@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Env / secrets
+.env
+*.local
+
+# Run artifacts
+run_ledger.sqlite3
+*.sqlite3
+evals/reports/*
+!evals/reports/.gitkeep
+
+# Node / dashboard
+node_modules/
+dashboard/dist/
+*.log
+
+# IaC / deploy
+deploy/cdk.out/
+.localstack/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
