@@ -33,6 +33,9 @@ class _State:
     """Mutable in-memory state for the mock APIs."""
 
     def __init__(self) -> None:
+        self.reset()
+
+    def reset(self) -> None:
         self.pulseads_rate_limit_remaining = 0
         self.novareach_idempotency: dict[str, str] = {}
         self.creatives: dict[str, dict[str, Any]] = {}
@@ -48,9 +51,8 @@ STATE = _State()
 
 
 def reset_state() -> None:
-    """Reset all in-memory mock state (call between tests)."""
-    global STATE
-    STATE = _State()
+    """Reset all in-memory mock state in place (call between tests)."""
+    STATE.reset()
 
 
 app = FastAPI(title="aih mock partner APIs", version="0.1.0")
