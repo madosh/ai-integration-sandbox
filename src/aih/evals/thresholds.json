@@ -1,0 +1,9 @@
+{
+  "retrieval.recall_at_3": 0.75,
+  "retrieval.mrr": 0.75,
+  "retrieval.ndcg_at_3": 0.75,
+  "generation.llm_judge": 0.5,
+  "tool_selection.accuracy": 0.66,
+  "redteam.block_rate": 0.5,
+  "rerank.quality": 0.5
+}

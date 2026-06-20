@@ -1,0 +1,4 @@
+{"id":"r1","input":{"query":"HTTP 429 Retry-After exponential backoff"},"reference":["policy-rate-limiting"],"rubric":null}
+{"id":"r2","input":{"query":"bearer token cursor pagination PulseAds"},"reference":["partner-pulseads"],"rubric":null}
+{"id":"r3","input":{"query":"API key offset limit NovaReach campaigns"},"reference":["partner-novareach"],"rubric":null}
+{"id":"r4","input":{"query":"multipart creative upload basic auth CreativeBox"},"reference":["partner-creativebox"],"rubric":null}

@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Integration Sandbox — Interview Practice Guide</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --factorial: #7c3aed;
+      --oxigent: #059669;
+      --code-bg: #1e293b;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 55%, #1e1b4b 100%);
+      color: #f8fafc;
+      padding: 3rem 1.5rem 2.5rem;
+    }
+
+    .hero-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      margin: 0 0 0.5rem;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .hero .subtitle {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      max-width: 42rem;
+      margin: 0 0 1.25rem;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .badge.factorial { background: rgba(124, 58, 237, 0.35); border-color: rgba(167, 139, 250, 0.5); }
+    .badge.oxigent { background: rgba(5, 150, 105, 0.35); border-color: rgba(52, 211, 153, 0.5); }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      margin: 1.25rem 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    p { margin: 0 0 0.75rem; }
+
+    .lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+    }
+
+    ul, ol { margin: 0 0 0.75rem; padding-left: 1.25rem; }
+    li { margin-bottom: 0.35rem; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 0.75rem 0;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.55rem 0.65rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--bg);
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    code {
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: 0.85em;
+      background: #f1f5f9;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: #e2e8f0;
+      padding: 1rem 1.15rem;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      margin: 0.75rem 0;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    @media (max-width: 700px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.5rem; }
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      background: var(--bg);
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .card.factorial { border-top: 3px solid var(--factorial); }
+    .card.oxigent { border-top: 3px solid var(--oxigent); }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      margin: 1rem 0;
+    }
+
+    .flow span {
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .flow .arrow { color: var(--muted); font-weight: 400; }
+
+    .practice-day {
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 0.75rem 0;
+    }
+
+    .practice-day strong { display: block; margin-bottom: 0.25rem; }
+
+    .toc {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .toc a:hover { text-decoration: underline; }
+
+    .demo-steps {
+      counter-reset: step;
+      list-style: none;
+      padding: 0;
+    }
+
+    .demo-steps li {
+      counter-increment: step;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      padding-left: 2.25rem;
+    }
+
+    .demo-steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      top: 0.6rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 1rem;
+    }
+
+    .diagram-wrap {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0 0 0.5rem;
+      font-weight: 600;
+    }
+
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      min-height: 80px;
+    }
+
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    @media (max-width: 800px) {
+      .diagram-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>AI Integration Sandbox</h1>
+      <p class="subtitle">
+        A local practice lab for two integration-focused AI engineer interviews.
+        One repo, offline-first, runnable without API keys — built to rehearse, demo, and extend in real time.
+      </p>
+      <div class="badges">
+        <span class="badge factorial">Factorial — Product AI Engineer</span>
+        <span class="badge oxigent">Oxigent — Integration Engineer</span>
+        <span class="badge">Offline-first</span>
+        <span class="badge">Spec-driven</span>
+        <span class="badge">59+ tests green</span>
+        <span class="badge">Final study edition</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="toc">
+      <h2>On this page</h2>
+      <ul class="toc">
+        <li><a href="#what">What the system does</a></li>
+        <li><a href="#diagrams">Architecture diagrams</a></li>
+        <li><a href="#modern-ai">Modern AI stack (Phases 10–14)</a></li>
+        <li><a href="#study-plan">Final study plan (7 days)</a></li>
+        <li><a href="#interviews">Which interview it rehearses</a></li>
+        <li><a href="#modules">Module map</a></li>
+        <li><a href="#run">How to run it</a></li>
+        <li><a href="#practice">How I practice with it</a></li>
+        <li><a href="#demo">Live demo script (5 min)</a></li>
+        <li><a href="#drills">Drills &amp; flashcards</a></li>
+        <li><a href="#talking">Talking points cheat sheet</a></li>
+      </ul>
+    </section>
+
+    <section id="what">
+      <h2>What this system does</h2>
+      <p class="lead">
+        It simulates an <strong>AI-native integration hub</strong>: connect to multiple external partner APIs,
+        let an agent automate sync and publish workflows, ground answers in company docs, and require
+        human approval before side effects (like uploading a creative).
+      </p>
+
+      <p>
+        The fake partners — <strong>PulseAds</strong> (Bearer + cursor pagination + 429 retries),
+        <strong>NovaReach</strong> (API-key + offset pagination), and <strong>CreativeBox</strong>
+        (basic auth + multipart upload) — are deliberately different so the connector abstraction has to earn its keep.
+      </p>
+
+      <div class="flow">
+        <span>Goal</span>
+        <span class="arrow">→</span>
+        <span>Agent</span>
+        <span class="arrow">→</span>
+        <span>Skill</span>
+        <span class="arrow">→</span>
+        <span>Connector</span>
+        <span class="arrow">→</span>
+        <span>Partner API</span>
+      </div>
+
+      <p>
+        Side-effecting steps (e.g. publish creative) pause at a <strong>human-in-the-loop gate</strong>
+        until you Approve or Deny in the dashboard or API. Read-only steps (sync, search docs) run immediately.
+        Everything is logged in an inspectable <strong>run trace</strong>.
+      </p>
+
+      <p>
+        By default: <code>FakeLLM</code> (deterministic planner), <code>HashEmbedder</code> (offline embeddings),
+        and <code>mock_apis/</code> (local FastAPI fakes). No keys, no cloud, reproducible in CI and in an interview room.
+      </p>
+    </section>
+
+    <section id="diagrams">
+      <h2>Architecture diagrams</h2>
+      <p class="lead">
+        Visual map of the system — use these when whiteboarding or walking an interviewer through the repo.
+        Diagrams render via Mermaid (requires internet on first open).
+      </p>
+
+      <h3>1. System overview (C4 containers)</h3>
+      <p>
+        Clients hit the FastAPI hub. The agent orchestrates skills, RAG, and connectors.
+        Partners are faked locally; AWS resources target LocalStack in dev.
+      </p>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TB
+  subgraph clients ["Clients"]
+    Dashboard["React Dashboard :5173"]
+    MCPClient["MCP Client"]
+    CLI["Tests / CLI"]
+  end
+
+  subgraph hub ["AI Integration Hub"]
+    API["FastAPI Service :8000"]
+    Agent["Agent Orchestrator"]
+    Skills["AI Skills"]
+    RAG["Hybrid RAG"]
+    MCP["MCP Server"]
+    Connectors["Connector Framework"]
+    Evals["Eval Harness"]
+    Ledger["Run Ledger"]
+  end
+
+  subgraph partners ["Partner layer (offline fakes)"]
+    MockAPIs["mock_apis :9000"]
+    PulseAds["PulseAds style"]
+    NovaReach["NovaReach style"]
+    CreativeBox["CreativeBox style"]
+  end
+
+  subgraph aws ["AWS / LocalStack"]
+    S3["S3 creatives"]
+    SQS["SQS approvals"]
+    DDB["DynamoDB ledger"]
+  end
+
+  Dashboard --> API
+  MCPClient --> MCP
+  CLI --> API
+  API --> Agent
+  API --> RAG
+  API --> Ledger
+  Agent --> Skills
+  Agent --> Ledger
+  Skills --> Connectors
+  Skills --> RAG
+  MCP --> Connectors
+  MCP --> RAG
+  Connectors --> MockAPIs
+  MockAPIs --> PulseAds
+  MockAPIs --> NovaReach
+  MockAPIs --> CreativeBox
+  API --> S3
+  API --> SQS
+  Ledger --> DDB
+        </div>
+      </div>
+
+      <h3>2. Agent run flow (read vs write)</h3>
+      <p>Every automation starts with a goal. Side-effecting skills pause for human approval before calling a partner.</p>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TD
+  Start(["POST /runs — goal"]) --> Plan["Agent plans via FakeLLM"]
+  Plan --> Pick["Select skill / tool"]
+  Pick --> Side{"Side effect?"}
+  Side -->|No| Exec["Execute skill"]
+  Side -->|Yes| Gate["HITL gate — run PAUSED"]
+  Gate --> Human{"Approve / Deny?"}
+  Human -->|Approve| Exec
+  Human -->|Deny| Denied(["Status: denied — zero side effects"])
+  Exec --> Conn["Connector transport"]
+  Conn --> Partner["mock_apis partner"]
+  Exec --> Trace["Steps saved to run ledger"]
+  Trace --> Done(["Status: completed"])
+        </div>
+      </div>
+
+      <div class="diagram-grid">
+        <div>
+          <p class="diagram-caption">3. Human-in-the-loop (publish creative)</p>
+          <div class="diagram-wrap">
+            <div class="mermaid">
+sequenceDiagram
+  participant U as You / Dashboard
+  participant API as FastAPI
+  participant A as Agent
+  participant G as Approval gate
+  participant C as CreativeBox connector
+  participant M as mock_apis
+
+  U->>API: POST /runs publish creative...
+  API->>A: start background run
+  A->>G: publish_creative needs approval
+  G-->>U: pending_approval in trace
+  U->>API: POST /runs/id/approve
+  API->>G: resolve approved=true
+  G->>A: continue
+  A->>C: push_creative multipart
+  C->>M: HTTP PUT creative
+  M-->>C: 201 created
+  C-->>A: success
+  A-->>API: trace completed
+  API-->>U: metrics update SSE
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="diagram-caption">4. Hybrid RAG pipeline</p>
+          <div class="diagram-wrap">
+            <div class="mermaid">
+flowchart LR
+  Q["User query"] --> Sparse["BM25 sparse"]
+  Q --> Dense["HashEmbedder dense"]
+  Sparse --> Fusion["RRF or alpha fusion"]
+  Dense --> Fusion
+  Fusion --> Chunks["Scored chunks + citations"]
+  Q --> Id{"Campaign ID in query?"}
+  Id -->|Yes| Record["Authoritative connector record"]
+  Id -->|No| Skip["Text only"]
+  Record --> Out["SearchResult"]
+  Chunks --> Out
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>5. Local runtime (three terminals)</h3>
+      <p>What you boot when practicing a live demo — no Docker required for the core loop.</p>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+  subgraph termA ["Terminal A"]
+    Mock["python tasks.py mock-apis"]
+  end
+  subgraph termB ["Terminal B"]
+    Svc["python tasks.py run"]
+  end
+  subgraph termC ["Terminal C"]
+    UI["python tasks.py ui"]
+  end
+
+  Browser["Browser localhost:5173"] --> UI
+  UI -->|"proxy /api"| Svc
+  Svc --> Mock
+  Mock --> P1["PulseAds fake"]
+  Mock --> P2["NovaReach fake"]
+  Mock --> P3["CreativeBox fake"]
+        </div>
+      </div>
+
+      <h3>6. Repo layers (what lives where)</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TB
+  subgraph practice ["Interview practice surface"]
+    Specs["specs/ — SDD contracts"]
+    Drills["drills/ — katas & design"]
+    Docs["docs/ — ADRs, notes"]
+  end
+
+  subgraph app ["Runnable application"]
+    Service["service/ — HTTP API"]
+    AgentL["agent/ + skills/"]
+    Integrations["connectors/ + mock_apis/"]
+    Intelligence["rag/ + llm/ + mcp_server/"]
+    Quality["evals/ + tests/"]
+  end
+
+  subgraph ship ["Ship & observe"]
+    DashboardL["dashboard/ — React UI"]
+    Deploy["deploy/ — Docker + LocalStack"]
+  end
+
+  practice --> app
+  app --> ship
+        </div>
+      </div>
+    </section>
+
+    <section id="modern-ai">
+      <h2>Modern AI stack (Phases 10–14) — final study map</h2>
+      <p class="lead">
+        Extensions added for <strong>today's AI engineering</strong>: vector index protocol, reranking,
+        query rewrite, injection guardrails, MCP resources/prompts, tracing, token budgets, online evals,
+        red-team suite, OAuth/outbox patterns, agent card (A2A-style), and streaming search in the UI.
+        All offline by default — same rehearsal rules as the core repo.
+      </p>
+
+      <table>
+        <thead>
+          <tr><th>Modern topic</th><th>Where</th><th>What to say in interviews</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Vector database / ANN index</td>
+            <td><code>rag/vector_store.py</code></td>
+            <td>Protocol + in-memory + <code>fake_pinecone</code> adapter; swap backend, keep retriever API</td>
+          </tr>
+          <tr>
+            <td>Reranking (2-stage RAG)</td>
+            <td><code>rag/rerank.py</code></td>
+            <td>Retrieve wide → rerank narrow; cross-encoder in prod, fake keyword lift offline</td>
+          </tr>
+          <tr>
+            <td>Query rewrite / decompose</td>
+            <td><code>rag/query.py</code></td>
+            <td>HyDE-lite expansion; split compound questions for multi-hop-style retrieval</td>
+          </tr>
+          <tr>
+            <td>RAG security</td>
+            <td><code>rag/safety.py</code></td>
+            <td>Block/sanitize injection; delimiter-wrapped trusted context</td>
+          </tr>
+          <tr>
+            <td>Guardrails / structured I/O</td>
+            <td><code>guardrails/validate.py</code></td>
+            <td>Validate tool args before side effects; Pydantic at every boundary</td>
+          </tr>
+          <tr>
+            <td>LLM observability</td>
+            <td><code>observability/tracing.py</code></td>
+            <td>Spans per LLM/skill call; token + cost estimates on run trace</td>
+          </tr>
+          <tr>
+            <td>Token budget</td>
+            <td><code>agent/budget.py</code></td>
+            <td>Cap agent loops; production uses real token counts from provider</td>
+          </tr>
+          <tr>
+            <td>Agent memory</td>
+            <td><code>agent/memory.py</code></td>
+            <td>Run-scoped notes; prod → vector memory or session store</td>
+          </tr>
+          <tr>
+            <td>Plan-and-execute graph</td>
+            <td><code>agent/graph.py</code></td>
+            <td>Inspectable plan from trace; LangGraph-style without heavy framework</td>
+          </tr>
+          <tr>
+            <td>MCP resources + prompts</td>
+            <td><code>mcp_server/server.py</code></td>
+            <td><code>corpus://</code> resources + <code>integration_runbook</code> prompt — full MCP surface</td>
+          </tr>
+          <tr>
+            <td>A2A agent card</td>
+            <td><code>agent/card.json</code>, <code>docs/a2a-notes.md</code></td>
+            <td>Agent discovery manifest for multi-agent routing (conceptual)</td>
+          </tr>
+          <tr>
+            <td>IDE agent context</td>
+            <td><code>AGENTS.md</code></td>
+            <td>Repo conventions for Cursor / coding agents (industry pattern)</td>
+          </tr>
+          <tr>
+            <td>OAuth connectors</td>
+            <td><code>connectors/oauth.py</code></td>
+            <td>Client-credentials stub; real partners often OAuth not static keys</td>
+          </tr>
+          <tr>
+            <td>Outbox / idempotency</td>
+            <td><code>connectors/outbox.py</code></td>
+            <td>Dedupe PUSH; pairs with connector idempotency keys</td>
+          </tr>
+          <tr>
+            <td>Streaming search UI</td>
+            <td><code>POST /search/stream</code>, dashboard Search panel</td>
+            <td>SSE token stream pattern for grounded answers</td>
+          </tr>
+          <tr>
+            <td>Online eval sampling</td>
+            <td><code>evals/online.py</code></td>
+            <td>Sample live runs to <code>evals/reports/online/</code> for HITL review</td>
+          </tr>
+          <tr>
+            <td>Red-team evals</td>
+            <td><code>evals/datasets/redteam.jsonl</code></td>
+            <td>Injection + guardrail block rate in <code>python tasks.py eval</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>RAG pipeline (with modern stages)</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+  Q["User query"] --> Safe["Safety sanitize"]
+  Safe --> Rewrite["Query rewrite"]
+  Rewrite --> Sparse["BM25"]
+  Rewrite --> Dense["Embedder + VectorStore"]
+  Sparse --> Fuse["RRF / alpha fusion"]
+  Dense --> Fuse
+  Fuse --> Rerank["Reranker"]
+  Rerank --> Citations["Cited chunks"]
+  Q --> Id{"Campaign ID?"}
+  Id -->|Yes| Record["Connector record"]
+  Citations --> Gen["Grounded generation"]
+  Record --> Out["SearchResult"]
+  Gen --> Out
+        </div>
+      </div>
+
+      <h3>Protocols &amp; interfaces</h3>
+      <table>
+        <thead><tr><th>Protocol</th><th>In this repo</th><th>Production note</th></tr></thead>
+        <tbody>
+          <tr><td><strong>MCP tools</strong></td><td>stdio server, typed envelopes</td><td>IDE + agent clients call connectors safely</td></tr>
+          <tr><td><strong>MCP resources</strong></td><td><code>corpus://{doc_id}</code></td><td>LLM reads trusted docs without fake retrieval</td></tr>
+          <tr><td><strong>MCP prompts</strong></td><td><code>integration_runbook</code></td><td>Reusable prompt templates versioned in repo</td></tr>
+          <tr><td><strong>REST / OpenAPI</strong></td><td>FastAPI <code>/runs</code>, <code>/search</code></td><td>Dashboard + external automation</td></tr>
+          <tr><td><strong>A2A card</strong></td><td><code>agent/card.json</code></td><td>Agent registry / orchestrator picks specialist</td></tr>
+          <tr><td><strong>AGENTS.md</strong></td><td>Root file</td><td>Coding-agent project context (Cursor convention)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Key env vars (optional tuning)</h3>
+      <pre><code>AIH_VECTOR_BACKEND=memory|fake_pinecone
+AIH_RERANKER=fake|none
+AIH_ENABLE_QUERY_REWRITE=true
+AIH_ENABLE_RAG_SAFETY=true
+AIH_AGENT_TOKEN_BUDGET=8000
+AIH_ONLINE_EVAL_SAMPLE_RATE=0.0</code></pre>
+      <p>See <code>.env.example</code> for the full list.</p>
+    </section>
+
+    <section id="study-plan">
+      <h2>Final study plan (7 days before interviews)</h2>
+      <p>Use this page + the repo. Each day: <strong>run</strong> → <strong>read one spec</strong> → <strong>one drill</strong> → <strong>narrate 5 min</strong>.</p>
+
+      <div class="practice-day">
+        <strong>Day 1 — Core loop</strong>
+        Boot 3 terminals. Demo publish + approve. Read <code>specs/agent.md</code>. Flashcards 1–10.
+      </div>
+      <div class="practice-day">
+        <strong>Day 2 — Integrations (Oxigent)</strong>
+        <code>tests/connectors/</code>, transport retries, OAuth/outbox stubs. System design #1 or #5.
+      </div>
+      <div class="practice-day">
+        <strong>Day 3 — RAG + vectors (Factorial)</strong>
+        Trace query through safety → rewrite → fusion → rerank. <code>docs/rag-notes.md</code>. Explain why no Pinecone in sandbox.
+      </div>
+      <div class="practice-day">
+        <strong>Day 4 — MCP + protocols</strong>
+        <code>docs/mcp-inspector.md</code>, resources/prompts. <code>agent/card.json</code> + <code>docs/a2a-notes.md</code>.
+      </div>
+      <div class="practice-day">
+        <strong>Day 5 — Evals + safety</strong>
+        <code>python tasks.py eval</code> (5 suites). Red-team + online sampling. <code>docs/evals-notes.md</code>.
+      </div>
+      <div class="practice-day">
+        <strong>Day 6 — Katas + challenge-back</strong>
+        <code>python tasks.py drill-katas</code> (solve 2). Two challenge-back scenarios aloud.
+      </div>
+      <div class="practice-day">
+        <strong>Day 7 — Mock interview</strong>
+        Full 5-min demo script (no notes). <code>python tasks.py test</code> must be green. Pick Factorial OR Oxigent emphasis.
+      </div>
+    </section>
+
+    <section id="interviews">
+      <h2>Which interviews this rehearses</h2>
+      <div class="grid-2">
+        <div class="card factorial">
+          <h3>Factorial — Product AI Engineer</h3>
+          <p>API &amp; Integrations team. Emphasis on:</p>
+          <ul>
+            <li><strong>Spec-Driven Development</strong> — every feature has a spec in <code>specs/</code> first</li>
+            <li><strong>AI Skills</strong> — reusable typed capabilities + registry</li>
+            <li><strong>Evals</strong> — automated scorers + HITL review queue</li>
+            <li><strong>Hybrid RAG</strong> — BM25 + dense + fusion, deterministic record path</li>
+            <li><strong>HITL + agentic workflows</strong> — approval gate on side effects</li>
+            <li><strong>MCP</strong> — tools expose integrations to LLM clients</li>
+            <li><strong>End-to-end ownership</strong> — service, tests, observability</li>
+          </ul>
+          <p><strong>Foreground in demos:</strong> agent trace, approval flow, RAG citations, eval scorecard, specs.</p>
+        </div>
+        <div class="card oxigent">
+          <h3>Oxigent — Software / Integration Engineer</h3>
+          <p>Ad-tech / mobile gaming integrations. Emphasis on:</p>
+          <ul>
+            <li><strong>Python automations</strong> — async connectors, retries, circuit breaker</li>
+            <li><strong>REST GET/PUSH</strong> — paginated extraction + multipart creative upload</li>
+            <li><strong>Integrations framework</strong> — registry, pluggable auth, shared transport</li>
+            <li><strong>LLM + MCP in the flow</strong> — agent drives connectors via skills/MCP</li>
+            <li><strong>React/TS monitoring UI</strong> — runs, metrics, live SSE</li>
+            <li><strong>AWS deployment</strong> — Docker, LocalStack, S3/SQS ADRs</li>
+            <li><strong>Architecture + challenge-back</strong> — ADRs, drills, trade-off narratives</li>
+          </ul>
+          <p><strong>Foreground in demos:</strong> connector layer, dashboard metrics, transport resilience, deploy story.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="modules">
+      <h2>Requirement → module map</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Competency</th>
+            <th>Where in the repo</th>
+            <th>Practice action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>REST GET/PUSH integrations</td>
+            <td><code>src/aih/connectors/</code>, <code>mock_apis/</code></td>
+            <td>Run connector tests; add a 4th partner in a kata</td>
+          </tr>
+          <tr>
+            <td>Integrations framework</td>
+            <td><code>connectors/base.py</code>, <code>registry.py</code></td>
+            <td>Walk registry + auth strategies aloud</td>
+          </tr>
+          <tr>
+            <td>MCP tools</td>
+            <td><code>src/aih/mcp_server/</code></td>
+            <td>Read <code>docs/mcp-inspector.md</code>; call tools</td>
+          </tr>
+          <tr>
+            <td>Agent + HITL</td>
+            <td><code>src/aih/agent/</code></td>
+            <td>Approve/deny in UI; read run trace</td>
+          </tr>
+          <tr>
+            <td>Hybrid RAG</td>
+            <td><code>src/aih/rag/</code></td>
+            <td>Read <code>docs/rag-notes.md</code>; run search</td>
+          </tr>
+          <tr>
+            <td>Evals</td>
+            <td><code>src/aih/evals/</code></td>
+            <td><code>python tasks.py eval</code></td>
+          </tr>
+          <tr>
+            <td>Spec-Driven Development</td>
+            <td><code>specs/</code></td>
+            <td>Pick a spec; explain behaviour + success criteria</td>
+          </tr>
+          <tr>
+            <td>Monitoring UI</td>
+            <td><code>dashboard/</code></td>
+            <td>Live demo with SSE + approval</td>
+          </tr>
+          <tr>
+            <td>AWS / deploy</td>
+            <td><code>deploy/</code>, <code>docs/architecture.md</code></td>
+            <td>Draw C4 from architecture doc; cite ADRs</td>
+          </tr>
+          <tr>
+            <td>Challenge-back</td>
+            <td><code>drills/challenge-back/</code></td>
+            <td>Argue against bad stakeholder ideas</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="run">
+      <h2>How to run it</h2>
+      <p>From PowerShell (Windows) or any shell — repo root: <code>ai-integration-sandbox/</code></p>
+
+      <h3>One-time setup</h3>
+      <pre><code>python tasks.py setup</code></pre>
+
+      <h3>Full stack (3 terminals)</h3>
+      <pre><code># Terminal A — fake partner APIs (:9000)
+python tasks.py mock-apis
+
+# Terminal B — FastAPI hub (:8000)
+python tasks.py run
+
+# Terminal C — React dashboard (:5173)
+python tasks.py ui</code></pre>
+      <p>Open <strong>http://localhost:5173</strong> — UI proxies API calls to the service.</p>
+
+      <h3>Verify &amp; rehearse offline</h3>
+      <pre><code>python tasks.py test          # full suite, no network
+python tasks.py eval          # RAG + agent + generation scorecard
+python tasks.py drill-katas   # 7 failing katas to solve
+python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></pre>
+
+      <p>
+        API docs when the service is running:
+        <a href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a>
+      </p>
+    </section>
+
+    <section id="practice">
+      <h2>How I use this to practice interviews</h2>
+      <p>
+        The repo is not just code to read — it's a <strong>rehearsal instrument</strong>.
+        I alternate between running the system, solving drills, and narrating architecture as if an interviewer is watching.
+      </p>
+
+      <h3>Weekly rhythm (suggested)</h3>
+
+      <div class="practice-day">
+        <strong>Day 1 — Run &amp; narrate (45 min)</strong>
+        Boot mock-apis + service + UI. Start a publish run, approve it, point at trace steps.
+        Say out loud: plan → skill → gate → connector → partner. Record yourself or use a timer.
+      </div>
+
+      <div class="practice-day">
+        <strong>Day 2 — Factorial depth (45 min)</strong>
+        Open <code>specs/agent.md</code> and <code>specs/rag.md</code>. Run <code>python tasks.py eval</code>.
+        Explain hybrid vs pure BM25/dense using <code>docs/rag-notes.md</code>. Demo HITL deny path (no side effects).
+      </div>
+
+      <div class="practice-day">
+        <strong>Day 3 — Oxigent depth (45 min)</strong>
+        Read connector transport (retries, 429, circuit breaker). Walk <code>tests/connectors/</code>.
+        Show dashboard metrics. Sketch deploy from <code>docs/architecture.md</code>.
+      </div>
+
+      <div class="practice-day">
+        <strong>Day 4 — System design (30 min)</strong>
+        Pick one prompt from <code>drills/system-design/</code>. Whiteboard for 20 min, then open the
+        <code>&lt;details&gt;</code> model answer and compare.
+      </div>
+
+      <div class="practice-day">
+        <strong>Day 5 — Katas (60 min)</strong>
+        <code>python tasks.py drill-katas</code> — solve one or two failing tests (backoff, RRF, pagination…).
+        Check <code>SOLUTION_*.md</code> only after attempting.
+      </div>
+
+      <div class="practice-day">
+        <strong>Day 6 — Challenge-back (20 min)</strong>
+        Two scenarios from <code>drills/challenge-back/</code>. State stakeholder claim, counter-argument, alternative.
+      </div>
+
+      <div class="practice-day">
+        <strong>Day 7 — Mock interview (60 min)</strong>
+        Full demo script below + 10 flashcards from <code>drills/flashcards.md</code>. No notes for the first 15 min.
+      </div>
+
+      <h3>Before each real interview</h3>
+      <ul>
+        <li>Run <code>python tasks.py test</code> — green suite = confidence to run live</li>
+        <li>Pick 3 modules to foreground based on which company is first</li>
+        <li>Prepare one “I extended this” story (e.g. added eval threshold, fixed a connector, solved a kata)</li>
+        <li>Know where specs live — Factorial cares that you spec before you code</li>
+      </ul>
+    </section>
+
+    <section id="demo">
+      <h2>Live demo script (~5 minutes)</h2>
+      <p>Use this when an interviewer says “walk me through something you built” or “show it running”.</p>
+
+      <ol class="demo-steps">
+        <li>
+          <strong>Context (30 s)</strong> — “This is an offline integration hub: three fake ad networks,
+          one agent, human approval on writes, hybrid RAG over partner docs.”
+        </li>
+        <li>
+          <strong>Dashboard metrics (30 s)</strong> — Open UI. Point at total runs, success rate, estimated value.
+          “This is the monitoring layer Oxigent-style integrations need.”
+        </li>
+        <li>
+          <strong>Read path (60 s)</strong> — Start run: <code>sync campaign data from pulseads</code>.
+          Show trace: plan → skill → connector. No approval needed.
+        </li>
+        <li>
+          <strong>RAG (45 s)</strong> — <code>POST /search</code> or ask docs in UI if wired — show citations
+          and mention BM25 + dense + RRF from <code>rag/</code>.
+        </li>
+        <li>
+          <strong>Write path + HITL (90 s)</strong> — Start: <code>publish the new creative to creativebox</code>.
+          Show pending approval. Approve → creative lands on mock store. Mention deny path leaves zero side effects.
+        </li>
+        <li>
+          <strong>Framework (45 s)</strong> — <code>GET /connectors</code> and <code>GET /skills</code>.
+          “Adding a partner is a module + registry entry; skills mirror that for agent capabilities.”
+        </li>
+        <li>
+          <strong>Quality (30 s)</strong> — Mention eval harness, committed thresholds, spec-first in <code>specs/</code>.
+        </li>
+        <li>
+          <strong>Close (30 s)</strong> — “Default is FakeLLM and mock APIs so this runs in CI and in this room
+          without keys; real providers are behind env flags.”
+        </li>
+      </ol>
+    </section>
+
+    <section id="drills">
+      <h2>Drills in the repo</h2>
+      <table>
+        <thead>
+          <tr><th>Folder</th><th>What</th><th>Command</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>drills/katas/</code></td>
+            <td>6 timed Python exercises (backoff, pagination, chunker, RRF, idempotent push, rate limiter)</td>
+            <td><code>python tasks.py drill-katas</code></td>
+          </tr>
+          <tr>
+            <td><code>drills/system-design/</code></td>
+            <td>5 design prompts with hidden model answers</td>
+            <td>Open markdown in editor</td>
+          </tr>
+          <tr>
+            <td><code>drills/challenge-back/</code></td>
+            <td>6 “bad stakeholder idea” scenarios</td>
+            <td>Open markdown in editor</td>
+          </tr>
+          <tr>
+            <td><code>drills/flashcards.md</code></td>
+            <td>30 rapid Q&amp;A (BM25, RRF, MCP, evals, AWS…)</td>
+            <td>Self-paced review</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="talking">
+      <h2>Talking points cheat sheet</h2>
+      <ul>
+        <li><strong>Why offline-first?</strong> Deterministic tests, no interview-day network failures, cheap CI evals.</li>
+        <li><strong>Why hybrid RAG?</strong> BM25 for IDs and rare tokens; dense for paraphrase; fusion when either alone fails.</li>
+        <li><strong>Why HITL?</strong> Side effects are low-reversibility; model can hallucinate tool args.</li>
+        <li><strong>Why MCP?</strong> Same integrations exposed to IDE agents and external LLM clients with typed tools.</li>
+        <li><strong>Why specs first?</strong> Aligns team on success criteria before code; specs are the contract for evals too.</li>
+        <li><strong>Why SQS for approvals?</strong> Durable async queue; see ADR 001. In-process gate for MVP.</li>
+        <li><strong>Why S3 for creatives?</strong> Blobs not rows; see ADR 002.</li>
+        <li><strong>Connector resilience?</strong> Backoff + jitter, Retry-After on 429, circuit breaker per partner.</li>
+      </ul>
+
+      <h3>Docs to skim before interviews</h3>
+      <ul>
+        <li><code>README.md</code> — overview</li>
+        <li><code>docs/architecture.md</code> — C4 diagram</li>
+        <li><code>docs/rag-notes.md</code> — retrieval trade-offs</li>
+        <li><code>docs/evals-notes.md</code> — when to trust automated vs human eval</li>
+        <li><code>AGENTS.md</code> — coding-agent / Cursor context</li>
+        <li><code>agent/card.json</code> + <code>docs/a2a-notes.md</code> — agent discovery</li>
+        <li><code>specs/modern-ai-extensions.md</code> — Phases 10–14 spec</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    AI Integration Sandbox · Final study guide · <code>docs/interview-practice.html</code>
+  </footer>
+
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#eff6ff",
+        primaryTextColor: "#0f172a",
+        primaryBorderColor: "#2563eb",
+        lineColor: "#64748b",
+        secondaryColor: "#f1f5f9",
+        tertiaryColor: "#f8fafc",
+        fontFamily: "Segoe UI, system-ui, sans-serif",
+      },
+      flowchart: { curve: "basis", padding: 12 },
+    });
+    await mermaid.run({ querySelector: ".mermaid" });
+  </script>
+</body>
+</html>

@@ -1,34 +1,39 @@
-"""Dense retrieval: embedding cosine similarity (offline HashEmbedder by default)."""
+"""Dense retrieval via vector store + embedder."""
 
 from __future__ import annotations
 
-import math
-
 from aih.llm.base import Embedder
 from aih.rag.models import Chunk
-
-
-def cosine(a: list[float], b: list[float]) -> float:
-    """Cosine similarity between two vectors."""
-    dot = sum(x * y for x, y in zip(a, b, strict=True))
-    na = math.sqrt(sum(x * x for x in a))
-    nb = math.sqrt(sum(y * y for y in b))
-    if na == 0.0 or nb == 0.0:
-        return 0.0
-    return dot / (na * nb)
+from aih.rag.vector_store import VectorStore, get_vector_store
 
 
 class DenseIndex:
-    """A dense index: precomputed chunk embeddings + cosine query scoring."""
+    """Dense index backed by a :class:`VectorStore` (in-memory or fake Pinecone)."""
 
-    def __init__(self, chunks: list[Chunk], embedder: Embedder) -> None:
+    def __init__(
+        self,
+        chunks: list[Chunk],
+        embedder: Embedder,
+        store: VectorStore | None = None,
+    ) -> None:
         self.chunks = chunks
         self._embedder = embedder
-        self._vectors = embedder.embed([c.text for c in chunks]) if chunks else []
+        self._store = store or get_vector_store()
+        self._backend = getattr(self._store, "backend_name", "memory")
+        if chunks:
+            ids = [c.id for c in chunks]
+            vectors = embedder.embed([c.text for c in chunks])
+            meta = [{"doc_id": c.doc_id} for c in chunks]
+            self._store.upsert(ids, vectors, meta)
 
     def scores(self, query: str) -> list[float]:
-        """Return a cosine similarity score per chunk."""
-        if not self._vectors:
+        if not self.chunks:
             return []
         q = self._embedder.embed([query])[0]
-        return [cosine(q, v) for v in self._vectors]
+        hits = self._store.search(q, len(self.chunks))
+        by_id = dict(hits)
+        return [float(by_id.get(c.id, 0.0)) for c in self.chunks]
+
+    @property
+    def backend_name(self) -> str:
+        return self._backend

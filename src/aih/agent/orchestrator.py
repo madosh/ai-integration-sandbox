@@ -14,13 +14,17 @@ from typing import Any
 from pydantic import ValidationError
 
 from aih.agent.approval import ApprovalRequest, Approver, AutoApprover
+from aih.agent.budget import TokenBudget
+from aih.agent.memory import MEMORY
 from aih.agent.models import RunResult, RunStep, RunTrace
 from aih.config import get_settings
 from aih.connectors.errors import ConnectorError
+from aih.guardrails.validate import validate_skill_args
 from aih.llm import get_llm
 from aih.llm.base import ChatMessage, LLMClient, ToolSpec
 from aih.observability.ledger import InMemoryLedger, RunLedger
 from aih.observability.logging import get_logger
+from aih.observability.tracing import Tracer
 from aih.skills.base import SkillContext
 from aih.skills.registry import SKILLS, SkillRegistry
 
@@ -59,9 +63,14 @@ class Agent:
         self.ctx = ctx or SkillContext.default()
         self.max_steps = max_steps or get_settings().agent_max_steps
 
-    async def run(self, goal: str) -> RunResult:
-        trace = RunTrace(run_id=uuid.uuid4().hex[:12], goal=goal)
+    async def run(self, goal: str, *, run_id: str | None = None) -> RunResult:
+        trace = RunTrace(run_id=run_id or uuid.uuid4().hex[:12], goal=goal)
+        tracer = Tracer(trace.run_id)
+        budget = TokenBudget()
+        settings = get_settings()
         self.ledger.save(trace)
+        if settings.agent_enable_memory:
+            MEMORY.remember(trace.run_id, f"goal:{goal}")
         messages = [
             ChatMessage(role="system", content=_SYSTEM_PROMPT),
             ChatMessage(role="user", content=f"GOAL: {goal}"),
@@ -72,7 +81,14 @@ class Agent:
         index = 0
 
         for _ in range(self.max_steps):
-            completion = await self.llm.tool_call(messages, tools)
+            if budget.exhausted:
+                trace.add(RunStep(index=index, kind="finish", message="token budget exhausted"))
+                trace.status = "max_steps"
+                break
+            with tracer.span("llm.tool_call", step=index):
+                completion = await self.llm.tool_call(messages, tools)
+                budget.charge(50)
+                tracer.add_token_estimate(50, 0.0001)
             call = completion.tool_call
             if call is None or call.name == "finish":
                 trace.add(RunStep(index=index, kind="finish", message="planner finished"))
@@ -113,6 +129,19 @@ class Agent:
                 continue
 
             skill = self.skills.get(call.name)
+            ok, err = validate_skill_args(skill.name, call.arguments)
+            if not ok:
+                trace.add(
+                    RunStep(
+                        index=index,
+                        kind="error",
+                        skill=call.name,
+                        message=f"guardrail: {err}",
+                    )
+                )
+                index += 1
+                self.ledger.save(trace)
+                continue
             try:
                 payload = skill.input_model(**call.arguments)
             except ValidationError as exc:
@@ -139,7 +168,9 @@ class Agent:
                     continue
 
             try:
-                result = await skill.run(payload, self.ctx)
+                with tracer.span("skill.run", skill=skill.name):
+                    result = await skill.run(payload, self.ctx)
+                budget.charge(20)
             except (ConnectorError, NotImplementedError) as exc:
                 trace.add(
                     RunStep(
@@ -157,6 +188,8 @@ class Agent:
                 continue
 
             last_output = result.model_dump()
+            if settings.agent_enable_memory:
+                MEMORY.remember(trace.run_id, f"skill:{skill.name}")
             trace.add(
                 RunStep(
                     index=index,
@@ -180,6 +213,9 @@ class Agent:
                 trace.status = "max_steps"
 
         trace.value_summary = _summarize_value(trace)
+        trace.tracing = tracer.to_dict()
+        trace.value_summary["tokens_used"] = budget.used
+        trace.value_summary["token_budget"] = budget.limit
         self.ledger.save(trace)
         _log.info(
             "run.complete",

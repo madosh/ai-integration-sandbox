@@ -35,6 +35,7 @@ class RunTrace(BaseModel):
     status: RunStatus = "running"
     steps: list[RunStep] = Field(default_factory=list)
     value_summary: dict[str, Any] = Field(default_factory=dict)
+    tracing: dict[str, Any] = Field(default_factory=dict)
     created_at: float = Field(default_factory=time.time)
     updated_at: float = Field(default_factory=time.time)
 

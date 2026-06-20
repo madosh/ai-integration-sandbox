@@ -12,6 +12,8 @@ It runs with **no external accounts or API keys by default**: the LLM is a deter
 embeddings use a deterministic `HashEmbedder`, and every external REST API is a local FastAPI fake in
 `mock_apis/`. So `python tasks.py test` is fully offline and deterministic.
 
+**Interview practice guide (HTML):** open [`docs/interview-practice.html`](docs/interview-practice.html) — **final study edition** (diagrams + modern AI map).
+
 ## Requirement -> module map
 
 | Interview requirement | Source | Module |

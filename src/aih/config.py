@@ -33,9 +33,17 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     anthropic_model: str = "claude-3-5-sonnet-latest"
 
-    # Embeddings
+    # Embeddings / vector index
     embedder: Literal["hash", "anthropic", "openai"] = "hash"
     embedding_dim: int = 256
+    vector_backend: Literal["memory", "fake_pinecone"] = "memory"
+    reranker: Literal["fake", "none"] = "fake"
+    enable_query_rewrite: bool = True
+    enable_rag_safety: bool = True
+
+    # Agent limits
+    agent_token_budget: int = Field(default=8000, ge=100)
+    agent_enable_memory: bool = True
 
     # Mock partner APIs
     mock_api_base_url: str = "http://127.0.0.1:9000"
@@ -48,6 +56,9 @@ class Settings(BaseSettings):
 
     # Agent
     agent_max_steps: int = Field(default=8, ge=1, le=50)
+
+    # Online eval sampling (0.0 = disabled)
+    online_eval_sample_rate: float = Field(default=0.0, ge=0.0, le=1.0)
 
     # AWS / LocalStack
     aws_endpoint_url: str | None = "http://127.0.0.1:4566"

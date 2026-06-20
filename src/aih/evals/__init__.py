@@ -1,8 +1,5 @@
-"""Eval harness (automated + human-in-the-loop).
+"""Eval harness: automated scorers, suites, and human-in-the-loop review."""
 
-See ``specs/evals.md``. Implemented in Phase 5.
-"""
+from aih.evals.runner import main, run_evals
 
-from __future__ import annotations
-
-__all__: list[str] = []
+__all__ = ["main", "run_evals"]

@@ -1,0 +1,39 @@
+services:
+  service:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      AIH_ENV: local
+      AIH_MOCK_API_BASE_URL: http://mock-apis:9000
+      AIH_AWS_ENDPOINT_URL: http://localstack:4566
+      AIH_RUN_LEDGER_PATH: /data/run_ledger.sqlite3
+    volumes:
+      - service-data:/data
+    depends_on:
+      - mock-apis
+      - localstack
+
+  mock-apis:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    command: ["uvicorn", "mock_apis.app:app", "--host", "0.0.0.0", "--port", "9000"]
+    ports:
+      - "9000:9000"
+
+  localstack:
+    image: localstack/localstack:3
+    ports:
+      - "4566:4566"
+    environment:
+      SERVICES: s3,sqs,dynamodb
+      DEBUG: 0
+    volumes:
+      - localstack-data:/var/lib/localstack
+
+volumes:
+  service-data:
+  localstack-data:

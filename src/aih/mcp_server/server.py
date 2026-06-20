@@ -31,6 +31,7 @@ from aih.mcp_server.envelopes import (
     ToolError,
 )
 from aih.observability.logging import get_logger
+from aih.rag.corpus import CORPUS_DIR
 from aih.rag.retriever import HybridRetriever
 
 _log = get_logger("aih.mcp_server")
@@ -196,3 +197,29 @@ async def search_docs(query: str, k: int = 5) -> SearchResultEnvelope:
         return SearchResultEnvelope(
             ok=False, query=query, error=ToolError(type="search_error", message=str(exc))
         )
+
+
+@mcp.resource("corpus://{doc_id}")
+async def corpus_resource(doc_id: str) -> str:
+    """MCP resource: read a corpus markdown document by stem id."""
+    path = CORPUS_DIR / f"{doc_id}.md"
+    if not path.exists():
+        return f"error: document {doc_id!r} not found"
+    return path.read_text(encoding="utf-8")
+
+
+@mcp.resource("corpus://index")
+async def corpus_index() -> str:
+    """MCP resource: list available corpus document ids."""
+    ids = sorted(p.stem for p in CORPUS_DIR.glob("*.md"))
+    return "\n".join(ids)
+
+
+@mcp.prompt()
+def integration_runbook(goal: str = "sync campaigns") -> str:
+    """Prompt template for integration automation goals."""
+    return (
+        f"You are an integration agent. Goal: {goal}. "
+        "Use read-only tools unless the goal requires a side effect. "
+        "Side effects require human approval."
+    )

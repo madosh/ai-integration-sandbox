@@ -76,7 +76,7 @@ def type_check(_: list[str]) -> int:
 
 
 def eval_(_: list[str]) -> int:
-    return _run([_python(), "-m", "aih.evals.runner"])
+    return _run([_python(), "-m", "aih.evals"])
 
 
 def ui(_: list[str]) -> int:
@@ -89,8 +89,7 @@ def ui(_: list[str]) -> int:
 
 
 def deploy_local(_: list[str]) -> int:
-    script = ROOT / "deploy" / "smoke_test.py"
-    return _run([_python(), str(script)])
+    return _run([_python(), "-m", "deploy.smoke_test"])
 
 
 def drill_katas(_: list[str]) -> int:

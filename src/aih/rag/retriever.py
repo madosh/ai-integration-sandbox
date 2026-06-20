@@ -1,4 +1,4 @@
-"""Hybrid retriever: BM25 + dense + fusion, with a deterministic record path."""
+"""Hybrid retriever: BM25 + vector dense + fusion + rerank + safety."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import re
 from collections.abc import Awaitable, Callable
 from typing import Literal
 
+from aih.config import get_settings
 from aih.llm import get_embedder
 from aih.llm.base import Embedder
 from aih.rag.corpus import load_chunks
@@ -18,19 +19,19 @@ from aih.rag.models import (
     RetrievedChunk,
     SearchResult,
 )
+from aih.rag.query import decompose_query, rewrite_query
+from aih.rag.rerank import Reranker, get_reranker
+from aih.rag.safety import detect_injection, sanitize_query
 from aih.rag.sparse import BM25Index
+from aih.rag.vector_store import VectorStore, get_vector_store
 
 FusionMethod = Literal["alpha", "rrf"]
-
-#: A resolver maps a campaign id to its authoritative record (or None).
 RecordResolver = Callable[[str], Awaitable[AuthoritativeRecord | None]]
-
-# Campaign ids look like "pa-1", "nr-2", "cb-3".
 _CAMPAIGN_ID_RE = re.compile(r"\b([a-z]{2}-\d+)\b", re.IGNORECASE)
 
 
 class HybridRetriever:
-    """Hybrid retrieval over a chunked corpus."""
+    """Hybrid retrieval over a chunked corpus with modern RAG stages."""
 
     def __init__(
         self,
@@ -38,12 +39,17 @@ class HybridRetriever:
         *,
         embedder: Embedder | None = None,
         record_resolver: RecordResolver | None = None,
+        vector_store: VectorStore | None = None,
+        reranker: Reranker | None = None,
     ) -> None:
         self.chunks = chunks if chunks is not None else load_chunks()
         self.embedder = embedder or get_embedder()
+        store = vector_store or get_vector_store()
         self._sparse = BM25Index(self.chunks)
-        self._dense = DenseIndex(self.chunks, self.embedder)
+        self._dense = DenseIndex(self.chunks, self.embedder, store=store)
+        self._reranker = reranker or get_reranker()
         self._resolver = record_resolver
+        self._vector_backend = self._dense.backend_name
 
     async def search(
         self,
@@ -52,11 +58,35 @@ class HybridRetriever:
         k: int = 5,
         alpha: float = 0.5,
         method: FusionMethod = "rrf",
+        retrieve_k: int | None = None,
     ) -> SearchResult:
-        """Return fused, cited chunks plus an optional authoritative record."""
+        settings = get_settings()
+        raw_query = query
+        if settings.enable_rag_safety:
+            if detect_injection(query):
+                return SearchResult(query=raw_query, chunks=[])
+            query = sanitize_query(query)
+        if settings.enable_query_rewrite:
+            query = rewrite_query(query)
+
         deterministic = await self._resolve_deterministic(query)
-        chunks = self._retrieve_text(query, k=k, alpha=alpha, method=method)
-        return SearchResult(query=query, chunks=chunks, deterministic=deterministic)
+        pool_k = retrieve_k or max(k * 2, k)
+        sub_queries = decompose_query(query)
+        merged: list[RetrievedChunk] = []
+        seen: set[str] = set()
+        for sq in sub_queries:
+            for rc in self._retrieve_text(sq, k=pool_k, alpha=alpha, method=method):
+                if rc.provenance.chunk_id and rc.provenance.chunk_id not in seen:
+                    seen.add(rc.provenance.chunk_id)
+                    merged.append(rc)
+        merged = await self._reranker.rerank(query, merged, pool_k)
+        chunks = merged[:k]
+        for c in chunks:
+            if "rerank" not in c.provenance.signals:
+                c.provenance.signals.append("rerank")
+            if self._vector_backend not in c.provenance.signals:
+                c.provenance.signals.append(f"vector:{self._vector_backend}")
+        return SearchResult(query=raw_query, chunks=chunks, deterministic=deterministic)
 
     def _retrieve_text(
         self, query: str, *, k: int, alpha: float, method: FusionMethod
@@ -74,6 +104,8 @@ class HybridRetriever:
 
     def _to_result(self, f: FusedScore, method: FusionMethod) -> RetrievedChunk:
         chunk = self.chunks[f.index]
+        signals = list(f.signals)
+        signals.append(f"vector:{self._vector_backend}")
         return RetrievedChunk(
             text=chunk.text,
             score=f.fused,
@@ -86,7 +118,7 @@ class HybridRetriever:
                 dense=f.dense,
                 fused=f.fused,
                 method=method,
-                signals=f.signals,
+                signals=signals,
             ),
         )
 
@@ -98,5 +130,5 @@ class HybridRetriever:
             return None
         try:
             return await self._resolver(match.group(1).lower())
-        except Exception:  # noqa: BLE001 - deterministic path degrades gracefully
+        except Exception:  # noqa: BLE001
             return None

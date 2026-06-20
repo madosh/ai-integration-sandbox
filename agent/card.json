@@ -1,0 +1,17 @@
+{
+  "name": "ai-integration-hub",
+  "description": "Offline-first integration agent with connectors, hybrid RAG, and HITL approvals.",
+  "version": "0.1.0",
+  "capabilities": [
+    "sync_campaign_data",
+    "publish_creative",
+    "answer_from_docs",
+    "search_docs"
+  ],
+  "protocols": ["mcp", "rest"],
+  "authentication": "none-local",
+  "endpoints": {
+    "service": "http://127.0.0.1:8000",
+    "mock_partners": "http://127.0.0.1:9000"
+  }
+}

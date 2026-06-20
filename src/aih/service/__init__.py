@@ -1,8 +1,5 @@
-"""FastAPI service wiring connectors, RAG, skills, the agent and observability.
+"""FastAPI service package."""
 
-See ``specs/service.md``. Implemented in Phase 6.
-"""
+from aih.service.app import app, create_app
 
-from __future__ import annotations
-
-__all__: list[str] = []
+__all__ = ["app", "create_app"]

@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AI Integration Hub — S3 creatives, SQS approvals, DynamoDB run ledger
+
+Parameters:
+  CreativesBucketName:
+    Type: String
+    Default: aih-creatives
+  ApprovalsQueueName:
+    Type: String
+    Default: aih-approvals
+  RunLedgerTableName:
+    Type: String
+    Default: aih-run-ledger
+
+Resources:
+  CreativesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref CreativesBucketName
+
+  ApprovalsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref ApprovalsQueueName
+      VisibilityTimeout: 300
+
+  RunLedgerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref RunLedgerTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: run_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: run_id
+          KeyType: HASH
+
+Outputs:
+  CreativesBucketName:
+    Value: !Ref CreativesBucket
+  ApprovalsQueueUrl:
+    Value: !Ref ApprovalsQueue
+  RunLedgerTableName:
+    Value: !Ref RunLedgerTable
