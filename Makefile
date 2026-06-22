@@ -6,7 +6,7 @@
 PY := python
 RUN := $(PY) tasks.py
 
-.PHONY: setup run mock-apis test lint type eval ui deploy-local drill-katas
+.PHONY: setup run mock-apis sandbox test lint type eval ui deploy-local drill-katas
 
 setup:        ## Create venv + install package and dev deps
 	$(RUN) setup
@@ -16,6 +16,9 @@ run:          ## Boot the FastAPI service on :8000
 
 mock-apis:    ## Boot the mock partner APIs on :9000
 	$(RUN) mock-apis
+
+sandbox:      ## Boot mock-apis + service + dashboard
+	$(RUN) sandbox
 
 test:         ## Run the pytest suite
 	$(RUN) test

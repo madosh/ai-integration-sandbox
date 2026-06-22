@@ -10,7 +10,9 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 
+from aih.connectors.cache import CONNECTOR_CACHE
 from aih.llm.base import ChatMessage
+from aih.prompts import load_prompt
 from aih.skills.base import Skill, SkillContext
 
 
@@ -26,6 +28,8 @@ class SyncCampaignOutput(BaseModel):
     total_spend: float
     summary: str
     records: list[dict[str, Any]]
+    prompt_id: str | None = None
+    cached: bool = False
 
 
 class SyncCampaignData(Skill):
@@ -37,6 +41,13 @@ class SyncCampaignData(Skill):
 
     async def run(self, payload: BaseModel, ctx: SkillContext) -> SyncCampaignOutput:
         assert isinstance(payload, SyncCampaignInput)
+        cache_key = f"{payload.connector}:{payload.resource}:{payload.limit}"
+        cached = CONNECTOR_CACHE.get(cache_key)
+        if cached is not None:
+            data = dict(cached)
+            data["cached"] = True
+            return SyncCampaignOutput(**data)
+
         connector = ctx.get_connector(payload.connector)
         try:
             records: list[dict[str, Any]] = []
@@ -49,15 +60,21 @@ class SyncCampaignData(Skill):
         finally:
             await connector.aclose()
 
-        prompt = (
-            f"Summarize {len(records)} campaigns from {payload.connector} "
-            f"with total spend {total_spend:.2f}."
+        template, prompt_id = load_prompt("sync_summary", "v1")
+        prompt = template.format(
+            count=len(records),
+            connector=payload.connector,
+            total_spend=total_spend,
         )
         completion = await ctx.llm.complete([ChatMessage(role="user", content=prompt)])
-        return SyncCampaignOutput(
+        output = SyncCampaignOutput(
             connector=payload.connector,
             count=len(records),
             total_spend=round(total_spend, 2),
             summary=completion.text,
             records=records,
+            prompt_id=prompt_id,
+            cached=False,
         )
+        CONNECTOR_CACHE.set(cache_key, output.model_dump())
+        return output

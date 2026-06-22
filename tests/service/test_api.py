@@ -58,6 +58,31 @@ async def test_search(client: httpx.AsyncClient) -> None:
     assert r.status_code == 200
     body = r.json()
     assert body["chunks"]
+    assert body["confidence"] in ("high", "medium", "low")
+
+
+async def test_connector_health(client: httpx.AsyncClient) -> None:
+    r = await client.get("/connectors/pulseads/health")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["name"] == "pulseads"
+    assert "circuit" in body
+
+
+async def test_webhook_and_chat(client: httpx.AsyncClient) -> None:
+    wh = await client.post("/webhooks/pulseads", json={"payload": {"event": "campaign.updated"}})
+    assert wh.status_code == 200
+    assert wh.json()["status"] == "received"
+    listed = await client.get("/webhooks?partner=pulseads")
+    assert listed.status_code == 200
+    assert len(listed.json()) >= 1
+
+    chat = await client.post(
+        "/chat",
+        json={"thread_id": "t1", "message": "HTTP 429 Retry-After backoff"},
+    )
+    assert chat.status_code == 200
+    assert chat.json()["answer"]
 
 
 async def test_full_run_with_approval(client: httpx.AsyncClient) -> None:

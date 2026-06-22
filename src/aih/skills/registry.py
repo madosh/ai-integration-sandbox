@@ -8,6 +8,7 @@ from aih.llm.base import ToolSpec
 from aih.skills.answer_from_docs import AnswerFromDocs
 from aih.skills.base import Skill
 from aih.skills.publish_creative import PublishCreative
+from aih.skills.sync_all_connectors import SyncAllConnectors
 from aih.skills.sync_campaign_data import SyncCampaignData
 
 
@@ -41,6 +42,7 @@ class SkillRegistry:
 def default_registry() -> SkillRegistry:
     reg = SkillRegistry()
     reg.register(SyncCampaignData())
+    reg.register(SyncAllConnectors())
     reg.register(PublishCreative())
     reg.register(AnswerFromDocs())
     return reg

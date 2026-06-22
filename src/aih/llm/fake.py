@@ -160,22 +160,21 @@ def _summarize(text: str) -> str:
 def _extract_context(messages: list[ChatMessage]) -> list[str]:
     blocks: list[str] = []
     for msg in messages:
-        if "CONTEXT" in msg.content and "---" in msg.content:
-            # Split on lines of dashes used to delimit retrieved chunks.
-            for part in re.split(r"\n-{3,}\n", msg.content):
-                part = part.strip()
-                if part and "CONTEXT" not in part:
-                    blocks.append(part)
+        if "CONTEXT:" not in msg.content:
+            continue
+        body = msg.content.split("CONTEXT:", 1)[1]
+        if "---\nQUESTION:" in body:
+            body = body.split("---\nQUESTION:", 1)[0]
+        for part in re.split(r"\n-{3,}\n", body):
+            part = part.strip()
+            if part:
+                blocks.append(part)
     return blocks
 
 
 def _answer_from_context(question: str, context: list[str]) -> str:
-    q_tokens = set(_tokenize(question))
-    best = max(
-        context,
-        key=lambda c: len(q_tokens & set(_tokenize(c))),
-        default="",
-    )
+    # Blocks are already ranked by hybrid retrieval + rerank; use the top chunk.
+    best = context[0] if context else ""
     return f"[fake-llm] Based on the provided context: {best.strip()[:400]}"
 
 

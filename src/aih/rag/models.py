@@ -56,3 +56,4 @@ class SearchResult(BaseModel):
     query: str
     chunks: list[RetrievedChunk] = Field(default_factory=list)
     deterministic: AuthoritativeRecord | None = None
+    confidence: Literal["high", "medium", "low"] = "low"

@@ -6,6 +6,7 @@ from collections.abc import AsyncIterator
 from typing import Any
 
 from aih.connectors.base import Connector, ConnectorConfig
+from aih.connectors.mapping import map_raw
 from aih.connectors.models import Campaign, CampaignStatus
 from aih.connectors.paginate import cursor_paginate
 
@@ -41,13 +42,14 @@ class PulseAdsConnector(Connector):
         return _iter()
 
     def _normalize(self, raw: dict[str, Any]) -> Campaign:
+        mapped = map_raw(self.name, "campaigns", raw)
         return Campaign(
-            id=str(raw.get("campaign_id", "")),
+            id=str(mapped.get("id", mapped.get("campaign_id", ""))),
             partner=self.name,
-            name=str(raw.get("label", "")),
-            status=_STATUS_MAP.get(str(raw.get("state", "")), "unknown"),
-            spend=round(int(raw.get("spend_cents", 0)) / 100, 2),
-            metric=int(raw.get("clicks", 0)),
+            name=str(mapped.get("label", mapped.get("name", ""))),
+            status=_STATUS_MAP.get(str(mapped.get("state", mapped.get("status", ""))), "unknown"),
+            spend=round(float(mapped.get("spend", mapped.get("spend_cents", 0) / 100)), 2),
+            metric=int(mapped.get("clicks", mapped.get("metric", 0))),
             raw=raw,
         )
 
