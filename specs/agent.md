@@ -3,7 +3,7 @@
 ## Goal
 
 Given a goal, plan and execute a sequence of skills/tools with a bounded step budget, a full,
-inspectable run trace, and a human-in-the-loop gate on any side-effecting step. This is the Factorial
+inspectable run trace, and a human-in-the-loop gate on any side-effecting step. This is the
 agentic-workflow + HITL surface.
 
 ## Inputs / Outputs

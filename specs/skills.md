@@ -3,7 +3,7 @@
 ## Goal
 
 Provide reusable, well-scoped capabilities the agent can invoke and that can be tested in isolation.
-This is the Factorial "AI Skills" surface and mirrors the connector registry so capabilities are
+This is the "AI Skills" surface and mirrors the connector registry so capabilities are
 discoverable.
 
 ## Inputs / Outputs
