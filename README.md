@@ -1,10 +1,10 @@
 # AI Integration Sandbox (`aih`)
 
-An **offline-first, AI-native integration hub** built as interview-rehearsal reps for two roles:
+An **offline-first, AI-native integration hub** covering two engineering profiles:
 
-- **Factorial — Product AI Engineer** (API & Integrations): Spec-Driven Development, AI Skills,
+- **Product AI Engineering** (API & Integrations): Spec-Driven Development, AI Skills,
   Evals, RAG, human-in-the-loop + agentic workflows, MCP, end-to-end ownership.
-- **Oxigent — Software / Integration Engineer** (ad-tech): Python automations, REST GET/PUSH across
+- **Integration Engineering** (ad-tech): Python automations, REST GET/PUSH across
   ad networks, LLM + MCP inside the flow, a React/TS monitoring UI, AWS deploy, architecture +
   challenge-back.
 
@@ -18,16 +18,16 @@ embeddings use a deterministic `HashEmbedder`, and every external REST API is a 
 
 | Interview requirement | Source | Module |
 |---|---|---|
-| Advanced Python automations / services | Oxigent, Factorial | `connectors/`, `service/` |
-| REST consumption (GET) + publishing (PUSH) of data/files/creatives | Oxigent | `connectors/` |
-| Integrations framework / reusable capabilities | Factorial | `connectors/base.py`, `skills/` |
+| Advanced Python automations / services | both | `connectors/`, `service/` |
+| REST consumption (GET) + publishing (PUSH) of data/files/creatives | Integration track | `connectors/` |
+| Integrations framework / reusable capabilities | AI track | `connectors/base.py`, `skills/` |
 | MCP server / tools | both | `mcp_server/` |
 | LLM + agentic workflow orchestration | both | `agent/` |
-| Human-in-the-loop on critical actions | Factorial | `agent/approval.py` |
-| RAG grounded in trusted data (probabilistic vs deterministic) | Factorial | `rag/` (BM25 + dense + fusion) |
-| Evals (automated + human-in-the-loop) | Factorial | `evals/` |
-| Spec-Driven Development | Factorial | `specs/` (every feature has a spec first) |
-| React / TypeScript monitoring UI | Oxigent | `dashboard/` |
+| Human-in-the-loop on critical actions | AI track | `agent/approval.py` |
+| RAG grounded in trusted data (probabilistic vs deterministic) | AI track | `rag/` (BM25 + dense + fusion) |
+| Evals (automated + human-in-the-loop) | AI track | `evals/` |
+| Spec-Driven Development | AI track | `specs/` (every feature has a spec first) |
+| React / TypeScript monitoring UI | Integration track | `dashboard/` |
 | AWS deploy / infra | both | `deploy/` (LocalStack-first) |
 | Architecture + challenge-back | both | `docs/adr/`, `drills/` |
 
