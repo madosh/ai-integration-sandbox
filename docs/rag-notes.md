@@ -59,7 +59,7 @@ We combine the two rankings two ways (`aih.rag.fusion`):
 - At the extremes the dial degenerates cleanly: `alpha=0` is pure BM25, `alpha=1` is pure dense
   (asserted in `tests/rag`).
 
-## Probabilistic vs deterministic (the Factorial framing)
+## Probabilistic vs deterministic
 
 Text retrieval is **probabilistic** — it returns the *likely* relevant passages. For structured
 facts (a specific campaign id, a price, a status), prefer a **deterministic** path: look the record

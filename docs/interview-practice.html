@@ -20,8 +20,8 @@
       --accent-hover: #93c5fd;
       --accent-soft: rgba(59, 130, 246, 0.14);
       --link: #60a5fa;
-      --factorial: #a78bfa;
-      --oxigent: #34d399;
+      --product-ai: #a78bfa;
+      --integration: #34d399;
       --code-bg: #020617;
       --code-inline: #243044;
       --sidebar-bg: #060d18;
@@ -111,8 +111,8 @@
       color: #cbd5e1;
     }
 
-    .sidebar-badges .factorial { background: rgba(124, 58, 237, 0.28); color: #c4b5fd; }
-    .sidebar-badges .oxigent { background: rgba(5, 150, 105, 0.28); color: #6ee7b7; }
+    .sidebar-badges .product-ai { background: rgba(124, 58, 237, 0.28); color: #c4b5fd; }
+    .sidebar-badges .integration { background: rgba(5, 150, 105, 0.28); color: #6ee7b7; }
 
     .sidebar-nav {
       flex: 1;
@@ -368,8 +368,8 @@
     }
 
     .card h3 { margin-top: 0; }
-    .card.factorial { border-top: 3px solid var(--factorial); }
-    .card.oxigent { border-top: 3px solid var(--oxigent); }
+    .card.product-ai { border-top: 3px solid var(--product-ai); }
+    .card.integration { border-top: 3px solid var(--integration); }
 
     .flow {
       display: flex;
@@ -708,8 +708,8 @@
         <h1>AI Integration Sandbox</h1>
         <p>Interview practice guide — offline-first, spec-driven, runnable without API keys.</p>
         <div class="sidebar-badges">
-          <span class="factorial">Factorial</span>
-          <span class="oxigent">Oxigent</span>
+          <span class="product-ai">Product AI</span>
+          <span class="integration">Integration</span>
           <span>59+ tests</span>
         </div>
       </div>
@@ -1791,11 +1791,11 @@ linkStyle default stroke:#818cf8,stroke-width:2px
         Boot the stack (<code>run-sandbox.cmd</code> or 3 terminals). Demo publish + approve. Read <code>specs/agent.md</code>. Flashcards 1–10.
       </div>
       <div class="practice-day">
-        <strong>Day 2 — Integrations (Oxigent)</strong>
+        <strong>Day 2 — Integrations</strong>
         <code>tests/connectors/</code>, transport retries, OAuth/outbox stubs. System design #1 or #5.
       </div>
       <div class="practice-day">
-        <strong>Day 3 — RAG + vectors (Factorial)</strong>
+        <strong>Day 3 — RAG + vectors</strong>
         Trace query through safety → rewrite → fusion → rerank. <code>docs/rag-notes.md</code>. Explain why no Pinecone in sandbox.
       </div>
       <div class="practice-day">
@@ -1812,7 +1812,7 @@ linkStyle default stroke:#818cf8,stroke-width:2px
       </div>
       <div class="practice-day">
         <strong>Day 7 — Mock interview</strong>
-        Full 5-min demo script (no notes). <code>python tasks.py test</code> must be green. Pick Factorial OR Oxigent emphasis.
+        Full 5-min demo script (no notes). <code>python tasks.py test</code> must be green. Pick product AI OR integration emphasis.
       </div>
       </div>
     </section>
@@ -1821,9 +1821,9 @@ linkStyle default stroke:#818cf8,stroke-width:2px
       <div class="page-card">
       <h2 class="page-title">Which interviews this rehearses</h2>
       <div class="grid-2">
-        <div class="card factorial">
-          <h3>Factorial — Product AI Engineer</h3>
-          <p>API &amp; Integrations team. Emphasis on:</p>
+        <div class="card product-ai">
+          <h3>Product AI Engineering</h3>
+          <p>API &amp; Integrations profile. Emphasis on:</p>
           <ul>
             <li><strong>Spec-Driven Development</strong> — every feature has a spec in <code>specs/</code> first</li>
             <li><strong>AI Skills</strong> — reusable typed capabilities + registry</li>
@@ -1835,9 +1835,9 @@ linkStyle default stroke:#818cf8,stroke-width:2px
           </ul>
           <p><strong>Foreground in demos:</strong> agent trace, approval flow, RAG citations, eval scorecard, specs.</p>
         </div>
-        <div class="card oxigent">
-          <h3>Oxigent — Software / Integration Engineer</h3>
-          <p>Ad-tech / mobile gaming integrations. Emphasis on:</p>
+        <div class="card integration">
+          <h3>Integration Engineering</h3>
+          <p>Ad-tech / integrations profile. Emphasis on:</p>
           <ul>
             <li><strong>Python automations</strong> — async connectors, retries, circuit breaker</li>
             <li><strong>REST GET/PUSH</strong> — paginated extraction + multipart creative upload</li>
@@ -2078,13 +2078,13 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
       </div>
 
       <div class="practice-day">
-        <strong>Day 2 — Factorial depth (45 min)</strong>
+        <strong>Day 2 — Product AI depth (45 min)</strong>
         Open <code>specs/agent.md</code> and <code>specs/rag.md</code>. Run <code>python tasks.py eval</code>.
         Explain hybrid vs pure BM25/dense using <code>docs/rag-notes.md</code>. Demo HITL deny path (no side effects).
       </div>
 
       <div class="practice-day">
-        <strong>Day 3 — Oxigent depth (45 min)</strong>
+        <strong>Day 3 — Integration depth (45 min)</strong>
         Read connector transport (retries, 429, circuit breaker). Walk <code>tests/connectors/</code>.
         Show dashboard metrics. Sketch deploy from <code>docs/architecture.md</code>.
       </div>
@@ -2116,7 +2116,7 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
         <li>Run <code>python tasks.py test</code> — green suite = confidence to run live</li>
         <li>Pick 3 modules to foreground based on which company is first</li>
         <li>Prepare one “I extended this” story (e.g. added eval threshold, fixed a connector, solved a kata)</li>
-        <li>Know where specs live — Factorial cares that you spec before you code</li>
+        <li>Know where specs live — spec-first is how this system was built</li>
       </ul>
       </div>
     </section>
@@ -2163,7 +2163,7 @@ linkStyle default stroke:#818cf8,stroke-width:2px
         </li>
         <li>
           <strong>Dashboard metrics (30 s)</strong> — Open UI. Point at total runs, success rate, estimated value.
-          “This is the monitoring layer Oxigent-style integrations need.”
+          “This is the monitoring layer integration engineers need.”
         </li>
         <li>
           <strong>Read path (60 s)</strong> — Start run: <code>sync campaign data from pulseads</code>.

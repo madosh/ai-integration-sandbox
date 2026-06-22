@@ -3,8 +3,8 @@
 ## Goal
 
 Ground answers in trusted company data using hybrid retrieval that balances a probabilistic text
-search (BM25 + dense) with a deterministic authoritative-record path. This is Factorial's RAG framing
-and plays to a hybrid-search background. Results must be cited (provenance) so downstream answers are
+search (BM25 + dense) with a deterministic authoritative-record path. This plays to a hybrid-search
+background. Results must be cited (provenance) so downstream answers are
 auditable.
 
 ## Inputs / Outputs
