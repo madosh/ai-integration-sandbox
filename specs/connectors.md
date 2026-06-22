@@ -4,7 +4,7 @@
 
 Provide a reusable layer that connects an internal system to MULTIPLE external partner APIs
 ("ad networks") that have deliberately different auth and pagination conventions. This is the
-Oxigent core (REST GET/PUSH across networks) and the substrate for Factorial's integrations
+integration core (REST GET/PUSH across networks) and the substrate for the AI skills
 framework. Adding a new partner must be cheap: one module + one registry entry.
 
 ## Inputs / Outputs

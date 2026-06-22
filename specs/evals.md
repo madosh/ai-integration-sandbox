@@ -4,7 +4,7 @@
 
 Measure the quality of the AI surfaces (RAG retrieval, grounded generation, agent tool-selection)
 with automated scorers plus a human-in-the-loop review path, and guard against regressions. This is
-the Factorial "evals" surface.
+the platform's evals surface.
 
 ## Inputs / Outputs
 
