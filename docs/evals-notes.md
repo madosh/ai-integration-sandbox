@@ -35,5 +35,23 @@ for reporting and threshold tuning.
 **Regression guard:** committed thresholds in `thresholds.json` fail CI when metrics drop —
 cheap insurance against silent quality decay.
 
+## Eval harness loop
+
+```mermaid
+flowchart LR
+  DS["datasets/*.jsonl"] --> Run["evals/runner.py"]
+  Run --> S1["retrieval MRR"]
+  Run --> S2["generation score"]
+  Run --> S3["tool selection"]
+  Run --> S4["red-team guardrails"]
+  S1 --> SC["thresholds.json"]
+  S2 --> SC
+  S3 --> SC
+  S4 --> SC
+  SC --> Pass{"Pass?"}
+  Pass -->|Yes| CI["CI green"]
+  Pass -->|No| HITL["Human review queue"]
+```
+
 **Alpha vs production:** start with a small golden set offline; grow it from HITL exports and
 production failure buckets; re-tune thresholds when the corpus shifts (new partners, new docs).

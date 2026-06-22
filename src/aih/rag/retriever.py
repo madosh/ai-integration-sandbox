@@ -30,6 +30,17 @@ RecordResolver = Callable[[str], Awaitable[AuthoritativeRecord | None]]
 _CAMPAIGN_ID_RE = re.compile(r"\b([a-z]{2}-\d+)\b", re.IGNORECASE)
 
 
+def _confidence_from_chunks(chunks: list[RetrievedChunk]) -> Literal["high", "medium", "low"]:
+    if not chunks:
+        return "low"
+    top = chunks[0].score
+    if top >= 0.45:
+        return "high"
+    if top >= 0.15:
+        return "medium"
+    return "low"
+
+
 class HybridRetriever:
     """Hybrid retrieval over a chunked corpus with modern RAG stages."""
 
@@ -86,7 +97,10 @@ class HybridRetriever:
                 c.provenance.signals.append("rerank")
             if self._vector_backend not in c.provenance.signals:
                 c.provenance.signals.append(f"vector:{self._vector_backend}")
-        return SearchResult(query=raw_query, chunks=chunks, deterministic=deterministic)
+        confidence = _confidence_from_chunks(chunks)
+        return SearchResult(
+            query=raw_query, chunks=chunks, deterministic=deterministic, confidence=confidence
+        )
 
     def _retrieve_text(
         self, query: str, *, k: int, alpha: float, method: FusionMethod

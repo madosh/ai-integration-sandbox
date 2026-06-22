@@ -70,6 +70,30 @@ flowchart TB
 3. **RAG path:** `POST /search` or `answer_from_docs` → hybrid BM25+dense fusion → cited chunks.
 4. **Eval path:** `python tasks.py eval` → golden datasets → scorers → scorecard + regression thresholds.
 
+## Publish flow (HITL write path)
+
+```mermaid
+sequenceDiagram
+  participant UI as Dashboard
+  participant API as FastAPI
+  participant Agent as Orchestrator
+  participant Gate as Approval gate
+  participant Conn as Connector
+  participant Partner as mock_apis
+
+  UI->>API: POST /runs publish goal
+  API->>Agent: plan + execute
+  Agent->>Gate: publish_creative pending
+  Gate-->>UI: approval required
+  UI->>API: POST approve
+  API->>Agent: resume
+  Agent->>Conn: multipart push
+  Conn->>Partner: POST creative
+  Partner-->>Conn: 201 + id
+  Conn-->>Agent: normalized result
+  Agent-->>UI: trace complete
+```
+
 ## Deployment topology (docker-compose)
 
 | Service     | Port | Role                          |

@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     env: Literal["local", "ci", "prod"] = "local"
     log_level: str = "INFO"
     run_ledger_path: str = "./run_ledger.sqlite3"
+    memory_db_path: str = "./memory.sqlite3"
 
     # LLM
     llm_provider: Literal["fake", "anthropic"] = "fake"
@@ -71,3 +72,16 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Return a cached Settings instance."""
     return Settings()
+
+
+def validate_settings(settings: Settings | None = None) -> list[str]:
+    """Return configuration warnings (empty when healthy)."""
+    s = settings or get_settings()
+    warnings: list[str] = []
+    if s.llm_provider == "anthropic" and not s.anthropic_api_key:
+        warnings.append("AIH_LLM_PROVIDER=anthropic but AIH_ANTHROPIC_API_KEY is unset")
+    if s.agent_token_budget < 500:
+        warnings.append("AIH_AGENT_TOKEN_BUDGET is very low; agent may stop early")
+    if not s.mock_api_base_url.startswith("http"):
+        warnings.append("AIH_MOCK_API_BASE_URL should be an http(s) URL")
+    return warnings

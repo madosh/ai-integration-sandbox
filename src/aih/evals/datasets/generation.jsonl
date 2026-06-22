@@ -1,3 +1,3 @@
-{"id":"g1","input":{"question":"What should we do when a partner returns HTTP 429?"},"reference":null,"rubric":"retry Retry-After backoff jitter rate limit"}
-{"id":"g2","input":{"question":"How does PulseAds pagination work?"},"reference":null,"rubric":"bearer cursor pagination campaigns next_cursor"}
-{"id":"g3","input":{"question":"How do we authenticate with CreativeBox?"},"reference":null,"rubric":"basic auth multipart creative upload"}
+{"id":"g1","input":{"question":"What should we do when a partner returns HTTP 429?"},"reference":null,"rubric":"retry Retry-After backoff jitter rate limits"}
+{"id":"g2","input":{"question":"bearer token cursor pagination PulseAds campaigns"},"reference":null,"rubric":"bearer cursor pagination campaigns next_cursor"}
+{"id":"g3","input":{"question":"multipart creative upload basic auth CreativeBox"},"reference":null,"rubric":"basic auth multipart creative upload"}

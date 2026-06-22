@@ -17,6 +17,7 @@ Targets:
     deploy-local Provision the stack against LocalStack and run a smoke test.
     drill-katas  Run ONLY the interview kata tests (expected to fail until solved).
     mock-apis    Boot the mock partner APIs (uvicorn) on :9000.
+    sandbox      Boot mock-apis + service + dashboard (all-in-one).
 """
 
 from __future__ import annotations
@@ -96,6 +97,18 @@ def drill_katas(_: list[str]) -> int:
     return _run([_python(), "-m", "pytest", "drills/katas", "-v"])
 
 
+def sandbox(args: list[str]) -> int:
+    """Boot the full stack via the platform launcher script."""
+    if IS_WINDOWS:
+        script = ROOT / "run-sandbox.cmd"
+        cmd = [str(script), *args]
+        return _run(cmd)
+
+    script = ROOT / "run-sandbox.sh"
+    cmd = ["bash", str(script), *args]
+    return _run(cmd)
+
+
 TARGETS = {
     "setup": setup,
     "run": run,
@@ -107,6 +120,7 @@ TARGETS = {
     "ui": ui,
     "deploy-local": deploy_local,
     "drill-katas": drill_katas,
+    "sandbox": sandbox,
 }
 
 

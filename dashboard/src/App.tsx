@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { api, streamRun, streamSearch } from "./api";
+import { extractApprovalSpec, sendAguiInput, streamAgui, type AguiEvent } from "./agui";
+import { A2uiApprovalCard, A2uiMetricCard } from "./A2uiRenderer";
 import type { RunSummary } from "./types";
 
 function formatDuration(run: RunSummary): string {
@@ -77,9 +79,18 @@ function RunDetail({
   onRefresh: () => void;
 }) {
   const approve = useMutation({
-    mutationFn: ({ id, ok }: { id: string; ok: boolean }) => api.approveRun(id, ok),
+    mutationFn: ({ id, ok }: { id: string; ok: boolean }) =>
+      sendAguiInput(id, ok ? "approve" : "deny").catch(() => api.approveRun(id, ok)),
     onSuccess: () => onRefresh(),
   });
+  const [aguiEvents, setAguiEvents] = useState<AguiEvent[]>([]);
+  const approvalSpec = extractApprovalSpec(aguiEvents);
+
+  useEffect(() => {
+    if (!run) return;
+    setAguiEvents([]);
+    return streamAgui(run.run_id, (ev) => setAguiEvents((prev) => [...prev, ev]));
+  }, [run?.run_id]);
 
   if (!run) return <p>Select a run to inspect the trace.</p>;
 
@@ -92,7 +103,14 @@ function RunDetail({
         · {formatDuration(run)} · {run.steps.length} steps
       </p>
 
-      {run.pending_approval && (
+      {run.pending_approval && approvalSpec ? (
+        <A2uiApprovalCard
+          spec={approvalSpec}
+          busy={approve.isPending}
+          onApprove={() => approve.mutate({ id: run.run_id, ok: true })}
+          onDeny={() => approve.mutate({ id: run.run_id, ok: false })}
+        />
+      ) : run.pending_approval ? (
         <div className="approval-box">
           <strong>Pending approval</strong>
           <p>A side-effecting step requires human sign-off.</p>
@@ -113,7 +131,13 @@ function RunDetail({
             </button>
           </div>
         </div>
-      )}
+      ) : null}
+
+      {aguiEvents
+        .filter((e) => e.type === "CUSTOM" && (e.payload.component as { component?: string })?.component === "MetricCard")
+        .map((e, i) => (
+          <A2uiMetricCard key={i} spec={e.payload.component as import("./agui").A2uiSpec} />
+        ))}
 
       <ul className="steps">
         {run.steps.map((s) => (

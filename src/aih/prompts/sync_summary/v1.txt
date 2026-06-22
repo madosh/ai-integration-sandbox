@@ -1,0 +1,2 @@
+Summarize {count} campaigns from {connector} with total spend {total_spend:.2f}.
+Highlight sync volume and spend trends in one sentence.

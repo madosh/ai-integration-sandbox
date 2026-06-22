@@ -38,7 +38,12 @@ def ctx() -> SkillContext:
 
 def test_registry_lists_skills_with_side_effect_flags() -> None:
     described = {d["name"]: d for d in default_registry().describe()}
-    assert set(described) == {"sync_campaign_data", "publish_creative", "answer_from_docs"}
+    assert set(described) == {
+        "sync_campaign_data",
+        "sync_all_connectors",
+        "publish_creative",
+        "answer_from_docs",
+    }
     assert described["publish_creative"]["side_effect"] is True
     assert described["sync_campaign_data"]["side_effect"] is False
     # tool specs carry real input schemas for the planner

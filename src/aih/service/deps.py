@@ -11,8 +11,11 @@ import httpx
 from aih.agent.approval import APIApprover
 from aih.agent.models import RunTrace
 from aih.agent.orchestrator import Agent
+from aih.a2a.server import A2AState, A2AServer
+from aih.agui.bridge import AguiBridge
 from aih.config import get_settings
 from aih.llm import get_embedder, get_llm
+from aih.memory.manager import MemoryManager, build_memory_manager
 from aih.observability.ledger import InMemoryLedger, RunLedger
 from aih.observability.sqlite_ledger import SQLiteLedger
 from aih.rag.retriever import HybridRetriever
@@ -28,6 +31,13 @@ class AppState:
     approver: APIApprover
     skills: SkillRegistry = SKILLS
     httpx_transport: httpx.AsyncBaseTransport | None = None
+    memory: MemoryManager | None = None
+    a2a_state: A2AState = field(default_factory=A2AState)
+    a2a_server: A2AServer | None = None
+    agui_bridge: AguiBridge = field(default_factory=AguiBridge)
+    _agui_subscribers: dict[str, list[asyncio.Queue[dict[str, object]]]] = field(
+        default_factory=dict
+    )
     _subscribers: dict[str, list[asyncio.Queue[RunTrace]]] = field(default_factory=dict)
 
     def subscribe(self, run_id: str) -> asyncio.Queue[RunTrace]:
@@ -38,6 +48,14 @@ class AppState:
     def notify(self, trace: RunTrace) -> None:
         for q in self._subscribers.get(trace.run_id, []):
             q.put_nowait(trace)
+        for event in self.agui_bridge.diff(trace):
+            for q in self._agui_subscribers.get(trace.run_id, []):
+                q.put_nowait(event.model_dump())
+
+    def subscribe_agui(self, run_id: str) -> asyncio.Queue[dict[str, object]]:
+        q: asyncio.Queue[dict[str, object]] = asyncio.Queue()
+        self._agui_subscribers.setdefault(run_id, []).append(q)
+        return q
 
     def build_agent(self) -> Agent:
         ctx = SkillContext(
@@ -51,11 +69,20 @@ class AppState:
             ledger=self.ledger,
             ctx=ctx,
             skills=self.skills,
+            memory=self.memory,
         )
         return agent
 
     def build_retriever(self) -> HybridRetriever:
         return HybridRetriever(embedder=get_embedder())
+
+    def skill_context(self) -> SkillContext:
+        return SkillContext(
+            llm=get_llm(),
+            embedder=get_embedder(),
+            retriever=HybridRetriever(embedder=get_embedder()),
+            httpx_transport=self.httpx_transport,
+        )
 
     def metrics(self) -> dict[str, Any]:
         if isinstance(self.ledger, SQLiteLedger):
@@ -90,14 +117,19 @@ def build_state(
     ledger: RunLedger | None = None,
     approver: APIApprover | None = None,
     httpx_transport: httpx.AsyncBaseTransport | None = None,
+    memory: MemoryManager | None = None,
 ) -> AppState:
     settings = get_settings()
     if ledger is None:
         ledger = (
             InMemoryLedger() if settings.env == "ci" else SQLiteLedger(settings.run_ledger_path)
         )
+    if memory is None and settings.agent_enable_memory:
+        memory = build_memory_manager(ledger=ledger, embedder=get_embedder())
+
     return AppState(
         ledger=ledger,
         approver=approver or APIApprover(),
         httpx_transport=httpx_transport,
+        memory=memory,
     )

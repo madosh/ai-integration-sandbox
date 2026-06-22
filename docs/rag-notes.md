@@ -2,6 +2,24 @@
 
 A one-page mental model for hybrid retrieval, grounded in this repo's `aih.rag` module.
 
+## Hybrid retrieval pipeline
+
+```mermaid
+flowchart LR
+  Q["User query"] --> RW["query_rewrite"]
+  RW --> SP["BM25 sparse"]
+  RW --> DN["dense embed"]
+  SP --> FU["fusion RRF / alpha"]
+  DN --> FU
+  FU --> RR["rerank cross-encoder"]
+  RR --> OUT["chunks + confidence"]
+  Q --> CONN["connector lookup if id present"]
+  CONN --> OUT
+
+  style Q fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
+  style OUT fill:#166534,stroke:#4ade80,color:#dcfce7
+```
+
 ## Sparse (BM25)
 
 - **What it is:** a probabilistic bag-of-words scorer. Score per document rises with term frequency

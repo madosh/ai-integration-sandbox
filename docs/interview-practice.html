@@ -4,155 +4,347 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Integration Sandbox — Interview Practice Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --accent: #2563eb;
-      --accent-soft: #eff6ff;
-      --factorial: #7c3aed;
-      --oxigent: #059669;
-      --code-bg: #1e293b;
-      --radius: 10px;
-      --shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+      color-scheme: dark;
+      --bg: #0b1120;
+      --surface: #151f32;
+      --surface-elevated: #1c2a42;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #2a3a52;
+      --accent: #60a5fa;
+      --accent-hover: #93c5fd;
+      --accent-soft: rgba(59, 130, 246, 0.14);
+      --link: #60a5fa;
+      --factorial: #a78bfa;
+      --oxigent: #34d399;
+      --code-bg: #020617;
+      --code-inline: #243044;
+      --sidebar-bg: #060d18;
+      --sidebar-text: #e2e8f0;
+      --sidebar-muted: #64748b;
+      --sidebar-active: #1a2740;
+      --header-bg: rgba(11, 17, 32, 0.88);
+      --pagination-bg: rgba(11, 17, 32, 0.92);
+      --radius: 12px;
+      --shadow: 0 4px 32px rgba(0, 0, 0, 0.35);
+      --sidebar-width: 280px;
     }
 
     * { box-sizing: border-box; }
 
+    html { scroll-behavior: smooth; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
     body {
       margin: 0;
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.65;
       font-size: 16px;
     }
 
-    .hero {
-      background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 55%, #1e1b4b 100%);
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      transition: transform 0.25s ease;
+    }
+
+    .sidebar-brand {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-brand h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
       color: #f8fafc;
-      padding: 3rem 1.5rem 2.5rem;
+      line-height: 1.3;
     }
 
-    .hero-inner {
-      max-width: 900px;
-      margin: 0 auto;
+    .sidebar-brand p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--sidebar-muted);
+      line-height: 1.45;
     }
 
-    .hero h1 {
-      margin: 0 0 0.5rem;
-      font-size: 2rem;
+    .sidebar-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.75rem;
+    }
+
+    .sidebar-badges span {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+
+    .sidebar-badges .factorial { background: rgba(124, 58, 237, 0.28); color: #c4b5fd; }
+    .sidebar-badges .oxigent { background: rgba(5, 150, 105, 0.28); color: #6ee7b7; }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem 0.65rem;
+    }
+
+    .sidebar-nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      color: var(--sidebar-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sidebar-nav a:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--sidebar-text);
+    }
+
+    .sidebar-nav a.active {
+      background: var(--sidebar-active);
+      color: #f8fafc;
+    }
+
+    .nav-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--sidebar-muted);
+      flex-shrink: 0;
+    }
+
+    .sidebar-nav a.active .nav-index {
+      background: var(--accent);
+      color: white;
+    }
+
+    .sidebar-footer {
+      padding: 0.85rem 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.75rem;
+      color: var(--sidebar-muted);
+    }
+
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 0.85rem;
+      left: 0.85rem;
+      z-index: 110;
+      background: var(--sidebar-bg);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 90;
+    }
+
+    /* ── Main content ── */
+    .main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 1.35rem;
       font-weight: 700;
       letter-spacing: -0.02em;
     }
 
-    .hero .subtitle {
-      font-size: 1.1rem;
-      color: #cbd5e1;
-      max-width: 42rem;
-      margin: 0 0 1.25rem;
+    .page-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+      white-space: nowrap;
     }
 
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
+    .page-content {
+      flex: 1;
+      padding: 1.75rem 2rem 2rem;
+      max-width: 920px;
+      width: 100%;
     }
 
-    .badge {
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.25rem 0.65rem;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+    .doc-page {
+      display: none;
+      animation: fadeIn 0.25s ease;
     }
 
-    .badge.factorial { background: rgba(124, 58, 237, 0.35); border-color: rgba(167, 139, 250, 0.5); }
-    .badge.oxigent { background: rgba(5, 150, 105, 0.35); border-color: rgba(52, 211, 153, 0.5); }
-
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
+    .doc-page.active {
+      display: block;
     }
 
-    section {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .doc-page .page-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.5rem 1.75rem;
-      margin-bottom: 1.25rem;
+      padding: 1.75rem 2rem;
       box-shadow: var(--shadow);
     }
 
-    h2 {
-      margin: 0 0 0.75rem;
-      font-size: 1.25rem;
-      font-weight: 650;
-      letter-spacing: -0.01em;
-    }
+    h2.page-title { display: none; }
 
     h3 {
-      margin: 1.25rem 0 0.5rem;
-      font-size: 1rem;
+      margin: 1.35rem 0 0.5rem;
+      font-size: 1.05rem;
       font-weight: 600;
       color: var(--text);
     }
 
-    p { margin: 0 0 0.75rem; }
+    h3:first-child { margin-top: 0; }
+
+    p { margin: 0 0 0.85rem; }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    a:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
 
     .lead {
       font-size: 1.05rem;
       color: var(--muted);
     }
 
-    ul, ol { margin: 0 0 0.75rem; padding-left: 1.25rem; }
-    li { margin-bottom: 0.35rem; }
+    ul, ol { margin: 0 0 0.85rem; padding-left: 1.25rem; }
+    li { margin-bottom: 0.4rem; }
 
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.875rem;
-      margin: 0.75rem 0;
+      margin: 0.85rem 0;
     }
 
     th, td {
       text-align: left;
-      padding: 0.55rem 0.65rem;
+      padding: 0.6rem 0.75rem;
       border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
 
     th {
-      background: var(--bg);
+      background: var(--surface-elevated);
       font-weight: 600;
       color: var(--muted);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
     code {
-      font-family: Consolas, "Cascadia Code", monospace;
-      font-size: 0.85em;
-      background: #f1f5f9;
-      padding: 0.1em 0.35em;
-      border-radius: 4px;
+      font-family: "JetBrains Mono", Consolas, "Cascadia Code", monospace;
+      font-size: 0.84em;
+      background: var(--code-inline);
+      color: #e2e8f0;
+      padding: 0.12em 0.4em;
+      border-radius: 5px;
     }
 
     pre {
       background: var(--code-bg);
       color: #e2e8f0;
-      padding: 1rem 1.15rem;
+      padding: 1.1rem 1.25rem;
       border-radius: var(--radius);
       overflow-x: auto;
       font-size: 0.82rem;
-      line-height: 1.5;
-      margin: 0.75rem 0;
+      line-height: 1.55;
+      margin: 0.85rem 0;
     }
 
     pre code {
@@ -165,23 +357,17 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      margin-top: 0.75rem;
-    }
-
-    @media (max-width: 700px) {
-      .grid-2 { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 1.5rem; }
+      margin-top: 0.85rem;
     }
 
     .card {
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1rem 1.15rem;
-      background: var(--bg);
+      background: var(--surface-elevated);
     }
 
     .card h3 { margin-top: 0; }
-
     .card.factorial { border-top: 3px solid var(--factorial); }
     .card.oxigent { border-top: 3px solid var(--oxigent); }
 
@@ -197,36 +383,23 @@
     .flow span {
       background: var(--accent-soft);
       color: var(--accent);
-      padding: 0.3rem 0.6rem;
+      padding: 0.3rem 0.65rem;
       border-radius: 6px;
       font-weight: 500;
+      border: 1px solid rgba(96, 165, 250, 0.2);
     }
 
-    .flow .arrow { color: var(--muted); font-weight: 400; }
+    .flow .arrow { color: var(--muted); font-weight: 400; background: none; padding: 0; }
 
     .practice-day {
       border-left: 3px solid var(--accent);
-      padding-left: 1rem;
-      margin: 0.75rem 0;
+      padding: 0.85rem 0 0.85rem 1rem;
+      margin: 0.85rem 0;
+      background: var(--surface-elevated);
+      border-radius: 0 8px 8px 0;
     }
 
     .practice-day strong { display: block; margin-bottom: 0.25rem; }
-
-    .toc {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: 0.35rem;
-    }
-
-    .toc a {
-      color: var(--accent);
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .toc a:hover { text-decoration: underline; }
 
     .demo-steps {
       counter-reset: step;
@@ -236,18 +409,18 @@
 
     .demo-steps li {
       counter-increment: step;
-      padding: 0.65rem 0;
+      padding: 0.7rem 0;
       border-bottom: 1px solid var(--border);
       position: relative;
-      padding-left: 2.25rem;
+      padding-left: 2.35rem;
     }
 
     .demo-steps li::before {
       content: counter(step);
       position: absolute;
       left: 0;
-      width: 1.5rem;
-      height: 1.5rem;
+      width: 1.55rem;
+      height: 1.55rem;
       background: var(--accent);
       color: white;
       border-radius: 50%;
@@ -256,22 +429,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      top: 0.6rem;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.85rem;
-      padding: 1rem;
+      top: 0.65rem;
     }
 
     .diagram-wrap {
-      background: var(--bg);
+      background: var(--surface-elevated);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1rem;
       margin: 1rem 0;
+      min-height: 4rem;
       overflow-x: auto;
     }
 
@@ -288,64 +455,208 @@
       min-height: 80px;
     }
 
-    .mermaid svg {
-      max-width: 100%;
-      height: auto;
+    .mermaid svg { max-width: 100%; height: auto; }
+
+    .diagram-error {
+      margin: 0;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--surface);
+      border-radius: 6px;
+      border: 1px dashed var(--border);
     }
+
+    .diagram-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin: 0 0 1.25rem;
+      padding: 0.85rem 1rem;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.78rem;
+    }
+
+    .diagram-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+    }
+
+    .diagram-legend i {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .legend-client { background: #0c4a6e; border-color: #38bdf8 !important; }
+    .legend-hub { background: #4338ca; border-color: #818cf8 !important; }
+    .legend-partner { background: #047857; border-color: #34d399 !important; }
+    .legend-aws { background: #b45309; border-color: #fbbf24 !important; }
+    .legend-hitl { background: #c2410c; border-color: #fb923c !important; }
+    .legend-success { background: #166534; border-color: #4ade80 !important; }
+    .legend-danger { background: #991b1b; border-color: #f87171 !important; }
+    .legend-rag { background: #5b21b6; border-color: #a78bfa !important; }
+    .legend-decision { background: #a16207; border-color: #facc15 !important; }
+    .legend-output { background: #0e7490; border-color: #22d3ee !important; }
+    .legend-guard { background: #9a3412; border-color: #fb923c !important; }
+    .legend-boundary { background: #334155; border-color: #94a3b8 !important; border-style: dashed !important; }
 
     .diagram-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      margin-top: 0.75rem;
+      margin-top: 0.85rem;
     }
 
-    @media (max-width: 800px) {
+    /* ── Pagination ── */
+    .pagination {
+      position: sticky;
+      bottom: 0;
+      background: var(--pagination-bg);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .pagination-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent-hover);
+      background: var(--accent-soft);
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .pagination-dots {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pagination-dot {
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .pagination-dot:hover {
+      background: var(--surface-elevated);
+      color: var(--text);
+    }
+
+    .pagination-dot.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .site-footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 0.75rem 2rem 1.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-toggle { display: block; }
+
+      .sidebar-overlay.open { display: block; }
+
+      .main { margin-left: 0; }
+
+      .page-header,
+      .page-content,
+      .pagination { padding-left: 1.25rem; padding-right: 1.25rem; }
+
+      .page-header { padding-top: 3.25rem; }
+
+      .grid-2,
       .diagram-grid { grid-template-columns: 1fr; }
+
+      .pagination-dots { display: none; }
+
+      .doc-page .page-card { padding: 1.25rem 1.35rem; }
     }
   </style>
 </head>
 <body>
 
-  <header class="hero">
-    <div class="hero-inner">
-      <h1>AI Integration Sandbox</h1>
-      <p class="subtitle">
-        A local practice lab for two integration-focused AI engineer interviews.
-        One repo, offline-first, runnable without API keys — built to rehearse, demo, and extend in real time.
-      </p>
-      <div class="badges">
-        <span class="badge factorial">Factorial — Product AI Engineer</span>
-        <span class="badge oxigent">Oxigent — Integration Engineer</span>
-        <span class="badge">Offline-first</span>
-        <span class="badge">Spec-driven</span>
-        <span class="badge">59+ tests green</span>
-        <span class="badge">Final study edition</span>
+  <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Open navigation">☰</button>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <h1>AI Integration Sandbox</h1>
+        <p>Interview practice guide — offline-first, spec-driven, runnable without API keys.</p>
+        <div class="sidebar-badges">
+          <span class="factorial">Factorial</span>
+          <span class="oxigent">Oxigent</span>
+          <span>59+ tests</span>
+        </div>
       </div>
-    </div>
-  </header>
+      <nav class="sidebar-nav" aria-label="Guide sections">
+        <ul id="sidebar-nav-list"></ul>
+      </nav>
+      <div class="sidebar-footer" id="sidebar-progress">Page 1 of 14</div>
+    </aside>
 
-  <main>
+    <div class="main">
+      <header class="page-header">
+        <h2 id="page-title">What this system does</h2>
+        <span class="page-meta" id="page-meta">1 / 14</span>
+      </header>
 
-    <section id="toc">
-      <h2>On this page</h2>
-      <ul class="toc">
-        <li><a href="#what">What the system does</a></li>
-        <li><a href="#diagrams">Architecture diagrams</a></li>
-        <li><a href="#modern-ai">Modern AI stack (Phases 10–14)</a></li>
-        <li><a href="#study-plan">Final study plan (7 days)</a></li>
-        <li><a href="#interviews">Which interview it rehearses</a></li>
-        <li><a href="#modules">Module map</a></li>
-        <li><a href="#run">How to run it</a></li>
-        <li><a href="#practice">How I practice with it</a></li>
-        <li><a href="#demo">Live demo script (5 min)</a></li>
-        <li><a href="#drills">Drills &amp; flashcards</a></li>
-        <li><a href="#talking">Talking points cheat sheet</a></li>
-      </ul>
-    </section>
+      <div class="page-content">
 
-    <section id="what">
-      <h2>What this system does</h2>
+    <section class="doc-page active" id="what" data-title="What this system does">
+      <div class="page-card">
+      <h2 class="page-title">What this system does</h2>
       <p class="lead">
         It simulates an <strong>AI-native integration hub</strong>: connect to multiple external partner APIs,
         let an agent automate sync and publish workflows, ground answers in company docs, and require
@@ -370,6 +681,45 @@
         <span>Partner API</span>
       </div>
 
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+G["🎯 Goal<br/>POST /runs"] -->|assemble context| M["🧠 MemoryManager<br/>recall + working set"]
+M --> A["🤖 Agent<br/>plan via FakeLLM"]
+A --> S{"🔀 Skill type?"}
+S -->|"read · safe"| R["📥 sync / search<br/>no side effects"]
+S -->|"write · side effect"| H["🛑 HITL gate<br/>run PAUSED"]
+H -->|"approve ✅"| C["🔌 Connector<br/>retry · backoff · idempotent"]
+H -.->|"deny ❌"| X["🚫 zero side effects"]
+R --> P["🟢 mock_apis partner"]
+C --> P
+P --> L["📒 Run ledger<br/>→ episodic memory"]
+
+class G input
+class M,R mem
+class A hub
+class S decision
+class H,C hitl
+class P partner
+class X danger
+class L success
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle 5 stroke:#4ade80,stroke-width:3px
+linkStyle 6 stroke:#f87171,stroke-width:2px,stroke-dasharray:4 3
+</div>
+      </div>
+
       <p>
         Side-effecting steps (e.g. publish creative) pause at a <strong>human-in-the-loop gate</strong>
         until you Approve or Deny in the dashboard or API. Read-only steps (sync, search docs) run immediately.
@@ -380,14 +730,34 @@
         By default: <code>FakeLLM</code> (deterministic planner), <code>HashEmbedder</code> (offline embeddings),
         and <code>mock_apis/</code> (local FastAPI fakes). No keys, no cloud, reproducible in CI and in an interview room.
       </p>
+      </div>
     </section>
 
-    <section id="diagrams">
-      <h2>Architecture diagrams</h2>
+    <section class="doc-page" id="diagrams" data-title="Architecture diagrams">
+      <div class="page-card">
+      <h2 class="page-title">Architecture diagrams</h2>
       <p class="lead">
         Visual map of the system — use these when whiteboarding or walking an interviewer through the repo.
-        Diagrams render via Mermaid (requires internet on first open).
+        Diagrams render via Mermaid (requires internet on first open). If you opened this file directly
+        (<code>file://</code>), use a local server instead:
+        <code>python -m http.server 8080</code> from the repo root, then open
+        <code>http://localhost:8080/docs/interview-practice.html</code>.
       </p>
+
+      <div class="diagram-legend" aria-label="Diagram color key">
+        <span><i class="legend-client"></i> Clients / UI</span>
+        <span><i class="legend-hub"></i> Hub / core services</span>
+        <span><i class="legend-partner"></i> Integrations / partners</span>
+        <span><i class="legend-aws"></i> AWS / infra</span>
+        <span><i class="legend-hitl"></i> Human-in-the-loop</span>
+        <span><i class="legend-success"></i> Success / complete</span>
+        <span><i class="legend-danger"></i> Denied / blocked</span>
+        <span><i class="legend-rag"></i> RAG / retrieval / memory</span>
+        <span><i class="legend-decision"></i> Decision / branch</span>
+        <span><i class="legend-output"></i> Output / result</span>
+        <span><i class="legend-guard"></i> Safety / guardrails</span>
+        <span><i class="legend-boundary"></i> Boundary / not built</span>
+      </div>
 
       <h3>1. System overview (C4 containers)</h3>
       <p>
@@ -397,56 +767,82 @@
       <div class="diagram-wrap">
         <div class="mermaid">
 flowchart TB
-  subgraph clients ["Clients"]
-    Dashboard["React Dashboard :5173"]
-    MCPClient["MCP Client"]
-    CLI["Tests / CLI"]
-  end
+subgraph clients ["🖥️ Clients"]
+Dashboard["⚛️ React Dashboard<br/>:5173"]
+MCPClient["🔧 MCP Client<br/>IDE / agent"]
+CLI["🧪 Tests / CLI"]
+Peer["🤝 A2A peer agent"]
+end
 
-  subgraph hub ["AI Integration Hub"]
-    API["FastAPI Service :8000"]
-    Agent["Agent Orchestrator"]
-    Skills["AI Skills"]
-    RAG["Hybrid RAG"]
-    MCP["MCP Server"]
-    Connectors["Connector Framework"]
-    Evals["Eval Harness"]
-    Ledger["Run Ledger"]
-  end
+subgraph hub ["🏛️ AI Integration Hub"]
+API["⚡ FastAPI Service<br/>:8000 · async"]
+Agent["🤖 Agent Orchestrator<br/>plan → act → observe"]
+Skills["🧰 AI Skills<br/>read + write"]
+Mem["🧠 MemoryManager<br/>7 types"]
+RAG["🔎 Hybrid RAG<br/>BM25 + dense"]
+MCP["🔧 MCP Server"]
+Conn["🔌 Connector Framework<br/>registry"]
+Evals["📊 Eval Harness"]
+Ledger["📒 Run Ledger"]
+end
 
-  subgraph partners ["Partner layer (offline fakes)"]
-    MockAPIs["mock_apis :9000"]
-    PulseAds["PulseAds style"]
-    NovaReach["NovaReach style"]
-    CreativeBox["CreativeBox style"]
-  end
+subgraph partners ["🟢 Partner layer (offline fakes)"]
+MockAPIs["🎭 mock_apis :9000"]
+PulseAds["PulseAds · Bearer · cursor"]
+NovaReach["NovaReach · API-key · offset"]
+CreativeBox["CreativeBox · Basic · multipart"]
+end
 
-  subgraph aws ["AWS / LocalStack"]
-    S3["S3 creatives"]
-    SQS["SQS approvals"]
-    DDB["DynamoDB ledger"]
-  end
+subgraph aws ["☁️ AWS / LocalStack :4566"]
+S3["🪣 S3 — creatives"]
+SQS["📨 SQS — approvals"]
+DDB["🗄️ DynamoDB — ledger"]
+end
 
-  Dashboard --> API
-  MCPClient --> MCP
-  CLI --> API
-  API --> Agent
-  API --> RAG
-  API --> Ledger
-  Agent --> Skills
-  Agent --> Ledger
-  Skills --> Connectors
-  Skills --> RAG
-  MCP --> Connectors
-  MCP --> RAG
-  Connectors --> MockAPIs
-  MockAPIs --> PulseAds
-  MockAPIs --> NovaReach
-  MockAPIs --> CreativeBox
-  API --> S3
-  API --> SQS
-  Ledger --> DDB
-        </div>
+Dashboard -->|"AG-UI SSE"| API
+MCPClient -->|"MCP stdio"| MCP
+Peer -->|"A2A JSON-RPC"| API
+CLI -->|HTTP| API
+API --> Agent
+API --> RAG
+API --> Ledger
+Agent --> Skills
+Agent --> Mem
+Agent --> Ledger
+Skills --> Conn
+Skills --> RAG
+MCP --> Conn
+MCP --> RAG
+Conn -->|"REST GET/PUSH"| MockAPIs
+MockAPIs --> PulseAds
+MockAPIs --> NovaReach
+MockAPIs --> CreativeBox
+API -.-> S3
+API -.-> SQS
+Ledger -.-> DDB
+
+class Dashboard,MCPClient,CLI,Peer input
+class API,Agent,Skills,MCP,Conn,Evals,Ledger hub
+class Mem,RAG mem
+class MockAPIs,PulseAds,NovaReach,CreativeBox partner
+class S3,SQS,DDB aws
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style clients fill:#082f49,stroke:#0ea5e9,color:#7dd3fc,stroke-width:2px
+style hub fill:#1e1b4b,stroke:#6366f1,color:#c7d2fe,stroke-width:3px
+style partners fill:#022c22,stroke:#10b981,color:#6ee7b7,stroke-width:2px
+style aws fill:#451a03,stroke:#f59e0b,color:#fcd34d,stroke-width:2px
+</div>
       </div>
 
       <h3>2. Agent run flow (read vs write)</h3>
@@ -454,19 +850,44 @@ flowchart TB
       <div class="diagram-wrap">
         <div class="mermaid">
 flowchart TD
-  Start(["POST /runs — goal"]) --> Plan["Agent plans via FakeLLM"]
-  Plan --> Pick["Select skill / tool"]
-  Pick --> Side{"Side effect?"}
-  Side -->|No| Exec["Execute skill"]
-  Side -->|Yes| Gate["HITL gate — run PAUSED"]
-  Gate --> Human{"Approve / Deny?"}
-  Human -->|Approve| Exec
-  Human -->|Deny| Denied(["Status: denied — zero side effects"])
-  Exec --> Conn["Connector transport"]
-  Conn --> Partner["mock_apis partner"]
-  Exec --> Trace["Steps saved to run ledger"]
-  Trace --> Done(["Status: completed"])
-        </div>
+Start(["🎯 POST /runs — goal"]) --> Mem["🧠 assemble_working_memory<br/>facts · episodes · procedures"]
+Mem --> Plan["🤖 Agent plans via FakeLLM"]
+Plan --> Pick["🧰 Select skill / MCP tool"]
+Pick --> Side{"🔀 Side effect?"}
+Side -->|"No · read"| Exec["▶️ Execute skill"]
+Side -->|"Yes · write"| Gate["🛑 HITL gate — run PAUSED"]
+Gate --> Human{"🙋 Approve / Deny?"}
+Human -->|"Approve ✅"| Exec
+Human -->|"Deny ❌"| Denied(["🚫 denied — zero side effects"])
+Exec --> Conn["🔌 Connector transport<br/>retry · 429 backoff · idempotent"]
+Conn --> Partner["🟢 mock_apis partner"]
+Exec --> Trace["📒 Steps → run ledger"]
+Trace --> Reflect["🔁 reflect → episodic"]
+Reflect --> Done(["✅ completed"])
+
+class Start,Done success
+class Denied danger
+class Side,Human decision
+class Gate hitl
+class Mem mem
+class Plan,Pick,Exec,Conn,Trace,Reflect hub
+class Partner partner
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle 0 stroke:#a78bfa,stroke-width:2px
+linkStyle 7 stroke:#4ade80,stroke-width:3px
+linkStyle 8 stroke:#f87171,stroke-width:2px,stroke-dasharray:4 3
+</div>
       </div>
 
       <div class="diagram-grid">
@@ -475,27 +896,35 @@ flowchart TD
           <div class="diagram-wrap">
             <div class="mermaid">
 sequenceDiagram
-  participant U as You / Dashboard
-  participant API as FastAPI
-  participant A as Agent
-  participant G as Approval gate
-  participant C as CreativeBox connector
-  participant M as mock_apis
+autonumber
+participant U as 🙋 You / Dashboard
+participant API as ⚡ FastAPI
+participant A as 🤖 Agent
+participant G as 🛑 Approval gate
+participant C as 🔌 CreativeBox connector
+participant M as 🟢 mock_apis
 
-  U->>API: POST /runs publish creative...
-  API->>A: start background run
-  A->>G: publish_creative needs approval
-  G-->>U: pending_approval in trace
-  U->>API: POST /runs/id/approve
-  API->>G: resolve approved=true
-  G->>A: continue
-  A->>C: push_creative multipart
-  C->>M: HTTP PUT creative
-  M-->>C: 201 created
-  C-->>A: success
-  A-->>API: trace completed
-  API-->>U: metrics update SSE
-            </div>
+U->>API: POST /runs (publish creative)
+API->>A: start background run
+A->>A: plan, select publish_creative
+rect rgb(67, 30, 12)
+note over A,G: Side-effecting skill needs a human gate
+A->>G: publish_creative needs approval
+G-->>U: pending_approval in trace
+U->>API: POST /runs/ID/approve approved=true
+API->>G: resolve approved=true
+G->>A: continue
+end
+rect rgb(4, 47, 34)
+note over C,M: Only now does a side effect happen
+A->>C: push_creative multipart + idempotency key
+C->>M: HTTP PUT /creatives
+M-->>C: 201 created
+C-->>A: success
+end
+A-->>API: trace completed
+API-->>U: metrics update via SSE
+</div>
           </div>
         </div>
         <div>
@@ -503,76 +932,519 @@ sequenceDiagram
           <div class="diagram-wrap">
             <div class="mermaid">
 flowchart LR
-  Q["User query"] --> Sparse["BM25 sparse"]
-  Q --> Dense["HashEmbedder dense"]
-  Sparse --> Fusion["RRF or alpha fusion"]
-  Dense --> Fusion
-  Fusion --> Chunks["Scored chunks + citations"]
-  Q --> Id{"Campaign ID in query?"}
-  Id -->|Yes| Record["Authoritative connector record"]
-  Id -->|No| Skip["Text only"]
-  Record --> Out["SearchResult"]
-  Chunks --> Out
-            </div>
+Q["🔎 User query"] --> Sparse["📚 BM25 sparse<br/>lexical match"]
+Q --> Dense["🧮 HashEmbedder dense<br/>semantic match"]
+Sparse --> Fusion["⚗️ Fusion<br/>RRF or α-weighted"]
+Dense --> Fusion
+Fusion --> Chunks["📄 Scored chunks<br/>+ provenance"]
+Q --> Id{"🔑 Campaign ID?"}
+Id -->|"Yes · deterministic"| Record["🟢 Authoritative<br/>connector record"]
+Id -->|"No · probabilistic"| Skip["text only"]
+Record --> Out["🔷 SearchResult<br/>cited"]
+Chunks --> Out
+
+class Q input
+class Sparse,Dense mem
+class Fusion,Chunks hub
+class Record partner
+class Out output
+class Id decision
+class Skip boundary
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle 6 stroke:#34d399,stroke-width:3px
+linkStyle 7 stroke:#94a3b8,stroke-width:1px,stroke-dasharray:3 3
+</div>
           </div>
         </div>
       </div>
 
-      <h3>5. Local runtime (three terminals)</h3>
-      <p>What you boot when practicing a live demo — no Docker required for the core loop.</p>
+      <h3>5. Local runtime (one command or three terminals)</h3>
+      <p>What you boot when practicing a live demo — no Docker required for the core loop. Use <code>run-sandbox.cmd</code> or <code>python tasks.py sandbox</code> to start everything at once.</p>
       <div class="diagram-wrap">
         <div class="mermaid">
 flowchart LR
-  subgraph termA ["Terminal A"]
-    Mock["python tasks.py mock-apis"]
-  end
-  subgraph termB ["Terminal B"]
-    Svc["python tasks.py run"]
-  end
-  subgraph termC ["Terminal C"]
-    UI["python tasks.py ui"]
-  end
+subgraph termA ["🟢 Terminal A"]
+Mock["python tasks.py mock-apis<br/>:9000"]
+end
+subgraph termB ["🏛️ Terminal B"]
+Svc["python tasks.py run<br/>FastAPI :8000"]
+end
+subgraph termC ["⚛️ Terminal C"]
+UI["python tasks.py ui<br/>Vite :5173"]
+end
 
-  Browser["Browser localhost:5173"] --> UI
-  UI -->|"proxy /api"| Svc
-  Svc --> Mock
-  Mock --> P1["PulseAds fake"]
-  Mock --> P2["NovaReach fake"]
-  Mock --> P3["CreativeBox fake"]
-        </div>
+Browser["🖥️ Browser<br/>localhost:5173"] --> UI
+UI -->|"proxy /api → :8000"| Svc
+Svc -->|"REST GET/PUSH"| Mock
+Mock --> P1["PulseAds fake"]
+Mock --> P2["NovaReach fake"]
+Mock --> P3["CreativeBox fake"]
+
+class Browser input
+class Mock,Svc,UI hub
+class P1,P2,P3 partner
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style termA fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
+style termB fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#c7d2fe
+style termC fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#7dd3fc
+</div>
       </div>
 
       <h3>6. Repo layers (what lives where)</h3>
       <div class="diagram-wrap">
         <div class="mermaid">
 flowchart TB
-  subgraph practice ["Interview practice surface"]
-    Specs["specs/ — SDD contracts"]
-    Drills["drills/ — katas & design"]
-    Docs["docs/ — ADRs, notes"]
-  end
+subgraph practice ["📝 Interview practice surface"]
+Specs["specs/ — SDD contracts"]
+Drills["drills/ — katas + design"]
+Docs["docs/ — ADRs + notes"]
+end
+subgraph app ["⚙️ Runnable application"]
+Service["service/ — HTTP API"]
+AgentL["agent/ + skills/ + memory/"]
+Integrations["connectors/ + mock_apis/"]
+Intelligence["rag/ + llm/ + mcp_server/"]
+Quality["evals/ + tests/"]
+end
+subgraph ship ["🚀 Ship & observe"]
+DashboardL["dashboard/ — React UI"]
+Deploy["deploy/ — Docker + LocalStack"]
+end
 
-  subgraph app ["Runnable application"]
-    Service["service/ — HTTP API"]
-    AgentL["agent/ + skills/"]
-    Integrations["connectors/ + mock_apis/"]
-    Intelligence["rag/ + llm/ + mcp_server/"]
-    Quality["evals/ + tests/"]
-  end
+practice -->|"specs guide code"| app
+app -->|"build → run → monitor"| ship
 
-  subgraph ship ["Ship & observe"]
-    DashboardL["dashboard/ — React UI"]
-    Deploy["deploy/ — Docker + LocalStack"]
-  end
+class Specs,Drills,Docs mem
+class Service,AgentL,Integrations,Intelligence,Quality hub
+class DashboardL,Deploy aws
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style practice fill:#3b0764,stroke:#a855f7,color:#f3e8ff,stroke-width:2px
+style app fill:#1e1b4b,stroke:#6366f1,color:#c7d2fe,stroke-width:3px
+style ship fill:#451a03,stroke:#f59e0b,color:#fcd34d,stroke-width:2px
+linkStyle 0 stroke:#a78bfa,stroke-width:2px
+linkStyle 1 stroke:#fbbf24,stroke-width:2px
+</div>
+      </div>
 
-  practice --> app
-  app --> ship
+      <h3>7. MemoryManager — seven types, one unifier</h3>
+      <p>Episodic ≈ run ledger, external ≈ RAG, procedural ≈ skills registry. Parametric is a boundary, not built.</p>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TB
+subgraph inputs ["📥 Per-run inputs"]
+Goal["🎯 Agent goal"]
+Trace["📒 RunTrace"]
+Budget["🎚️ Token budget"]
+end
+
+subgraph manager ["🧠 MemoryManager"]
+MM["remember · recall · assemble<br/>consolidate · reflect"]
+end
+
+subgraph types ["7️⃣ Seven memory types"]
+W["1 · Working<br/>context window"]
+S["2 · Semantic<br/>facts + prefs"]
+E["3 · Episodic<br/>past runs + outcomes"]
+P["4 · Procedural<br/>skills + heuristics"]
+X["5 · External<br/>RAG wrapper"]
+Pr["6 · Prospective<br/>future intentions"]
+Pa["7 · Parametric<br/>⛔ BOUNDARY — weights"]
+end
+
+subgraph stores ["♻️ Reused infra (offline)"]
+Ledger["📒 Run ledger SQLite"]
+RAGS["🔎 HybridRetriever"]
+SkillsR["🧰 Skills registry"]
+MemDB["🗄️ memory.sqlite3"]
+end
+
+Goal --> MM
+Trace --> MM
+Budget --> MM
+MM --> W
+MM --> S
+MM --> E
+MM --> P
+MM --> X
+MM --> Pr
+MM -.-> Pa
+E --> Ledger
+X --> RAGS
+P --> SkillsR
+S --> MemDB
+E --> MemDB
+Pr --> MemDB
+P --> MemDB
+
+class Goal,Trace,Budget input
+class MM hub
+class W,S,E,P,X,Pr mem
+class Pa boundary
+class Ledger,RAGS,SkillsR,MemDB partner
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style types fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#f3e8ff
+style manager fill:#1e1b4b,stroke:#6366f1,stroke-width:3px,color:#c7d2fe
+style stores fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
+</div>
+      </div>
+
+      <h3>8. Memory lifecycle — reflect, consolidate, forget</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+Run(["🏁 Agent run ends"]) --> Reflect["🔁 reflect<br/>→ episodic index"]
+Reflect --> Sem["💡 optional semantic fact"]
+Reflect --> Due{"⏰ Due intentions?"}
+Due -->|Yes| Work["🧠 assemble_working_memory"]
+Reflect --> Cons["📦 consolidate<br/>on N successes"]
+Cons --> Heur["📘 procedural heuristic"]
+Cons --> Evict["🗑️ TTL + salience eviction"]
+Heur --> Next(["🚀 Next run smarter"])
+Work --> Next
+
+class Run,Next success
+class Reflect,Sem,Cons,Heur hub
+class Work mem
+class Due decision
+class Evict boundary
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+</div>
+      </div>
+
+      <div class="diagram-grid">
+        <div>
+          <p class="diagram-caption">9. Protocols — three-legged stool</p>
+          <div class="diagram-wrap">
+            <div class="mermaid">
+flowchart TB
+subgraph clients ["🖥️ Clients"]
+IDE["🔧 MCP client / IDE"]
+Peer["🤝 A2A peer agent"]
+UI["⚛️ React dashboard"]
+end
+
+subgraph hub ["🏛️ Hub protocols"]
+MCP["🔧 MCP<br/>agent ↔ tools"]
+A2A["🤝 A2A<br/>agent ↔ agents"]
+AGUI["📡 AG-UI<br/>agent ↔ UI events"]
+A2UI["🎨 A2UI<br/>declarative UI specs"]
+Gate["🛑 HITL gate"]
+end
+
+IDE -->|"stdio"| MCP
+Peer -->|"JSON-RPC + SSE"| A2A
+UI -->|"SSE"| AGUI
+AGUI -->|"carries"| A2UI
+MCP --> Gate
+A2A -->|"input-required"| Gate
+AGUI -->|"INPUT_REQUEST"| Gate
+
+class IDE,Peer,UI input
+class MCP,A2A,AGUI,A2UI hub
+class Gate hitl
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style clients fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#7dd3fc
+style hub fill:#1e1b4b,stroke:#6366f1,stroke-width:3px,color:#c7d2fe
+</div>
+          </div>
         </div>
+        <div>
+          <p class="diagram-caption">10. HITL — one gate, three faces</p>
+          <div class="diagram-wrap">
+            <div class="mermaid">
+flowchart LR
+Agent["🤖 Agent hits side effect"] --> Gate["🛑 Approval gate<br/>one mechanism"]
+Gate --> A["🔌 APIApprover.decide"]
+Gate --> B["🤝 A2A input-required"]
+Gate --> C["📡 AG-UI INPUT_REQUEST"]
+A --> Human["🙋 Human decides"]
+B --> Human
+C --> Human
+Human -->|"Approve ✅"| Resume["▶️ Run resumes"]
+Human -->|"Deny ❌"| Stop(["🚫 Zero side effects"])
+
+class Agent,Resume hub
+class Gate hitl
+class A,B,C decision
+class Human input
+class Stop danger
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle 7 stroke:#4ade80,stroke-width:3px
+linkStyle 8 stroke:#f87171,stroke-width:2px,stroke-dasharray:4 3
+</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>11. A2A task lifecycle</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+stateDiagram-v2
+direction LR
+[*] --> submitted: message/send
+submitted --> working: agent starts
+working --> input_required: HITL gate
+input_required --> working: client approves
+input_required --> failed: client denies
+working --> completed: run succeeds
+working --> failed: error / timeout
+working --> canceled: tasks/cancel
+completed --> [*]
+failed --> [*]
+canceled --> [*]
+
+note right of input_required
+  Same gate as AG-UI INPUT_REQUEST
+  and the API approver — one mechanism
+end note
+
+classDef active fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef good fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef bad fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef wait fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+class submitted active
+class working active
+class completed good
+class failed bad
+class canceled bad
+class input_required wait
+</div>
+      </div>
+
+      <h3>12. AG-UI event stream</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+sequenceDiagram
+autonumber
+participant UI as ⚛️ Dashboard
+participant API as ⚡ FastAPI
+participant Br as 📡 AguiBridge
+participant Ag as 🤖 Agent
+
+UI->>API: POST /agui/runs (goal)
+API->>Ag: background run
+rect rgb(30, 27, 75)
+note over Br,API: Lifecycle + text + tool events
+Ag->>Br: step started
+Br-->>API: RUN_STARTED / STEP_STARTED
+Br-->>API: TEXT_MESSAGE_CONTENT (token stream)
+Br-->>API: TOOL_CALL_START / TOOL_CALL_RESULT
+API-->>UI: SSE AG-UI events
+end
+rect rgb(67, 30, 12)
+note over Br,UI: Human-in-the-loop interrupt
+Ag->>Br: approval step
+Br-->>API: INPUT_REQUEST + A2UI ApprovalCard
+API-->>UI: render generic A2UI component
+UI->>API: POST /agui/runs/ID/input approve
+API->>Ag: gate resolves
+end
+rect rgb(20, 83, 45)
+Ag->>Br: completed
+Br-->>API: STATE_DELTA + RUN_FINISHED + MetricCard
+API-->>UI: SSE close
+end
+</div>
+      </div>
       </div>
     </section>
 
-    <section id="modern-ai">
-      <h2>Modern AI stack (Phases 10–14) — final study map</h2>
+    <section class="doc-page" id="integration-ops" data-title="Integration ops">
+      <div class="page-card">
+      <h2 class="page-title">Integration ops (Phase 15) — production-shaped gaps</h2>
+      <p class="lead">
+        Tier-1 extensions for <strong>integration engineer</strong> interviews: health probes, webhook intake,
+        schema mapping, connector caching, parallel sync, multi-turn chat, prompt versioning, RAG confidence,
+        CI, and an add-partner runbook.
+      </p>
+
+      <h3>Connector ops flow</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+subgraph ingest ["📥 Inbound"]
+WH["POST /webhooks/partner<br/>signature verify"]
+HC["GET /connectors/health"]
+end
+subgraph transform ["🔧 Transform"]
+MAP["mapping.py<br/>raw → domain model"]
+CACHE["cache.py<br/>TTL + ETag"]
+end
+subgraph execute ["▶️ Execute"]
+SYNC["sync_campaign_data"]
+PAR["sync_all_connectors<br/>async gather"]
+CHAT["POST /chat<br/>multi-turn"]
+end
+
+WH -->|normalize| MAP
+HC -->|"healthy?"| SYNC
+MAP --> SYNC
+CACHE -->|"hit → skip fetch"| SYNC
+SYNC --> PAR
+RAG["🔎 Hybrid RAG<br/>confidence + cite"] --> CHAT
+
+class WH,HC input
+class MAP,CACHE hub
+class SYNC,PAR,CHAT hub
+class RAG mem
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style ingest fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#7dd3fc
+style transform fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#f3e8ff
+style execute fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#c7d2fe
+</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Capability</th><th>Where</th><th>Demo command / endpoint</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Connector health + circuit state</td>
+            <td><code>connectors/health.py</code>, <code>GET /connectors/{name}/health</code></td>
+            <td><code>curl localhost:8000/connectors/pulseads/health</code></td>
+          </tr>
+          <tr>
+            <td>Webhook receiver (async partner callbacks)</td>
+            <td><code>service/webhooks.py</code>, <code>POST /webhooks/{partner}</code></td>
+            <td><code>curl -X POST localhost:8000/webhooks/pulseads -d '{"payload":{"event":"sync"}}'</code></td>
+          </tr>
+          <tr>
+            <td>Schema mapping / drift</td>
+            <td><code>connectors/mapping.py</code></td>
+            <td>Explain <code>MAPPINGS</code> registry vs one-off transforms</td>
+          </tr>
+          <tr>
+            <td>TTL cache on connector reads</td>
+            <td><code>connectors/cache.py</code>, <code>sync_campaign_data</code></td>
+            <td>Second sync returns <code>cached: true</code></td>
+          </tr>
+          <tr>
+            <td>Parallel sync all partners</td>
+            <td><code>skills/sync_all_connectors.py</code></td>
+            <td>Skill <code>sync_all_connectors</code> via agent or MCP</td>
+          </tr>
+          <tr>
+            <td>Multi-turn RAG chat</td>
+            <td><code>service/chat.py</code>, <code>POST /chat</code></td>
+            <td>Same thread_id for follow-up questions</td>
+          </tr>
+          <tr>
+            <td>Versioned prompts</td>
+            <td><code>prompts/sync_summary/v1.txt</code></td>
+            <td><code>prompt_id</code> on sync output for traceability</td>
+          </tr>
+          <tr>
+            <td>RAG confidence signaling</td>
+            <td><code>rag/models.py</code> <code>confidence</code> field</td>
+            <td>Search API returns high / medium / low</td>
+          </tr>
+          <tr>
+            <td>CI pipeline</td>
+            <td><code>.github/workflows/ci.yml</code></td>
+            <td><code>python tasks.py test</code> + <code>eval</code></td>
+          </tr>
+          <tr>
+            <td>Add-partner runbook</td>
+            <td><code>docs/runbooks/add-a-partner.md</code></td>
+            <td>Walk interviewer through registry + mapping + corpus</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="doc-page" id="modern-ai" data-title="Modern AI stack">
+      <div class="page-card">
+      <h2 class="page-title">Modern AI stack (Phases 10–14) — final study map</h2>
       <p class="lead">
         Extensions added for <strong>today's AI engineering</strong>: vector index protocol, reranking,
         query rewrite, injection guardrails, MCP resources/prompts, tracing, token budgets, online evals,
@@ -673,24 +1545,87 @@ flowchart TB
         </tbody>
       </table>
 
+      <h3>Eval harness loop</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+DS["📁 datasets/*.jsonl<br/>golden + rubric"] --> Run["⚙️ evals/runner.py"]
+Run --> S1["🎯 retrieval<br/>recall@k · MRR · nDCG"]
+Run --> S2["✍️ generation<br/>LLM-as-judge"]
+Run --> S3["🧰 tool selection<br/>accuracy"]
+Run --> S4["🛡️ red-team<br/>guardrails"]
+S1 --> SC["📏 thresholds.json"]
+S2 --> SC
+S3 --> SC
+S4 --> SC
+SC --> Pass{"✅ Pass?"}
+Pass -->|Yes| CI["🟢 CI green"]
+Pass -->|No| HITL["🙋 Human review queue"]
+HITL -.->|"re-label → dataset"| DS
+
+class DS,Run hub
+class S1,S2,S3 hub
+class S4 guard
+class SC,CI success
+class Pass decision
+class HITL hitl
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle 10 stroke:#4ade80,stroke-width:3px
+linkStyle 11 stroke:#fb923c,stroke-width:2px
+</div>
+      </div>
+
       <h3>RAG pipeline (with modern stages)</h3>
       <div class="diagram-wrap">
         <div class="mermaid">
 flowchart LR
-  Q["User query"] --> Safe["Safety sanitize"]
-  Safe --> Rewrite["Query rewrite"]
-  Rewrite --> Sparse["BM25"]
-  Rewrite --> Dense["Embedder + VectorStore"]
-  Sparse --> Fuse["RRF / alpha fusion"]
-  Dense --> Fuse
-  Fuse --> Rerank["Reranker"]
-  Rerank --> Citations["Cited chunks"]
-  Q --> Id{"Campaign ID?"}
-  Id -->|Yes| Record["Connector record"]
-  Citations --> Gen["Grounded generation"]
-  Record --> Out["SearchResult"]
-  Gen --> Out
-        </div>
+Q["🔎 User query"] --> Safe["🛡️ Safety sanitize<br/>injection check"]
+Safe --> Rewrite["✏️ Query rewrite<br/>+ expansion"]
+Rewrite --> Sparse["📚 BM25"]
+Rewrite --> Dense["🧮 Embedder + VectorStore"]
+Sparse --> Fuse["⚗️ RRF / α-fusion"]
+Dense --> Fuse
+Fuse --> Rerank["🏅 Cross-encoder reranker"]
+Rerank --> Citations["📄 Cited chunks"]
+Q --> Id{"🔑 Campaign ID?"}
+Id -->|"Yes · deterministic"| Record["🟢 Connector record"]
+Citations --> Gen["💬 Grounded generation<br/>cite or refuse"]
+Record --> Out["🔷 SearchResult"]
+Gen --> Out
+
+class Q input
+class Safe,Rewrite guard
+class Sparse,Dense mem
+class Fuse,Rerank hub
+class Citations,Gen output
+class Record partner
+class Out output
+class Id decision
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle 9 stroke:#34d399,stroke-width:3px
+</div>
       </div>
 
       <h3>Protocols &amp; interfaces</h3>
@@ -714,15 +1649,50 @@ AIH_ENABLE_RAG_SAFETY=true
 AIH_AGENT_TOKEN_BUDGET=8000
 AIH_ONLINE_EVAL_SAMPLE_RATE=0.0</code></pre>
       <p>See <code>.env.example</code> for the full list.</p>
+      </div>
     </section>
 
-    <section id="study-plan">
-      <h2>Final study plan (7 days before interviews)</h2>
+    <section class="doc-page" id="study-plan" data-title="Study plan">
+      <div class="page-card">
+      <h2 class="page-title">Final study plan (7 days before interviews)</h2>
       <p>Use this page + the repo. Each day: <strong>run</strong> → <strong>read one spec</strong> → <strong>one drill</strong> → <strong>narrate 5 min</strong>.</p>
+
+      <h3>7-day arc</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+D1["📅 D1<br/>Core loop + specs"] --> D2["📅 D2<br/>Connectors + mocks"]
+D2 --> D3["📅 D3<br/>Hybrid RAG"]
+D3 --> D4["📅 D4<br/>MCP + agent + HITL"]
+D4 --> D5["📅 D5<br/>Evals + CI"]
+D5 --> D6["📅 D6<br/>Memory + A2A + AG-UI"]
+D6 --> D7["🎤 D7<br/>Mock interview"]
+
+class D1 input
+class D2,D3 mem
+class D4 hub
+class D5 success
+class D6 hitl
+class D7 output
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle default stroke:#818cf8,stroke-width:2px
+</div>
+      </div>
 
       <div class="practice-day">
         <strong>Day 1 — Core loop</strong>
-        Boot 3 terminals. Demo publish + approve. Read <code>specs/agent.md</code>. Flashcards 1–10.
+        Boot the stack (<code>run-sandbox.cmd</code> or 3 terminals). Demo publish + approve. Read <code>specs/agent.md</code>. Flashcards 1–10.
       </div>
       <div class="practice-day">
         <strong>Day 2 — Integrations (Oxigent)</strong>
@@ -748,10 +1718,12 @@ AIH_ONLINE_EVAL_SAMPLE_RATE=0.0</code></pre>
         <strong>Day 7 — Mock interview</strong>
         Full 5-min demo script (no notes). <code>python tasks.py test</code> must be green. Pick Factorial OR Oxigent emphasis.
       </div>
+      </div>
     </section>
 
-    <section id="interviews">
-      <h2>Which interviews this rehearses</h2>
+    <section class="doc-page" id="interviews" data-title="Which interviews">
+      <div class="page-card">
+      <h2 class="page-title">Which interviews this rehearses</h2>
       <div class="grid-2">
         <div class="card factorial">
           <h3>Factorial — Product AI Engineer</h3>
@@ -782,10 +1754,72 @@ AIH_ONLINE_EVAL_SAMPLE_RATE=0.0</code></pre>
           <p><strong>Foreground in demos:</strong> connector layer, dashboard metrics, transport resilience, deploy story.</p>
         </div>
       </div>
+      </div>
     </section>
 
-    <section id="modules">
-      <h2>Requirement → module map</h2>
+    <section class="doc-page" id="modules" data-title="Module map">
+      <div class="page-card">
+      <h2 class="page-title">Requirement → module map</h2>
+
+      <h3>Repo layers</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TB
+subgraph surface ["🖥️ Surface"]
+DASH["dashboard/ React"]
+API["service/ FastAPI"]
+MCP["mcp_server/ stdio"]
+end
+subgraph core ["⚙️ Core"]
+AGENT["agent/ orchestrator"]
+SKILLS["skills/"]
+RAG["rag/ hybrid"]
+MEM["memory/"]
+EVALS["evals/"]
+end
+subgraph integration ["🔌 Integration"]
+CONN["connectors/"]
+MOCK["mock_apis/"]
+end
+subgraph protocols ["📡 Protocols"]
+A2A["a2a/"]
+AGUI["agui/"]
+end
+
+DASH -->|"AG-UI"| API
+MCP --> SKILLS
+API --> AGENT
+AGENT --> SKILLS
+AGENT --> MEM
+SKILLS --> CONN
+SKILLS --> RAG
+CONN -->|"REST"| MOCK
+API --> A2A
+API --> AGUI
+
+class DASH,API,MCP input
+class AGENT,SKILLS,RAG,MEM,EVALS hub
+class CONN,MOCK partner
+class A2A,AGUI success
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style surface fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#7dd3fc
+style core fill:#1e1b4b,stroke:#6366f1,stroke-width:3px,color:#c7d2fe
+style integration fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
+style protocols fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#f3e8ff
+</div>
+      </div>
+
       <table>
         <thead>
           <tr>
@@ -847,16 +1881,62 @@ AIH_ONLINE_EVAL_SAMPLE_RATE=0.0</code></pre>
           </tr>
         </tbody>
       </table>
+      </div>
     </section>
 
-    <section id="run">
-      <h2>How to run it</h2>
+    <section class="doc-page" id="run" data-title="How to run it">
+      <div class="page-card">
+      <h2 class="page-title">How to run it</h2>
       <p>From PowerShell (Windows) or any shell — repo root: <code>ai-integration-sandbox/</code></p>
 
       <h3>One-time setup</h3>
       <pre><code>python tasks.py setup</code></pre>
 
-      <h3>Full stack (3 terminals)</h3>
+      <h3>Full stack (one command)</h3>
+      <p>Starts mock-apis, the FastAPI hub, and the dashboard together. Runs setup automatically if <code>.venv</code> is missing.</p>
+      <pre><code># Windows — works even when PowerShell blocks .ps1 scripts
+run-sandbox.cmd
+
+# Without the dashboard
+run-sandbox.cmd -NoUi
+
+# Any OS
+python tasks.py sandbox</code></pre>
+      <p>Open <strong>http://localhost:5173</strong> — UI proxies API calls to the service.</p>
+
+      <h3>Sandbox topology</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+CMD["▶️ run-sandbox.cmd"] --> A["🟢 Terminal A<br/>mock-apis :9000"]
+CMD --> B["🏛️ Terminal B<br/>service :8000"]
+CMD --> C["⚛️ Terminal C<br/>dashboard :5173"]
+
+C -->|"proxy /api"| B
+B -->|"REST HTTP"| A
+B -.->|optional| LS["☁️ LocalStack :4566"]
+
+class CMD input
+class A partner
+class B hub
+class C input
+class LS aws
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+</div>
+      </div>
+
+      <h3>Full stack (3 terminals, manual)</h3>
       <pre><code># Terminal A — fake partner APIs (:9000)
 python tasks.py mock-apis
 
@@ -865,7 +1945,6 @@ python tasks.py run
 
 # Terminal C — React dashboard (:5173)
 python tasks.py ui</code></pre>
-      <p>Open <strong>http://localhost:5173</strong> — UI proxies API calls to the service.</p>
 
       <h3>Verify &amp; rehearse offline</h3>
       <pre><code>python tasks.py test          # full suite, no network
@@ -877,10 +1956,12 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
         API docs when the service is running:
         <a href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a>
       </p>
+      </div>
     </section>
 
-    <section id="practice">
-      <h2>How I use this to practice interviews</h2>
+    <section class="doc-page" id="practice" data-title="How to practice">
+      <div class="page-card">
+      <h2 class="page-title">How I use this to practice interviews</h2>
       <p>
         The repo is not just code to read — it's a <strong>rehearsal instrument</strong>.
         I alternate between running the system, solving drills, and narrating architecture as if an interviewer is watching.
@@ -890,7 +1971,7 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
 
       <div class="practice-day">
         <strong>Day 1 — Run &amp; narrate (45 min)</strong>
-        Boot mock-apis + service + UI. Start a publish run, approve it, point at trace steps.
+        Boot the stack with <code>run-sandbox.cmd</code> or <code>python tasks.py sandbox</code>. Start a publish run, approve it, point at trace steps.
         Say out loud: plan → skill → gate → connector → partner. Record yourself or use a timer.
       </div>
 
@@ -935,11 +2016,43 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
         <li>Prepare one “I extended this” story (e.g. added eval threshold, fixed a connector, solved a kata)</li>
         <li>Know where specs live — Factorial cares that you spec before you code</li>
       </ul>
+      </div>
     </section>
 
-    <section id="demo">
-      <h2>Live demo script (~5 minutes)</h2>
+    <section class="doc-page" id="demo" data-title="Live demo script">
+      <div class="page-card">
+      <h2 class="page-title">Live demo script (~5 minutes)</h2>
       <p>Use this when an interviewer says “walk me through something you built” or “show it running”.</p>
+
+      <h3>Demo arc</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+CTX["🗣️ Context<br/>~30s"] --> MET["📊 Metrics<br/>~30s"]
+MET --> READ["📥 Sync read<br/>~60s"]
+READ --> RAG["🔎 RAG cite<br/>~45s"]
+RAG --> WRITE["🛑 Publish + HITL<br/>~90s"]
+WRITE --> EVAL["📊 Evals + protocols<br/>~45s"]
+
+class CTX,MET input
+class READ,RAG mem
+class WRITE hitl
+class EVAL success
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle default stroke:#818cf8,stroke-width:2px
+</div>
+      </div>
 
       <ol class="demo-steps">
         <li>
@@ -974,10 +2087,12 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
           without keys; real providers are behind env flags.”
         </li>
       </ol>
+      </div>
     </section>
 
-    <section id="drills">
-      <h2>Drills in the repo</h2>
+    <section class="doc-page" id="drills" data-title="Drills">
+      <div class="page-card">
+      <h2 class="page-title">Drills in the repo</h2>
       <table>
         <thead>
           <tr><th>Folder</th><th>What</th><th>Command</th></tr>
@@ -1005,10 +2120,301 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
           </tr>
         </tbody>
       </table>
+      </div>
     </section>
 
-    <section id="talking">
-      <h2>Talking points cheat sheet</h2>
+    <section class="doc-page" id="memory-protocols" data-title="Memory & protocols">
+      <div class="page-card">
+      <h2 class="page-title">Agent memory + communication protocols</h2>
+      <p class="lead">One unifier, not seven silos. Episodic ≈ run ledger, external ≈ RAG, procedural ≈ skills registry. HITL gate = A2A <code>input-required</code> = AG-UI <code>INPUT_REQUEST</code>.</p>
+
+      <h3>MemoryManager map</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+subgraph recall ["🧠 recall sources"]
+direction TB
+S1["💡 Semantic facts"]
+S2["📒 Similar episodes"]
+S3["📘 Procedures"]
+S4["⏰ Due intentions"]
+S5["📄 RAG chunks"]
+end
+
+S1 --> ASM["🧩 assemble_working_memory"]
+S2 --> ASM
+S3 --> ASM
+S4 --> ASM
+S5 --> ASM
+ASM --> CTX["🔷 System prompt fragments<br/>+ provenance, under budget"]
+CTX --> Agent["🤖 Agent plans"]
+
+class ASM,Agent hub
+class S1,S2,S3,S4,S5 mem
+class CTX output
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style recall fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#f3e8ff
+</div>
+      </div>
+
+      <h3>Externalize vs parametric</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TB
+Q{"🧠 Where does this knowledge live?"}
+Q -->|"Must audit / delete / per-tenant"| Ext["♻️ Externalize<br/>SQLite + RAG"]
+Q -->|"General reasoning pattern"| Par["⛔ Parametric<br/>model weights"]
+Ext --> Ex1["💡 Semantic memory"]
+Ext --> Ex2["📒 Episodic ledger"]
+Ext --> Ex3["📄 Doc corpus"]
+Par --> P1["🤖 FakeLLM / real LLM"]
+Par --> P2["🚫 NOT faked in sandbox"]
+
+class Q decision
+class Ext,Ex1,Ex2,Ex3 partner
+class Par,P1,P2 boundary
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+linkStyle 0 stroke:#34d399,stroke-width:2px
+linkStyle 1 stroke:#94a3b8,stroke-width:2px,stroke-dasharray:5 4
+</div>
+      </div>
+
+      <h3>MemoryManager (7 types)</h3>
+      <table>
+        <thead><tr><th>Type</th><th>Module</th><th>Built?</th></tr></thead>
+        <tbody>
+          <tr><td>Working</td><td><code>memory/working.py</code></td><td>Yes</td></tr>
+          <tr><td>Semantic</td><td><code>memory/semantic.py</code></td><td>Yes</td></tr>
+          <tr><td>Episodic</td><td><code>memory/episodic.py</code> + ledger</td><td>Yes</td></tr>
+          <tr><td>Procedural</td><td><code>memory/procedural.py</code> + skills</td><td>Yes</td></tr>
+          <tr><td>External</td><td><code>memory/external.py</code> → RAG</td><td>Yes</td></tr>
+          <tr><td>Parametric</td><td><code>docs/memory-notes.md</code></td><td>Boundary only</td></tr>
+          <tr><td>Prospective</td><td><code>memory/prospective.py</code></td><td>Yes</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Protocols (three-legged stool)</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TB
+MCP["🔧 MCP<br/>typed tools"] -->|"agent ↔ tools"| Agent["🤖 Agent + connectors"]
+A2A["🤝 A2A<br/>task lifecycle"] -->|"agent ↔ agents"| Agent
+AGUI["📡 AG-UI<br/>SSE events"] -->|"agent ↔ UI"| UI["⚛️ Dashboard"]
+A2UI["🎨 A2UI<br/>component specs"] -->|"rides on AG-UI"| UI
+Agent --> Gate["🛑 HITL gate"]
+A2A -->|"input-required"| Gate
+AGUI -->|"INPUT_REQUEST"| Gate
+
+class MCP,A2A,AGUI,A2UI hub
+class Agent hub
+class Gate hitl
+class UI input
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+</div>
+      </div>
+      <table>
+        <thead><tr><th>Protocol</th><th>Path</th><th>For</th></tr></thead>
+        <tbody>
+          <tr><td>MCP</td><td><code>mcp_server/</code></td><td>Tools you own</td></tr>
+          <tr><td>A2A</td><td><code>a2a/</code> + <code>/.well-known/agent-card.json</code></td><td>Opaque peer agents</td></tr>
+          <tr><td>AG-UI</td><td><code>agui/events.py</code></td><td>Event stream to UI</td></tr>
+          <tr><td>A2UI</td><td><code>agui/a2ui.py</code></td><td>Declarative UI specs on stream</td></tr>
+        </tbody>
+      </table>
+      <p>Deep dive: <code>docs/memory-notes.md</code>, <code>docs/protocols.md</code>, <code>drills/protocols-and-memory.md</code></p>
+      </div>
+    </section>
+
+    <section class="doc-page" id="fastapi" data-title="FastAPI architecture">
+      <div class="page-card">
+      <h2 class="page-title">FastAPI in the AI application</h2>
+      <p class="lead">FastAPI is the <strong>composition root</strong> — it wires agent, RAG, memory, A2A, AG-UI, and HITL into one async HTTP surface for the dashboard and tests.</p>
+
+      <h3>AppState wiring</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart TB
+subgraph fastapi ["⚡ FastAPI :8000"]
+App["create_app()"]
+State["📦 AppState"]
+Routes["🛣️ Routes + SSE"]
+end
+
+subgraph deps ["🧩 build_state() wires"]
+Ledger["📒 SQLiteLedger"]
+Approver["🛑 APIApprover"]
+Memory["🧠 MemoryManager"]
+A2A["🤝 A2AServer"]
+Bridge["📡 AguiBridge"]
+AgentB["🤖 build_agent()"]
+end
+
+App --> State
+State --> Routes
+State --> Ledger
+State --> Approver
+State --> Memory
+State --> A2A
+State --> Bridge
+Routes --> AgentB
+AgentB --> Ledger
+AgentB --> Memory
+AgentB --> Approver
+
+class App,State,Routes hub
+class Ledger,A2A,Bridge,AgentB partner
+class Approver hitl
+class Memory mem
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style fastapi fill:#1e1b4b,stroke:#6366f1,stroke-width:3px,color:#c7d2fe
+style deps fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
+</div>
+      </div>
+
+      <h3>Publish creative — request flow</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+sequenceDiagram
+autonumber
+participant D as ⚛️ Dashboard
+participant F as ⚡ FastAPI
+participant A as 🤖 Agent
+participant G as 🛑 HITL gate
+participant C as 🔌 Connector
+
+D->>F: POST /runs (goal)
+F-->>D: run_id immediately
+F->>A: asyncio.create_task (background)
+rect rgb(67, 30, 12)
+note over A,F: Side effect, pause for human
+A->>G: publish_creative side effect
+G-->>F: pending approval
+F-->>D: AG-UI INPUT_REQUEST + A2UI card
+D->>F: POST /agui/runs/ID/input approve
+F->>G: resolve()
+end
+rect rgb(20, 83, 45)
+A->>C: push creative
+C-->>A: 201 created
+A-->>F: trace completed
+F-->>D: RUN_FINISHED via SSE
+end
+</div>
+      </div>
+
+      <h3>Route map</h3>
+      <div class="diagram-wrap">
+        <div class="mermaid">
+flowchart LR
+subgraph rest ["🛣️ REST"]
+R1["POST /runs"]
+R2["POST /runs/ID/approve"]
+R3["POST /search"]
+R4["POST /a2a — JSON-RPC"]
+end
+
+subgraph sse ["📡 SSE streams"]
+S1["GET /runs/ID/stream"]
+S2["GET /agui/runs/ID/stream"]
+S3["GET /a2a/tasks/ID/events"]
+S4["POST /search/stream"]
+end
+
+subgraph meta ["🔍 Discovery"]
+M1["GET /.well-known/agent-card.json"]
+M2["GET /skills"]
+M3["GET /metrics"]
+end
+
+class R1,R2,R3,R4 hub
+class S1,S2,S3,S4 input
+class M1,M2,M3 partner
+classDef input fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px
+classDef hub fill:#4338ca,stroke:#818cf8,color:#eef2ff,stroke-width:2px
+classDef mem fill:#5b21b6,stroke:#a78bfa,color:#f3e8ff,stroke-width:2px
+classDef partner fill:#047857,stroke:#34d399,color:#d1fae5,stroke-width:2px
+classDef hitl fill:#c2410c,stroke:#fb923c,color:#ffedd5,stroke-width:3px
+classDef decision fill:#a16207,stroke:#facc15,color:#fef9c3,stroke-width:2px
+classDef danger fill:#991b1b,stroke:#f87171,color:#fee2e2,stroke-width:2px
+classDef success fill:#166534,stroke:#4ade80,color:#dcfce7,stroke-width:2px
+classDef output fill:#0e7490,stroke:#22d3ee,color:#cffafe,stroke-width:3px
+classDef boundary fill:#334155,stroke:#94a3b8,color:#e2e8f0,stroke-width:2px,stroke-dasharray:6 4
+classDef aws fill:#b45309,stroke:#fbbf24,color:#fef3c7,stroke-width:2px
+classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
+style rest fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#c7d2fe
+style sse fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#7dd3fc
+style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
+</div>
+      </div>
+
+      <h3>Key pieces</h3>
+      <ul>
+        <li><code>service/app.py</code> — routes, SSE streams, JSON models</li>
+        <li><code>service/deps.py</code> — <code>AppState</code> (ledger, approver, memory, subscribers)</li>
+        <li><code>POST /runs</code> — background <code>asyncio.create_task</code> agent loop</li>
+        <li><code>POST /runs/{id}/approve</code> — unblocks <code>APIApprover</code> (same gate as A2A/AG-UI)</li>
+        <li><code>GET /agui/runs/{id}/stream</code> — AG-UI events + A2UI payloads</li>
+        <li><code>POST /a2a</code> — JSON-RPC task delegation</li>
+      </ul>
+
+      <h3>Why async FastAPI for AI?</h3>
+      <ul>
+        <li>Agent, connectors, and RAG search are async — no thread-pool glue.</li>
+        <li>SSE (<code>sse-starlette</code>) pushes run state to React without polling-only UX.</li>
+        <li><code>httpx.ASGITransport</code> tests the full app in-process — offline CI.</li>
+        <li>Thin routes, fat domain: orchestration stays in <code>agent/</code>, <code>memory/</code>, <code>a2a/</code>.</li>
+      </ul>
+      <p>Full write-up: <code>docs/fastapi-architecture.md</code></p>
+      </div>
+    </section>
+
+    <section class="doc-page" id="talking" data-title="Talking points">
+      <div class="page-card">
+      <h2 class="page-title">Talking points cheat sheet</h2>
       <ul>
         <li><strong>Why offline-first?</strong> Deterministic tests, no interview-day network failures, cheap CI evals.</li>
         <li><strong>Why hybrid RAG?</strong> BM25 for IDs and rare tokens; dense for paraphrase; fusion when either alone fails.</li>
@@ -1029,32 +2435,270 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
         <li><code>AGENTS.md</code> — coding-agent / Cursor context</li>
         <li><code>agent/card.json</code> + <code>docs/a2a-notes.md</code> — agent discovery</li>
         <li><code>specs/modern-ai-extensions.md</code> — Phases 10–14 spec</li>
+        <li><code>specs/memory.md</code> + <code>docs/memory-notes.md</code> — 7 memory types</li>
+        <li><code>docs/protocols.md</code> — MCP / A2A / AG-UI stool</li>
+        <li><code>docs/fastapi-architecture.md</code> — how HTTP wires the AI stack</li>
       </ul>
+      </div>
     </section>
 
-  </main>
+      </div>
 
-  <footer>
-    AI Integration Sandbox · Final study guide · <code>docs/interview-practice.html</code>
-  </footer>
+      <nav class="pagination" aria-label="Page navigation">
+        <button class="pagination-btn" id="prev-btn" type="button" disabled>← Previous</button>
+        <div class="pagination-dots" id="pagination-dots"></div>
+        <button class="pagination-btn" id="next-btn" type="button">Next →</button>
+      </nav>
+
+      <footer class="site-footer">
+        AI Integration Sandbox · Final study guide · <code>docs/interview-practice.html</code>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    const PAGES = [
+      { id: "what", label: "What it does" },
+      { id: "diagrams", label: "Architecture" },
+      { id: "integration-ops", label: "Integration ops" },
+      { id: "modern-ai", label: "Modern AI stack" },
+      { id: "study-plan", label: "Study plan" },
+      { id: "interviews", label: "Interviews" },
+      { id: "modules", label: "Module map" },
+      { id: "run", label: "How to run" },
+      { id: "practice", label: "Practice" },
+      { id: "demo", label: "Live demo" },
+      { id: "drills", label: "Drills" },
+      { id: "memory-protocols", label: "Memory & protocols" },
+      { id: "fastapi", label: "FastAPI" },
+      { id: "talking", label: "Talking points" },
+    ];
+
+    let currentIndex = 0;
+    const pageEls = PAGES.map((p) => document.getElementById(p.id));
+    const pageTitle = document.getElementById("page-title");
+    const pageMeta = document.getElementById("page-meta");
+    const sidebarProgress = document.getElementById("sidebar-progress");
+    const sidebarNavList = document.getElementById("sidebar-nav-list");
+    const paginationDots = document.getElementById("pagination-dots");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarToggle = document.getElementById("sidebar-toggle");
+    const sidebarOverlay = document.getElementById("sidebar-overlay");
+
+    function buildNav() {
+      sidebarNavList.innerHTML = PAGES.map((page, i) => `
+        <li>
+          <a href="#${page.id}" data-index="${i}" class="${i === 0 ? "active" : ""}">
+            <span class="nav-index">${i + 1}</span>
+            ${page.label}
+          </a>
+        </li>
+      `).join("");
+
+      paginationDots.innerHTML = PAGES.map((page, i) => `
+        <button class="pagination-dot${i === 0 ? " active" : ""}" type="button" data-index="${i}" aria-label="Go to ${page.label}">${i + 1}</button>
+      `).join("");
+
+      sidebarNavList.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          goToPage(Number(link.dataset.index));
+          closeSidebar();
+        });
+      });
+
+      paginationDots.querySelectorAll(".pagination-dot").forEach((dot) => {
+        dot.addEventListener("click", () => goToPage(Number(dot.dataset.index)));
+      });
+    }
+
+    function updateUI() {
+      pageEls.forEach((el, i) => {
+        if (el) el.classList.toggle("active", i === currentIndex);
+      });
+
+      const page = PAGES[currentIndex];
+      const title = pageEls[currentIndex]?.dataset.title || page.label;
+      pageTitle.textContent = title;
+      pageMeta.textContent = `${currentIndex + 1} / ${PAGES.length}`;
+      sidebarProgress.textContent = `Page ${currentIndex + 1} of ${PAGES.length}`;
+
+      sidebarNavList.querySelectorAll("a").forEach((link, i) => {
+        link.classList.toggle("active", i === currentIndex);
+      });
+
+      paginationDots.querySelectorAll(".pagination-dot").forEach((dot, i) => {
+        dot.classList.toggle("active", i === currentIndex);
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === PAGES.length - 1;
+
+      const activeLink = sidebarNavList.querySelector("a.active");
+      if (activeLink) activeLink.scrollIntoView({ block: "nearest" });
+
+      try {
+        history.replaceState(null, "", `#${page.id}`);
+      } catch (e) {
+        /* sandboxed about:srcdoc iframes block URL history updates; ignore */
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (pageEls[currentIndex]?.querySelector(".mermaid")) {
+        window.dispatchEvent(new CustomEvent("render-diagrams"));
+      }
+    }
+
+    function goToPage(index) {
+      if (index < 0 || index >= PAGES.length) return;
+      currentIndex = index;
+      updateUI();
+    }
+
+    prevBtn.addEventListener("click", () => goToPage(currentIndex - 1));
+    nextBtn.addEventListener("click", () => goToPage(currentIndex + 1));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.target.closest("pre, code, input, textarea")) return;
+      if (e.key === "ArrowLeft") goToPage(currentIndex - 1);
+      if (e.key === "ArrowRight") goToPage(currentIndex + 1);
+    });
+
+    function openSidebar() {
+      sidebar.classList.add("open");
+      sidebarOverlay.classList.add("open");
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove("open");
+      sidebarOverlay.classList.remove("open");
+    }
+
+    sidebarToggle.addEventListener("click", () => {
+      sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+    });
+    sidebarOverlay.addEventListener("click", closeSidebar);
+
+    function resolveInitialPage() {
+      const hash = location.hash.replace("#", "");
+      const idx = PAGES.findIndex((p) => p.id === hash);
+      if (idx >= 0) currentIndex = idx;
+    }
+
+    buildNav();
+    resolveInitialPage();
+    updateUI();
+  </script>
 
   <script type="module">
-    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+    let renderToken = 0;
+
     mermaid.initialize({
       startOnLoad: false,
-      theme: "base",
+      securityLevel: "loose",
+      theme: "dark",
       themeVariables: {
-        primaryColor: "#eff6ff",
-        primaryTextColor: "#0f172a",
-        primaryBorderColor: "#2563eb",
-        lineColor: "#64748b",
-        secondaryColor: "#f1f5f9",
-        tertiaryColor: "#f8fafc",
-        fontFamily: "Segoe UI, system-ui, sans-serif",
+        fontSize: "14px",
+        fontFamily: "Inter, Segoe UI, system-ui, sans-serif",
+        primaryColor: "#4338ca",
+        primaryTextColor: "#f8fafc",
+        primaryBorderColor: "#818cf8",
+        secondaryColor: "#5b21b6",
+        secondaryTextColor: "#f3e8ff",
+        secondaryBorderColor: "#a78bfa",
+        tertiaryColor: "#0c4a6e",
+        tertiaryTextColor: "#e0f2fe",
+        tertiaryBorderColor: "#38bdf8",
+        lineColor: "#94a3b8",
+        textColor: "#f1f5f9",
+        mainBkg: "#1e293b",
+        nodeBorder: "#64748b",
+        clusterBkg: "#0f172a",
+        clusterBorder: "#475569",
+        titleColor: "#f8fafc",
+        edgeLabelBackground: "#1e293b",
+        darkMode: true,
+        actorBkg: "#4338ca",
+        actorBorder: "#818cf8",
+        actorTextColor: "#f8fafc",
+        actorLineColor: "#94a3b8",
+        signalColor: "#60a5fa",
+        signalTextColor: "#f1f5f9",
+        labelBoxBkgColor: "#1e293b",
+        labelBoxBorderColor: "#475569",
+        labelTextColor: "#e2e8f0",
+        loopTextColor: "#cbd5e1",
+        noteBkgColor: "#422006",
+        noteTextColor: "#fef3c7",
+        noteBorderColor: "#f59e0b",
+        activationBkgColor: "#312e81",
+        activationBorderColor: "#818cf8",
+        sequenceNumberColor: "#94a3b8",
       },
-      flowchart: { curve: "basis", padding: 12 },
+      flowchart: {
+        curve: "basis",
+        padding: 18,
+        htmlLabels: true,
+        nodeSpacing: 58,
+        rankSpacing: 74,
+      },
+      sequence: {
+        diagramMarginX: 24,
+        diagramMarginY: 16,
+        actorMargin: 72,
+        width: 168,
+        height: 52,
+        boxMargin: 12,
+        boxTextMargin: 8,
+        noteMargin: 12,
+        messageMargin: 40,
+      },
+      themeCSS: `
+        .node rect, .node circle, .node ellipse, .node polygon { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
+        .edgePath .path { stroke-width: 2.5px; }
+        .cluster rect { stroke-width: 2px; opacity: 0.97; }
+        .edgeLabel { background-color: #1e293b !important; color: #e2e8f0 !important; }
+        .actor { filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35)); stroke-width: 2px; }
+        .messageLine0, .messageLine1 { stroke-width: 2.5px; }
+        .labelBox { stroke-width: 2px; }
+      `,
     });
-    await mermaid.run({ querySelector: ".mermaid" });
+
+    function waitForLayout() {
+      return new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
+    }
+
+    async function renderDiagrams() {
+      const token = ++renderToken;
+      const activePage = document.querySelector(".doc-page.active");
+      if (!activePage) return;
+
+      await waitForLayout();
+      if (token !== renderToken) return;
+
+      const nodes = [...activePage.querySelectorAll(".mermaid:not([data-processed])")];
+      if (nodes.length === 0) return;
+
+      for (const node of nodes) {
+        if (token !== renderToken) return;
+        try {
+          await mermaid.run({ nodes: [node] });
+        } catch (err) {
+          console.warn("Mermaid diagram failed:", err);
+          node.innerHTML = `<pre class="diagram-error">Diagram could not render. Open via a local server: <code>python -m http.server 8080</code> then visit <code>http://localhost:8080/docs/interview-practice.html</code></pre>`;
+          node.setAttribute("data-processed", "true");
+        }
+      }
+    }
+
+    window.addEventListener("render-diagrams", () => { renderDiagrams(); });
+    renderDiagrams();
   </script>
 </body>
 </html>

@@ -22,6 +22,7 @@ from aih.connectors.errors import ConnectorError
 from aih.guardrails.validate import validate_skill_args
 from aih.llm import get_llm
 from aih.llm.base import ChatMessage, LLMClient, ToolSpec
+from aih.memory.manager import MemoryManager
 from aih.observability.ledger import InMemoryLedger, RunLedger
 from aih.observability.logging import get_logger
 from aih.observability.tracing import Tracer
@@ -55,6 +56,9 @@ class Agent:
         ledger: RunLedger | None = None,
         ctx: SkillContext | None = None,
         max_steps: int | None = None,
+        memory: MemoryManager | None = None,
+        tenant_id: str = "default",
+        subject_id: str | None = None,
     ) -> None:
         self.llm = llm or get_llm()
         self.skills = skills or SKILLS
@@ -62,6 +66,9 @@ class Agent:
         self.ledger: RunLedger = ledger or InMemoryLedger()
         self.ctx = ctx or SkillContext.default()
         self.max_steps = max_steps or get_settings().agent_max_steps
+        self.memory = memory
+        self.tenant_id = tenant_id
+        self.subject_id = subject_id
 
     async def run(self, goal: str, *, run_id: str | None = None) -> RunResult:
         trace = RunTrace(run_id=run_id or uuid.uuid4().hex[:12], goal=goal)
@@ -69,10 +76,16 @@ class Agent:
         budget = TokenBudget()
         settings = get_settings()
         self.ledger.save(trace)
+        system_prompt = _SYSTEM_PROMPT
+        if self.memory and settings.agent_enable_memory:
+            assembled = await self.memory.assemble_working_memory(
+                goal, budget.limit, tenant_id=self.tenant_id
+            )
+            system_prompt += assembled.to_prompt_block()
         if settings.agent_enable_memory:
             MEMORY.remember(trace.run_id, f"goal:{goal}")
         messages = [
-            ChatMessage(role="system", content=_SYSTEM_PROMPT),
+            ChatMessage(role="system", content=system_prompt),
             ChatMessage(role="user", content=f"GOAL: {goal}"),
         ]
         tools = [*self.skills.tool_specs(), _FINISH_TOOL]
@@ -217,6 +230,8 @@ class Agent:
         trace.value_summary["tokens_used"] = budget.used
         trace.value_summary["token_budget"] = budget.limit
         self.ledger.save(trace)
+        if self.memory and settings.agent_enable_memory:
+            self.memory.reflect(trace, tenant_id=self.tenant_id, subject_id=self.subject_id)
         _log.info(
             "run.complete",
             extra={"context": {"run_id": trace.run_id, "status": trace.status}},

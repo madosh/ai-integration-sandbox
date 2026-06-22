@@ -81,6 +81,10 @@ class CircuitBreaker:
     def is_open(self) -> bool:
         return self._opened_at is not None
 
+    @property
+    def failure_count(self) -> int:
+        return self._failures
+
 
 class Transport:
     """An async HTTP transport shared by all connectors."""
@@ -220,3 +224,11 @@ class Transport:
         if resp.status_code == 429:
             raise RateLimitedError("rate limited; retries exhausted", connector=self.name)
         raise UpstreamError(f"upstream {resp.status_code}; retries exhausted", connector=self.name)
+
+    def circuit_status(self) -> dict[str, object]:
+        """Expose circuit breaker state for health checks and dashboards."""
+        return {
+            "open": self._breaker.is_open,
+            "failure_count": self._breaker.failure_count,
+            "threshold": self._breaker.threshold,
+        }
