@@ -467,6 +467,79 @@
       border: 1px dashed var(--border);
     }
 
+    .md-section {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .md-hint {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .md-embed.md-loading {
+      min-height: 3rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .md-embed.md-loading::before {
+      content: "Loading doc…";
+    }
+
+    .md-body {
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .md-body h1 { font-size: 1.35rem; margin: 0 0 0.75rem; }
+    .md-body h2 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--text); }
+    .md-body h3 { font-size: 1rem; margin: 1rem 0 0.4rem; }
+    .md-body p { margin: 0 0 0.75rem; color: var(--muted); }
+    .md-body ul, .md-body ol { margin: 0 0 0.75rem; padding-left: 1.25rem; }
+    .md-body li { margin-bottom: 0.35rem; }
+    .md-body blockquote {
+      margin: 0.75rem 0;
+      padding: 0.6rem 0.9rem;
+      border-left: 3px solid var(--accent);
+      background: var(--surface-elevated);
+      color: var(--text);
+    }
+    .md-body pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      margin: 0.75rem 0;
+    }
+    .md-body code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.85em;
+    }
+    .md-body :not(pre) > code {
+      background: var(--surface-elevated);
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
+    }
+    .md-body table { font-size: 0.85rem; }
+    .md-body a { color: var(--link); }
+
+    .md-error {
+      padding: 0.85rem 1rem;
+      background: #422006;
+      border: 1px solid #f59e0b;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #fef3c7;
+    }
+
+    .md-error p { margin: 0 0 0.5rem; color: #fef3c7; }
+    .md-error p:last-child { margin-bottom: 0; }
+
     .diagram-legend {
       display: flex;
       flex-wrap: wrap;
@@ -738,8 +811,8 @@ linkStyle 6 stroke:#f87171,stroke-width:2px,stroke-dasharray:4 3
       <h2 class="page-title">Architecture diagrams</h2>
       <p class="lead">
         Visual map of the system — use these when whiteboarding or walking an interviewer through the repo.
-        Diagrams render via Mermaid (requires internet on first open). If you opened this file directly
-        (<code>file://</code>), use a local server instead:
+        Diagrams render via Mermaid (requires internet on first open). Each topic page also loads the matching <code>docs/*.md</code> file below the curated summary — serve over HTTP so markdown can be fetched. If you opened this file directly
+        (<code>file://</code>), use a local server:
         <code>python -m http.server 8080</code> from the repo root, then open
         <code>http://localhost:8080/docs/interview-practice.html</code>.
       </p>
@@ -1323,6 +1396,12 @@ API-->>UI: SSE close
 end
 </div>
       </div>
+
+      <div class="md-section">
+        <h3>Architecture notes (from repo)</h3>
+        <p class="md-hint">Full <code>docs/architecture.md</code> — C4 container diagram, key flows, publish sequence, and deployment table.</p>
+        <div class="md-embed" data-src="architecture.md"></div>
+      </div>
       </div>
     </section>
 
@@ -1439,6 +1518,12 @@ style execute fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#c7d2fe
           </tr>
         </tbody>
       </table>
+
+      <div class="md-section">
+        <h3>Add-partner runbook</h3>
+        <p class="md-hint">Step-by-step from <code>docs/runbooks/add-a-partner.md</code>.</p>
+        <div class="md-embed" data-src="runbooks/add-a-partner.md"></div>
+      </div>
       </div>
     </section>
 
@@ -1649,6 +1734,17 @@ AIH_ENABLE_RAG_SAFETY=true
 AIH_AGENT_TOKEN_BUDGET=8000
 AIH_ONLINE_EVAL_SAMPLE_RATE=0.0</code></pre>
       <p>See <code>.env.example</code> for the full list.</p>
+
+      <div class="md-section">
+        <h3>RAG deep dive</h3>
+        <p class="md-hint">From <code>docs/rag-notes.md</code> — BM25 vs dense, fusion, and deterministic connector lookups.</p>
+        <div class="md-embed" data-src="rag-notes.md"></div>
+      </div>
+      <div class="md-section">
+        <h3>Evals deep dive</h3>
+        <p class="md-hint">From <code>docs/evals-notes.md</code> — when to trust automated vs human eval.</p>
+        <div class="md-embed" data-src="evals-notes.md"></div>
+      </div>
       </div>
     </section>
 
@@ -1881,6 +1977,12 @@ style protocols fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#f3e8ff
           </tr>
         </tbody>
       </table>
+
+      <div class="md-section">
+        <h3>MCP Inspector guide</h3>
+        <p class="md-hint">From <code>docs/mcp-inspector.md</code> — exercise MCP tools in the browser.</p>
+        <div class="md-embed" data-src="mcp-inspector.md"></div>
+      </div>
       </div>
     </section>
 
@@ -2254,7 +2356,19 @@ classDef guard fill:#9a3412,stroke:#fb923c,color:#ffedd5,stroke-width:2px
           <tr><td>A2UI</td><td><code>agui/a2ui.py</code></td><td>Declarative UI specs on stream</td></tr>
         </tbody>
       </table>
-      <p>Deep dive: <code>docs/memory-notes.md</code>, <code>docs/protocols.md</code>, <code>drills/protocols-and-memory.md</code></p>
+
+      <div class="md-section">
+        <h3>Memory notes</h3>
+        <div class="md-embed" data-src="memory-notes.md"></div>
+      </div>
+      <div class="md-section">
+        <h3>Protocol notes (MCP / A2A / AG-UI)</h3>
+        <div class="md-embed" data-src="protocols.md"></div>
+      </div>
+      <div class="md-section">
+        <h3>A2A agent card notes</h3>
+        <div class="md-embed" data-src="a2a-notes.md"></div>
+      </div>
       </div>
     </section>
 
@@ -2408,7 +2522,12 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
         <li><code>httpx.ASGITransport</code> tests the full app in-process — offline CI.</li>
         <li>Thin routes, fat domain: orchestration stays in <code>agent/</code>, <code>memory/</code>, <code>a2a/</code>.</li>
       </ul>
-      <p>Full write-up: <code>docs/fastapi-architecture.md</code></p>
+
+      <div class="md-section">
+        <h3>FastAPI architecture (full doc)</h3>
+        <p class="md-hint">From <code>docs/fastapi-architecture.md</code> — AppState, routes, and publish sequence diagrams.</p>
+        <div class="md-embed" data-src="fastapi-architecture.md"></div>
+      </div>
       </div>
     </section>
 
@@ -2546,8 +2665,8 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
 
-      if (pageEls[currentIndex]?.querySelector(".mermaid")) {
-        window.dispatchEvent(new CustomEvent("render-diagrams"));
+      if (pageEls[currentIndex]?.querySelector(".md-embed, .mermaid")) {
+        window.dispatchEvent(new CustomEvent("load-page-docs"));
       }
     }
 
@@ -2594,8 +2713,12 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
 
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked@12/lib/marked.esm.js";
+
+    marked.setOptions({ gfm: true });
 
     let renderToken = 0;
+    let pageLoadToken = 0;
 
     mermaid.initialize({
       startOnLoad: false,
@@ -2697,8 +2820,74 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       }
     }
 
-    window.addEventListener("render-diagrams", () => { renderDiagrams(); });
-    renderDiagrams();
+    function renderMarkdownWithMermaid(md, container) {
+      const regex = /```mermaid\n([\s\S]*?)```/g;
+      container.replaceChildren();
+      const frag = document.createDocumentFragment();
+      let lastIndex = 0;
+      let match;
+
+      while ((match = regex.exec(md)) !== null) {
+        const textBefore = md.slice(lastIndex, match.index);
+        if (textBefore.trim()) {
+          const div = document.createElement("div");
+          div.className = "md-body";
+          div.innerHTML = marked.parse(textBefore);
+          frag.appendChild(div);
+        }
+        const wrap = document.createElement("div");
+        wrap.className = "diagram-wrap md-diagram";
+        const mer = document.createElement("div");
+        mer.className = "mermaid";
+        mer.textContent = match[1].trim();
+        wrap.appendChild(mer);
+        frag.appendChild(wrap);
+        lastIndex = regex.lastIndex;
+      }
+
+      const tail = md.slice(lastIndex);
+      if (tail.trim()) {
+        const div = document.createElement("div");
+        div.className = "md-body";
+        div.innerHTML = marked.parse(tail);
+        frag.appendChild(div);
+      }
+
+      container.appendChild(frag);
+    }
+
+    async function loadPageDocs() {
+      const token = ++pageLoadToken;
+      const activePage = document.querySelector(".doc-page.active");
+      if (!activePage) {
+        await renderDiagrams();
+        return;
+      }
+
+      const embeds = [...activePage.querySelectorAll(".md-embed[data-src]:not([data-loaded])")];
+      for (const embed of embeds) {
+        if (token !== pageLoadToken) return;
+        const src = embed.dataset.src;
+        embed.classList.add("md-loading");
+        try {
+          const res = await fetch(src);
+          if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+          renderMarkdownWithMermaid(await res.text(), embed);
+          embed.dataset.loaded = "true";
+        } catch (err) {
+          console.warn("Markdown load failed:", src, err);
+          embed.innerHTML = `<div class="md-error"><p>Could not load <code>docs/${src}</code>.</p><p>Serve the repo over HTTP — e.g. <code>python -m http.server 8080</code> from <code>ai-integration-sandbox/</code>, then open <code>http://localhost:8080/docs/interview-practice.html</code>. Opening the HTML file directly (<code>file://</code>) cannot fetch sibling markdown files.</p></div>`;
+          embed.dataset.loaded = "error";
+        } finally {
+          embed.classList.remove("md-loading");
+        }
+      }
+
+      await renderDiagrams();
+    }
+
+    window.addEventListener("load-page-docs", () => { loadPageDocs(); });
+    loadPageDocs();
   </script>
 </body>
 </html>
