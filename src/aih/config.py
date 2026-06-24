@@ -61,6 +61,9 @@ class Settings(BaseSettings):
     # Online eval sampling (0.0 = disabled)
     online_eval_sample_rate: float = Field(default=0.0, ge=0.0, le=1.0)
 
+    # API authentication (disabled when unset)
+    api_key: str | None = None
+
     # AWS / LocalStack
     aws_endpoint_url: str | None = "http://127.0.0.1:4566"
     aws_region: str = "us-east-1"

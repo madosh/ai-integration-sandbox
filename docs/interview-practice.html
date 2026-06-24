@@ -587,6 +587,140 @@
       margin-top: 0.85rem;
     }
 
+    /* ── Q&A accordion ── */
+    .qa-category { margin-bottom: 1.5rem; }
+    .qa-category-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      margin: 0 0 0.6rem;
+      padding: 0 0 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .qa-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+    .qa-list details {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-elevated);
+      overflow: hidden;
+    }
+    .qa-list details[open] { border-color: var(--accent); }
+    .qa-list summary {
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+      list-style: none;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      user-select: none;
+      line-height: 1.4;
+    }
+    .qa-list summary::-webkit-details-marker { display: none; }
+    .qa-list summary::before {
+      content: "+";
+      width: 1.3rem;
+      height: 1.3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      border-radius: 50%;
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+      transition: background 0.15s;
+    }
+    .qa-list details[open] summary::before { content: "−"; background: rgba(96, 165, 250, 0.25); }
+    .qa-answer {
+      padding: 0 1rem 1rem 3rem;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+    }
+    .qa-answer p { margin: 0 0 0.55rem; color: var(--text); }
+    .qa-answer p:last-child { margin: 0; }
+    .qa-answer strong { color: var(--accent-hover); }
+    .qa-answer code { background: var(--code-inline); padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.82em; color: #e2e8f0; }
+
+    /* ── Sidebar visited indicator ── */
+    .sidebar-nav a.visited .nav-index {
+      background: rgba(74, 222, 128, 0.18);
+      color: #4ade80;
+    }
+
+    /* ── Sidebar progress bar ── */
+    .sidebar-progress-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .sidebar-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.35s ease;
+    }
+
+    /* ── Keyboard hint ── */
+    .kbd-hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1em 0.45em;
+      font-size: 0.78em;
+      font-family: monospace;
+      color: var(--muted);
+    }
+
+    /* ── Connector comparison table ── */
+    .connector-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 0.85rem 0;
+    }
+    .connector-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      background: var(--surface-elevated);
+      font-size: 0.84rem;
+    }
+    .connector-card h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .connector-card dl { margin: 0; }
+    .connector-card dt { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-top: 0.45rem; }
+    .connector-card dd { margin: 0.1rem 0 0; color: var(--text); }
+    .connector-card dd code { font-size: 0.78em; }
+    @media (max-width: 900px) {
+      .connector-grid { grid-template-columns: 1fr; }
+    }
+
     /* ── Pagination ── */
     .pagination {
       position: sticky;
@@ -716,7 +850,12 @@
       <nav class="sidebar-nav" aria-label="Guide sections">
         <ul id="sidebar-nav-list"></ul>
       </nav>
-      <div class="sidebar-footer" id="sidebar-progress">Page 1 of 14</div>
+      <div class="sidebar-footer" id="sidebar-progress">
+        Page 1 of 15
+        <div class="sidebar-progress-track">
+          <div class="sidebar-progress-fill" id="sidebar-progress-fill" style="width: 6.67%"></div>
+        </div>
+      </div>
     </aside>
 
     <div class="main">
@@ -1414,6 +1553,40 @@ end
         CI, and an add-partner runbook.
       </p>
 
+      <h3>Partner quick reference</h3>
+      <div class="connector-grid">
+        <div class="connector-card">
+          <h4>PulseAds</h4>
+          <dl>
+            <dt>Auth</dt><dd>Bearer token (<code>Authorization: Bearer …</code>)</dd>
+            <dt>Pagination</dt><dd>Cursor — <code>next_cursor</code> in response</dd>
+            <dt>Quirk</dt><dd>Rate-limited: 429 + <code>Retry-After</code> header</dd>
+            <dt>Operations</dt><dd>GET campaigns only (read-only)</dd>
+            <dt>Env var</dt><dd><code>AIH_PULSEADS_TOKEN</code></dd>
+          </dl>
+        </div>
+        <div class="connector-card">
+          <h4>NovaReach</h4>
+          <dl>
+            <dt>Auth</dt><dd>API key header (<code>X-Api-Key: …</code>)</dd>
+            <dt>Pagination</dt><dd>Offset/limit — <code>?offset=N&amp;limit=M</code></dd>
+            <dt>Quirk</dt><dd>Idempotent POST via <code>Idempotency-Key</code> header</dd>
+            <dt>Operations</dt><dd>GET campaigns + POST records</dd>
+            <dt>Env var</dt><dd><code>AIH_NOVAREACH_API_KEY</code></dd>
+          </dl>
+        </div>
+        <div class="connector-card">
+          <h4>CreativeBox</h4>
+          <dl>
+            <dt>Auth</dt><dd>HTTP Basic auth (username + password)</dd>
+            <dt>Pagination</dt><dd>N/A — asset-based, no pagination</dd>
+            <dt>Quirk</dt><dd>Multipart upload; idempotency via content checksum</dd>
+            <dt>Operations</dt><dd>PUT creative (multipart) + GET download</dd>
+            <dt>Env var</dt><dd><code>AIH_CREATIVEBOX_USER</code> / <code>_PASSWORD</code></dd>
+          </dl>
+        </div>
+      </div>
+
       <h3>Connector ops flow</h3>
       <div class="diagram-wrap">
         <div class="mermaid">
@@ -2063,10 +2236,10 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
 
     <section class="doc-page" id="practice" data-title="How to practice">
       <div class="page-card">
-      <h2 class="page-title">How I use this to practice interviews</h2>
+      <h2 class="page-title">How to use this guide</h2>
       <p>
         The repo is not just code to read — it's a <strong>rehearsal instrument</strong>.
-        I alternate between running the system, solving drills, and narrating architecture as if an interviewer is watching.
+        Alternate between running the system, solving drills, and narrating architecture out loud as if an interviewer is watching.
       </p>
 
       <h3>Weekly rhythm (suggested)</h3>
@@ -2531,18 +2704,181 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       </div>
     </section>
 
+    <section class="doc-page" id="qa" data-title="Interview Q&amp;A">
+      <div class="page-card">
+      <h2 class="page-title">Interview Q&amp;A — 15 questions, crisp answers</h2>
+      <p class="lead">Click a question to expand the answer. Cover these before every interview — they map directly to the diagrams, specs, and code.</p>
+
+      <div class="qa-category">
+        <p class="qa-category-title">System overview</p>
+        <ul class="qa-list">
+          <li>
+            <details>
+              <summary>Walk me through what this system does end-to-end.</summary>
+              <div class="qa-answer">
+                <p>A goal string arrives at <code>POST /runs</code>. The agent assembles <strong>working memory</strong> (recent episodes, relevant docs, skill procedures) then asks the LLM to select a skill via function-calling. <strong>Read-only skills</strong> (sync, search) execute immediately through the connector framework — retry, backoff, circuit-breaker included. <strong>Side-effecting skills</strong> (publish_creative) pause at the HITL gate: the caller must <code>POST /runs/{id}/approve</code> before any connector is touched. Every step is appended to an immutable <strong>run trace</strong> in the SQLite ledger, which feeds episodic memory for future runs.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Why offline-first? Why FakeLLM and mock APIs?</summary>
+              <div class="qa-answer">
+                <p>Deterministic tests that run anywhere without API keys or network — in CI, in a local dev environment, and in an interview room. <code>FakeLLM</code> returns predictable skill selections by keyword matching; <code>HashEmbedder</code> is a deterministic hashed bag-of-words. Swapping in real providers is an env-flag change (<code>AIH_LLM_PROVIDER=anthropic</code>), not a code change. The principle: <strong>domain logic should not be coupled to provider availability</strong>.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>What is Spec-Driven Development in this repo?</summary>
+              <div class="qa-answer">
+                <p>No code is written before its spec exists in <code>specs/</code>. Each spec defines: <strong>Goal</strong>, Inputs/Outputs, Behaviour (numbered steps), Constraints, Failure modes, <strong>Success criteria</strong> (measurable), and Out of scope. The Success criteria become the eval thresholds committed in <code>evals/thresholds.json</code>. This aligns on "done" before implementation starts and makes specs the living contract for both code and evals.</p>
+              </div>
+            </details>
+          </li>
+        </ul>
+      </div>
+
+      <div class="qa-category">
+        <p class="qa-category-title">Agent &amp; HITL</p>
+        <ul class="qa-list">
+          <li>
+            <details>
+              <summary>What is the HITL gate? When does it trigger?</summary>
+              <div class="qa-answer">
+                <p>Every Skill declares <code>side_effect: bool</code>. When the agent selects a side-effecting skill, it constructs an <strong>ApprovalRequest</strong> (what / why / payload preview / reversibility) and passes it to the injected <code>Approver</code>. The loop pauses until <code>Approver.decide()</code> returns. Only if <code>decision.approved is True</code> does the skill run. A denial records the decision to the trace with <strong>zero side effects</strong> — no connector is called. Approver implementations: <code>AutoApprover</code> (tests), <code>CLIApprover</code> (stdin), <code>APIApprover</code> (awaits <code>POST /runs/{id}/approve</code>).</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>How does the agent select tools?</summary>
+              <div class="qa-answer">
+                <p>The planner builds <code>ToolSpec</code>s from each skill's Pydantic input schema (field name, type, description) plus a <code>finish</code> tool. It assembles a prompt with these specs and calls <code>LLMClient.tool_call(prompt, tool_specs)</code> which returns a <code>(tool_name, args)</code> pair. <code>FakeLLM</code> matches the goal string to a skill by keyword; a real LLM uses function-calling. The loop continues until the same tool+args is re-selected (<strong>convergence</strong>) or <code>finish</code> is selected.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>What happens if the agent exceeds its step budget?</summary>
+              <div class="qa-answer">
+                <p>The orchestrator increments a step counter each iteration. If it reaches <code>agent_max_steps</code>, the loop terminates with <code>status="max_steps"</code> and returns the partial <code>RunResult</code> with the full trace so far. The trace is still persisted to the ledger. This bounds runaway loops — critical when a real LLM makes unexpected or looping tool selections.</p>
+              </div>
+            </details>
+          </li>
+        </ul>
+      </div>
+
+      <div class="qa-category">
+        <p class="qa-category-title">Hybrid RAG</p>
+        <ul class="qa-list">
+          <li>
+            <details>
+              <summary>Why hybrid RAG? Why not just BM25 or just dense embeddings?</summary>
+              <div class="qa-answer">
+                <p><strong>BM25</strong> excels at exact-token matches (error codes, IDs, rare terms like "429") but has no semantics — "rate limit" and "429" are unrelated to it. <strong>Dense embeddings</strong> capture paraphrase and synonyms but miss rare tokens and depend on model quality. The offline <code>HashEmbedder</code> is a deterministic hashed bag-of-words with no IDF — deliberately making BM25 and dense disagree so the tests can prove fusion beats either alone by MRR. In production, the two signals complement each other and fusion robustly improves recall.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>What is RRF vs alpha fusion? When do you use each?</summary>
+              <div class="qa-answer">
+                <p><strong>Alpha fusion:</strong> <code>fused = α × dense_norm + (1-α) × sparse_norm</code> over min-max-normalized scores. Blends magnitudes — needs calibration and is sensitive to score distributions. <strong>RRF:</strong> <code>score = Σ 1/(k + rank_i)</code> over each retriever's ranking. Blends <em>ranks</em>, not magnitudes — scale-free and robust when BM25 and cosine scores live on incomparable scales (the normal case). <strong>Rule of thumb:</strong> use RRF by default; use alpha when both signals are well-calibrated and you want explicit lexical/semantic balance. At the extremes, <code>alpha=0</code> is pure BM25, <code>alpha=1</code> is pure dense.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>What is the deterministic path in RAG?</summary>
+              <div class="qa-answer">
+                <p>If the query contains a structured entity reference (a campaign ID), the <code>HybridRetriever</code> calls an injected <strong>resolver</strong> that fetches the authoritative record directly from the connector. This record is returned alongside retrieved text chunks, labelled <code>connector:&lt;partner&gt;</code> for provenance rather than <code>doc:&lt;id&gt;</code>. The resolver is injected (not called directly) so RAG stays decoupled from the connector/network layer. Rule of thumb: <strong>retrieve prose, look up facts</strong>.</p>
+              </div>
+            </details>
+          </li>
+        </ul>
+      </div>
+
+      <div class="qa-category">
+        <p class="qa-category-title">Connectors &amp; resilience</p>
+        <ul class="qa-list">
+          <li>
+            <details>
+              <summary>How does the connector framework handle retries and rate limiting?</summary>
+              <div class="qa-answer">
+                <p>Every connector uses a shared <strong>Transport</strong> wrapping <code>httpx.AsyncClient</code>. On HTTP 429, Transport reads the <code>Retry-After</code> header and sleeps for that duration (sleep is injectable so tests run instantly). On 5xx or network errors, it applies exponential backoff with jitter up to a configured budget. 4xx errors (401, 404) are <strong>not retried</strong> — they surface as typed errors (<code>AuthError</code>, <code>NotFoundError</code>). After N consecutive failures, a <strong>circuit breaker</strong> opens and fails fast with <code>CircuitOpenError</code> until a cooldown period passes.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>How do you add a new (4th) partner connector?</summary>
+              <div class="qa-answer">
+                <p>(1) Create <code>src/aih/connectors/newpartner.py</code> — a <code>Connector</code> subclass with a <code>ConnectorConfig</code> and the partner's auth strategy. (2) Implement <code>get_records()</code> using <code>cursor_paginate</code> or <code>offset_paginate</code> from <code>paginate.py</code>. (3) Register: <code>registry.register("newpartner", NewPartnerConnector)</code>. (4) Add credentials to <code>config.py</code> and <code>.env.example</code>. (5) Add a mock route to <code>mock_apis/app.py</code>. (6) Add a corpus doc if RAG coverage is needed. The runbook at <code>docs/runbooks/add-a-partner.md</code> walks this step-by-step.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>What is idempotency in the connector context?</summary>
+              <div class="qa-answer">
+                <p>Before a creative is pushed, an <strong><code>Idempotency-Key</code></strong> header is computed as a hash of the payload content. If the same creative is uploaded twice (e.g. after a network-timeout retry), the server deduplicates based on this key and returns the original result without storing a duplicate. This guarantees <strong>at-most-once side effects</strong> even under retry logic — important when retrying a write that may have partially succeeded on the first attempt.</p>
+              </div>
+            </details>
+          </li>
+        </ul>
+      </div>
+
+      <div class="qa-category">
+        <p class="qa-category-title">Evals, Skills &amp; Specs</p>
+        <ul class="qa-list">
+          <li>
+            <details>
+              <summary>What eval suites does the harness run?</summary>
+              <div class="qa-answer">
+                <p>Five suites: (1) <strong>retrieval</strong> — recall@k, MRR, nDCG@k against labelled doc IDs. (2) <strong>generation</strong> — <code>answer_from_docs</code> answers scored by an LLM-as-judge using rubric keyword coverage. (3) <strong>tool_selection</strong> — agent planner accuracy on expected skill per goal. (4) <strong>red-team</strong> — guardrail block rate on injection/jailbreak prompts. (5) <strong>online sampling</strong> — sample live runs to a HITL review queue. Thresholds are committed in <code>evals/thresholds.json</code>; the runner exits non-zero if any metric falls below threshold.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>How do you prevent eval regression across model or retriever changes?</summary>
+              <div class="qa-answer">
+                <p>Thresholds are committed to <code>evals/thresholds.json</code> alongside the code. The eval runner (<code>python tasks.py eval</code>) exits with code 1 if any metric falls below its threshold — CI enforces this. When a change improves scores, thresholds are bumped in the same commit — <strong>scores can only go up</strong>. HITL review exports (CSV + JSON) include a blank <code>human_score</code> column; reviewed files are re-ingested to merge human judgements back into the dataset.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>What is an AI Skill and how does it differ from an MCP tool?</summary>
+              <div class="qa-answer">
+                <p>A <strong>Skill</strong> is a first-class domain capability with a typed Pydantic <code>input_model</code> and <code>output_model</code>, a <code>side_effect</code> flag, and a <code>run(payload, ctx)</code> entry point. Skills live in the <code>SkillRegistry</code> and are invoked by the agent orchestrator loop — with HITL gating enforced for <code>side_effect=True</code>. An <strong>MCP tool</strong> is a protocol-level binding that exposes the same underlying logic over the MCP stdio protocol to external LLM clients (IDE agents, Claude Desktop). Same logic, different protocol surface — one mechanism, multiple faces.</p>
+              </div>
+            </details>
+          </li>
+        </ul>
+      </div>
+      </div>
+    </section>
+
     <section class="doc-page" id="talking" data-title="Talking points">
       <div class="page-card">
       <h2 class="page-title">Talking points cheat sheet</h2>
       <ul>
-        <li><strong>Why offline-first?</strong> Deterministic tests, no interview-day network failures, cheap CI evals.</li>
-        <li><strong>Why hybrid RAG?</strong> BM25 for IDs and rare tokens; dense for paraphrase; fusion when either alone fails.</li>
-        <li><strong>Why HITL?</strong> Side effects are low-reversibility; model can hallucinate tool args.</li>
-        <li><strong>Why MCP?</strong> Same integrations exposed to IDE agents and external LLM clients with typed tools.</li>
-        <li><strong>Why specs first?</strong> Aligns team on success criteria before code; specs are the contract for evals too.</li>
-        <li><strong>Why SQS for approvals?</strong> Durable async queue; see ADR 001. In-process gate for MVP.</li>
-        <li><strong>Why S3 for creatives?</strong> Blobs not rows; see ADR 002.</li>
-        <li><strong>Connector resilience?</strong> Backoff + jitter, Retry-After on 429, circuit breaker per partner.</li>
+        <li><strong>Why offline-first?</strong> Deterministic tests, no interview-day network failures, cheap CI evals. Real providers are behind env flags — one change to swap in.</li>
+        <li><strong>Why hybrid RAG?</strong> BM25 wins on exact token matches (IDs, error codes, rare terms); dense wins on paraphrase and semantic queries. Fusion beats either alone in MRR — proven by the test suite.</li>
+        <li><strong>Why RRF over alpha fusion?</strong> RRF blends ranks, not magnitudes — scale-free and robust when BM25 and cosine scores live on incomparable scales. Alpha needs calibrated, comparable distributions.</li>
+        <li><strong>Why HITL?</strong> Side effects are low-reversibility; models can hallucinate tool arguments. The gate creates an auditable paper trail: every decision is recorded to the run trace.</li>
+        <li><strong>Why MCP?</strong> Same integrations exposed to IDE agents and external LLM clients with typed tool envelopes — no additional HTTP surface needed.</li>
+        <li><strong>Why specs first?</strong> Aligns the team on success criteria before code; the Success criteria become the eval thresholds. Specs are a living contract, not a one-time artefact.</li>
+        <li><strong>Why SQS for approvals in prod?</strong> Durable async queue survives service restarts; approval decisions arrive out-of-band. In-process <code>APIApprover</code> is the MVP — ADR 001 explains the upgrade path.</li>
+        <li><strong>Why S3 for creatives?</strong> Blobs not rows: unbounded size, cheap storage, CDN-friendly. ADR 002 explains why DynamoDB wasn't the right fit here.</li>
+        <li><strong>Connector resilience?</strong> Exponential backoff + jitter, <code>Retry-After</code> on 429, circuit breaker per partner (opens after N failures, fails fast until cooldown). Sleep is injectable so tests run instantly.</li>
+        <li><strong>Why idempotency keys on writes?</strong> Deduplicates retried writes server-side: the connector hashes payload content → <code>Idempotency-Key</code> header. Guarantees at-most-once side effects under retry logic.</li>
+        <li><strong>Deterministic vs probabilistic retrieval?</strong> Text retrieval returns the likely relevant passage. For structured facts (a campaign ID, a price, a status), look the record up in the authoritative connector — return it with <code>connector:</code> provenance, not a retrieved paragraph.</li>
+        <li><strong>How do evals guard against regression?</strong> Thresholds committed to <code>evals/thresholds.json</code>; CI exits non-zero on any metric below threshold. Scores can only go up — threshold bumps in the same commit as improvements.</li>
+        <li><strong>What is an AI Skill vs an MCP tool?</strong> A Skill is a first-class domain capability with typed I/O, a <code>side_effect</code> flag, and HITL enforcement. An MCP tool exposes the same underlying logic over the MCP stdio protocol to external LLM clients.</li>
+        <li><strong>Why FastAPI for the AI layer?</strong> Native async matches async connectors, RAG, and agent loops. SSE pushes run state without polling. <code>httpx.ASGITransport</code> tests the full app in-process — no sockets in CI.</li>
       </ul>
 
       <h3>Docs to skim before interviews</h3>
@@ -2565,7 +2901,10 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
 
       <nav class="pagination" aria-label="Page navigation">
         <button class="pagination-btn" id="prev-btn" type="button" disabled>← Previous</button>
-        <div class="pagination-dots" id="pagination-dots"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.35rem;">
+          <div class="pagination-dots" id="pagination-dots"></div>
+          <span class="kbd-hint"><kbd class="kbd">←</kbd><kbd class="kbd">→</kbd> arrow keys to navigate</span>
+        </div>
         <button class="pagination-btn" id="next-btn" type="button">Next →</button>
       </nav>
 
@@ -2591,7 +2930,10 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       { id: "memory-protocols", label: "Memory & protocols" },
       { id: "fastapi", label: "FastAPI" },
       { id: "talking", label: "Talking points" },
+      { id: "qa", label: "Interview Q&A" },
     ];
+
+    const visitedPages = new Set([0]);
 
     let currentIndex = 0;
     const pageEls = PAGES.map((p) => document.getElementById(p.id));
@@ -2633,7 +2975,11 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       });
     }
 
+    const progressFill = document.getElementById("sidebar-progress-fill");
+
     function updateUI() {
+      visitedPages.add(currentIndex);
+
       pageEls.forEach((el, i) => {
         if (el) el.classList.toggle("active", i === currentIndex);
       });
@@ -2642,10 +2988,21 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       const title = pageEls[currentIndex]?.dataset.title || page.label;
       pageTitle.textContent = title;
       pageMeta.textContent = `${currentIndex + 1} / ${PAGES.length}`;
-      sidebarProgress.textContent = `Page ${currentIndex + 1} of ${PAGES.length}`;
+
+      const progressText = document.createTextNode(`Page ${currentIndex + 1} of ${PAGES.length}`);
+      while (sidebarProgress.firstChild && sidebarProgress.firstChild.nodeType === 3) {
+        sidebarProgress.removeChild(sidebarProgress.firstChild);
+      }
+      sidebarProgress.insertBefore(progressText, sidebarProgress.firstChild);
+
+      if (progressFill) {
+        const pct = Math.round((visitedPages.size / PAGES.length) * 100);
+        progressFill.style.width = `${pct}%`;
+      }
 
       sidebarNavList.querySelectorAll("a").forEach((link, i) => {
         link.classList.toggle("active", i === currentIndex);
+        link.classList.toggle("visited", visitedPages.has(i) && i !== currentIndex);
       });
 
       paginationDots.querySelectorAll(".pagination-dot").forEach((dot, i) => {
