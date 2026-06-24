@@ -8,7 +8,7 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
@@ -119,6 +119,20 @@ def create_app(state: AppState | None = None) -> FastAPI:
         response: Response = await call_next(request)
         response.headers["x-request-id"] = rid
         return response
+
+    _NO_AUTH_PATHS = {"/healthz", "/.well-known/agent-card.json"}
+
+    @app.middleware("http")
+    async def api_key_middleware(request: Request, call_next):  # type: ignore[no-untyped-def]
+        if settings.api_key is not None and request.url.path not in _NO_AUTH_PATHS:
+            provided = request.headers.get("x-api-key")
+            if provided != settings.api_key:
+                return Response(
+                    content='{"detail":"invalid or missing api key"}',
+                    status_code=401,
+                    media_type="application/json",
+                )
+        return await call_next(request)
 
     @app.get("/healthz")
     async def healthz() -> dict[str, str]:
@@ -252,8 +266,29 @@ def create_app(state: AppState | None = None) -> FastAPI:
         return StartRunResponse(run_id=run_id, status="running")
 
     @app.get("/runs")
-    async def list_runs() -> list[dict[str, Any]]:
-        return [_trace_summary(t) for t in app_state.ledger.list_runs()]
+    async def list_runs(
+        limit: int = Query(default=50, ge=1, le=200),
+        cursor: str | None = Query(default=None),
+        status: str | None = Query(default=None),
+    ) -> dict[str, Any]:
+        all_runs = app_state.ledger.list_runs()
+        if status is not None:
+            all_runs = [t for t in all_runs if t.status == status]
+        total = len(all_runs)
+        if cursor is not None:
+            run_ids = [t.run_id for t in all_runs]
+            try:
+                idx = run_ids.index(cursor)
+                all_runs = all_runs[idx + 1 :]
+            except ValueError:
+                raise HTTPException(status_code=400, detail="invalid cursor")
+        page = all_runs[:limit]
+        next_cursor = page[-1].run_id if len(all_runs) > limit else None
+        return {
+            "runs": [_trace_summary(t) for t in page],
+            "next_cursor": next_cursor,
+            "total": total,
+        }
 
     @app.get("/runs/{run_id}")
     async def get_run(run_id: str) -> dict[str, Any]:
