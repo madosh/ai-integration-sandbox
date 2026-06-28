@@ -27,8 +27,11 @@ jobs:
       - name: Type check
         run: python tasks.py type
 
-      - name: Test with coverage
-        run: python -m pytest --cov=aih --cov-report=xml --cov-report=term-missing -q
+      - name: Test with coverage (gate >= 70%)
+        run: >-
+          python -m pytest -q
+          --cov=aih --cov-report=xml --cov-report=term-missing
+          --cov-fail-under=70
 
       - name: Upload coverage
         if: matrix.python-version == '3.12'
@@ -37,5 +40,20 @@ jobs:
           name: coverage-report
           path: coverage.xml
 
-      - name: Eval
-        run: python tasks.py eval
+      # Regression gate: `python tasks.py eval` exits non-zero if any metric in
+      # evals/datasets falls below the bar in src/aih/evals/thresholds.json
+      # (recall@k, MRR, nDCG, tool-selection accuracy, red-team block rate, ...).
+      # A drop in retrieval/agent quality therefore fails the build like any test.
+      - name: Eval regression gate
+        if: matrix.python-version == '3.12'
+        run: python tasks.py eval | tee eval-output.txt
+
+      - name: Publish eval scorecard to job summary
+        if: matrix.python-version == '3.12' && always()
+        run: |
+          {
+            echo '## Eval scorecard'
+            echo '```'
+            sed -n '/=== EVAL SCORECARD ===/,$p' eval-output.txt || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
