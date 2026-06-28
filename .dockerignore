@@ -1,0 +1,17 @@
+# Keep Docker build contexts small and reproducible.
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+**/*.pyc
+.git
+.github
+.mypy_cache
+.pytest_cache
+.ruff_cache
+*.sqlite3
+evals/reports/*
+!evals/reports/.gitkeep
+dashboard/tsconfig.tsbuildinfo
+# Never ship the nested duplicate tree into an image.
+ai-integration-sandbox/

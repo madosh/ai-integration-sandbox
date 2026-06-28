@@ -70,6 +70,14 @@ class Settings(BaseSettings):
     s3_creatives_bucket: str = "aih-creatives"
     sqs_approvals_queue: str = "aih-approvals"
 
+    # Observability / OpenTelemetry (disabled by default to stay offline-first).
+    # When enabled, in-process run spans are exported to an OTLP collector
+    # (e.g. Jaeger). Requires the optional ``otel`` extra to be installed; if the
+    # packages are missing the exporter degrades to a silent no-op.
+    otel_enabled: bool = False
+    otel_service_name: str = "aih"
+    otel_endpoint: str = "http://127.0.0.1:4317"
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

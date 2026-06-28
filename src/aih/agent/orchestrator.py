@@ -25,7 +25,7 @@ from aih.llm.base import ChatMessage, LLMClient, ToolSpec
 from aih.memory.manager import MemoryManager
 from aih.observability.ledger import InMemoryLedger, RunLedger
 from aih.observability.logging import get_logger
-from aih.observability.tracing import Tracer
+from aih.observability.tracing import Tracer, export_run
 from aih.skills.base import SkillContext
 from aih.skills.registry import SKILLS, SkillRegistry
 
@@ -230,6 +230,7 @@ class Agent:
         trace.value_summary["tokens_used"] = budget.used
         trace.value_summary["token_budget"] = budget.limit
         self.ledger.save(trace)
+        export_run(tracer)
         if self.memory and settings.agent_enable_memory:
             self.memory.reflect(trace, tenant_id=self.tenant_id, subject_id=self.subject_id)
         _log.info(

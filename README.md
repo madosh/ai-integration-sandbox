@@ -1,5 +1,10 @@
 # AI Integration Sandbox (`aih`)
 
+[![CI](https://github.com/madosh/ai-integration-sandbox/actions/workflows/ci.yml/badge.svg)](https://github.com/madosh/ai-integration-sandbox/actions/workflows/ci.yml)
+![coverage](https://img.shields.io/badge/coverage-%E2%89%A570%25-brightgreen)
+![python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)
+![license](https://img.shields.io/badge/license-MIT-green)
+
 An **offline-first, AI-native integration hub** covering two engineering profiles:
 
 - **Product AI Engineering** (API & Integrations): Spec-Driven Development, AI Skills,
@@ -112,6 +117,62 @@ python tasks.py ui
 > **Tooling note:** this repo ships both a `Makefile` and a stdlib-only `tasks.py`. On machines with
 > GNU `make` you can use `make test` etc.; everywhere else use `python tasks.py test`. They are
 > equivalent. If `uv` is installed it is preferred for installs, otherwise a `.venv` is used.
+
+## Run the full stack in one command (Docker)
+
+The whole sandbox — API, mock partners, dashboard, AWS emulation, and distributed
+tracing — boots from a single command. No Node, Python, or AWS account required on
+the host.
+
+```bash
+docker compose up --build
+```
+
+| URL | What |
+|---|---|
+| http://localhost:5173 | **React monitoring dashboard** (served by nginx, proxies `/api` → service) |
+| http://localhost:8000 | FastAPI service (OpenAPI docs at `/docs`) |
+| http://localhost:9000 | Mock partner APIs |
+| http://localhost:16686 | **Jaeger UI** — traces for every agent run |
+| http://localhost:4566 | LocalStack (S3 / SQS / DynamoDB) |
+
+Trigger a run from the dashboard, then open the Jaeger UI and select the
+`aih-service` service to see the per-step trace (LLM planning, skill execution,
+connector calls) for that run.
+
+## Observability
+
+Every agent run is instrumented with spans (`llm.tool_call`, `skill.run`, …) plus
+token/cost estimates. Spans are always recorded on the run trace (visible in the
+dashboard and the SQLite ledger) with **zero dependencies**.
+
+When `AIH_OTEL_ENABLED=true` and the optional `otel` extra is installed, those
+spans are additionally exported over OTLP to a collector such as Jaeger:
+
+```bash
+pip install -e ".[otel]"
+export AIH_OTEL_ENABLED=true
+export AIH_OTEL_ENDPOINT=http://localhost:4317   # Jaeger OTLP gRPC
+```
+
+If OTel is disabled or its packages are missing, the exporter degrades to a silent
+no-op — the offline-first default is never broken. See [`specs/observability.md`](specs/observability.md).
+
+## Quality gates
+
+CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on Python 3.11 and
+3.12 and blocks merges unless **all** of these pass:
+
+| Gate | Tool | Bar |
+|---|---|---|
+| Lint + format | `ruff` + `black --check` | clean |
+| Static types | `mypy` (strict) | clean |
+| Tests + coverage | `pytest --cov` | **≥ 70%** (`--cov-fail-under=70`) |
+| Eval regression | `python tasks.py eval` | every metric ≥ `evals/thresholds.json` |
+
+The eval gate means a drop in retrieval quality (recall@k, MRR, nDCG),
+tool-selection accuracy, or red-team block-rate **fails the build like any unit
+test** — the scorecard is published to the GitHub Actions job summary.
 
 ## Layout
 

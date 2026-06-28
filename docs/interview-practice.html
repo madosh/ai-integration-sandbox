@@ -1743,7 +1743,7 @@ style execute fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#c7d2fe
           <tr>
             <td>LLM observability</td>
             <td><code>observability/tracing.py</code></td>
-            <td>Spans per LLM/skill call; token + cost estimates on run trace</td>
+            <td>Spans per LLM/skill call; token + cost estimates on run trace. Optional <strong>OpenTelemetry export</strong> to Jaeger via OTLP (<code>AIH_OTEL_ENABLED=true</code>) — fails closed to a no-op offline</td>
           </tr>
           <tr>
             <td>Token budget</td>
@@ -2139,9 +2139,19 @@ style protocols fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#f3e8ff
             <td>Live demo with SSE + approval</td>
           </tr>
           <tr>
+            <td>Observability / tracing</td>
+            <td><code>observability/tracing.py</code>, <code>specs/observability.md</code></td>
+            <td>Show run spans; enable OTel → open Jaeger UI</td>
+          </tr>
+          <tr>
+            <td>CI / quality gates</td>
+            <td><code>.github/workflows/ci.yml</code></td>
+            <td>Lint + strict mypy + coverage ≥70% + eval thresholds block merges</td>
+          </tr>
+          <tr>
             <td>AWS / deploy</td>
             <td><code>deploy/</code>, <code>docs/architecture.md</code></td>
-            <td>Draw C4 from architecture doc; cite ADRs</td>
+            <td>Draw C4 from architecture doc; cite ADRs; <code>docker compose up</code></td>
           </tr>
           <tr>
             <td>Challenge-back</td>
@@ -2178,6 +2188,23 @@ run-sandbox.cmd -NoUi
 # Any OS
 python tasks.py sandbox</code></pre>
       <p>Open <strong>http://localhost:5173</strong> — UI proxies API calls to the service.</p>
+
+      <h3>Run everything in Docker (one command)</h3>
+      <p>No Python/Node/AWS on the host — boots the API, mock partners, dashboard, AWS emulation, and distributed tracing together.</p>
+      <pre><code>docker compose up --build</code></pre>
+      <table>
+        <thead>
+          <tr><th>URL</th><th>What</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>http://localhost:5173</code></td><td>React dashboard (nginx → proxies <code>/api</code>)</td></tr>
+          <tr><td><code>http://localhost:8000</code></td><td>FastAPI service (<code>/docs</code> for OpenAPI)</td></tr>
+          <tr><td><code>http://localhost:9000</code></td><td>Mock partner APIs</td></tr>
+          <tr><td><code>http://localhost:16686</code></td><td><strong>Jaeger UI</strong> — a trace per agent run</td></tr>
+          <tr><td><code>http://localhost:4566</code></td><td>LocalStack (S3 / SQS / DynamoDB)</td></tr>
+        </tbody>
+      </table>
+      <p>Trigger a run from the dashboard, then open Jaeger and select service <code>aih-service</code> to see the per-step trace (LLM planning → skill → connector calls).</p>
 
       <h3>Sandbox topology</h3>
       <div class="diagram-wrap">
@@ -2355,7 +2382,15 @@ linkStyle default stroke:#818cf8,stroke-width:2px
           “Adding a partner is a module + registry entry; skills mirror that for agent capabilities.”
         </li>
         <li>
+          <strong>Observability (30 s)</strong> — If running via <code>docker compose</code>, open Jaeger
+          (<code>:16686</code>), pick <code>aih-service</code>, and show the trace for the run you just did:
+          one span per planning step, skill, and connector call. “Same in-process spans render in the
+          dashboard offline; behind a flag they export to OTLP/Jaeger.”
+        </li>
+        <li>
           <strong>Quality (30 s)</strong> — Mention eval harness, committed thresholds, spec-first in <code>specs/</code>.
+          “CI blocks merges on lint, strict mypy, ≥70% coverage, <em>and</em> an eval regression gate — a drop in
+          recall@k or tool-selection accuracy fails the build like any unit test.”
         </li>
         <li>
           <strong>Close (30 s)</strong> — “Default is FakeLLM and mock APIs so this runs in CI and in this room
