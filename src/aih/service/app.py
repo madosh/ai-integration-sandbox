@@ -16,6 +16,7 @@ from sse_starlette.sse import EventSourceResponse
 from aih.a2a.card import build_agent_card
 from aih.a2a.models import JsonRpcRequest, JsonRpcResponse
 from aih.a2a.server import A2AServer
+from aih.agent.models import RunTrace
 from aih.config import get_settings, validate_settings
 from aih.connectors.health import check_all_connectors, check_connector_health
 from aih.connectors.registry import REGISTRY
@@ -280,8 +281,8 @@ def create_app(state: AppState | None = None) -> FastAPI:
             try:
                 idx = run_ids.index(cursor)
                 all_runs = all_runs[idx + 1 :]
-            except ValueError:
-                raise HTTPException(status_code=400, detail="invalid cursor")
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail="invalid cursor") from exc
         page = all_runs[:limit]
         next_cursor = page[-1].run_id if len(all_runs) > limit else None
         return {

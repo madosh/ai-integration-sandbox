@@ -39,14 +39,10 @@ class AguiBridge:
         prev = self._last_step_count.get(trace.run_id, 0)
         new_steps = trace.steps[prev:]
         for step in new_steps:
-            events.append(
-                step_started(trace.run_id, step.index, step.kind, step.skill)
-            )
+            events.append(step_started(trace.run_id, step.index, step.kind, step.skill))
             if step.kind == "approval" and step.approval:
                 preview = step.approval.payload_preview or {}
-                events.append(
-                    input_request(trace.run_id, step.approval.action, preview)
-                )
+                events.append(input_request(trace.run_id, step.approval.action, preview))
                 events.append(
                     custom_a2ui(
                         trace.run_id,
@@ -64,9 +60,7 @@ class AguiBridge:
 
         pending = trace.pending_approval()
         if trace.status != "running" and pending is None:
-            events.append(
-                run_finished(trace.run_id, trace.status, trace.value_summary or {})
-            )
+            events.append(run_finished(trace.run_id, trace.status, trace.value_summary or {}))
             if trace.value_summary:
                 events.append(
                     custom_a2ui(trace.run_id, metric_card("Run metrics", trace.value_summary))

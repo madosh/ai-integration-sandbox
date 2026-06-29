@@ -829,6 +829,83 @@
 
       .doc-page .page-card { padding: 1.25rem 1.35rem; }
     }
+
+    /* ── Copy-to-clipboard on code blocks ── */
+    pre { position: relative; }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      font: 600 0.68rem "Inter", sans-serif;
+      color: var(--muted);
+      background: var(--code-inline);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.2rem 0.55rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    pre:hover .copy-btn,
+    .copy-btn:focus-visible { opacity: 1; }
+    .copy-btn:hover { color: var(--accent-hover); border-color: var(--accent); }
+    .copy-btn.copied { color: var(--integration); border-color: var(--integration); opacity: 1; }
+
+    /* ── Sidebar filter ── */
+    .sidebar-search { margin: 0 0.65rem 0.5rem; position: relative; }
+    .sidebar-search input {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      font-size: 0.8rem;
+      color: var(--sidebar-text);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+    .sidebar-search input:focus { border-color: var(--accent); }
+    .sidebar-search input::placeholder { color: var(--sidebar-muted); }
+    .sidebar-search kbd {
+      position: absolute;
+      right: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font: 600 0.65rem "Inter", sans-serif;
+      color: var(--sidebar-muted);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      padding: 0.05rem 0.35rem;
+      pointer-events: none;
+    }
+    .sidebar-nav li.filtered-out { display: none; }
+    .nav-empty { color: var(--sidebar-muted); font-size: 0.78rem; padding: 0.5rem 0.75rem; }
+
+    /* ── Callout + green status pills ── */
+    .callout {
+      border-left: 3px solid var(--integration);
+      padding: 0.85rem 1rem;
+      margin: 1rem 0;
+      background: var(--surface-elevated);
+      border-radius: 0 8px 8px 0;
+    }
+    .callout strong { color: #6ee7b7; }
+    .gate-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .gate {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.14);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .gate::before { content: "✓"; font-weight: 700; }
+    .sidebar-badges .ci-pass { background: rgba(16, 185, 129, 0.28); color: #6ee7b7; }
   </style>
 </head>
 <body>
@@ -845,9 +922,14 @@
           <span class="product-ai">Product AI</span>
           <span class="integration">Integration</span>
           <span>59+ tests</span>
+          <span class="ci-pass">CI green</span>
         </div>
       </div>
       <nav class="sidebar-nav" aria-label="Guide sections">
+        <div class="sidebar-search">
+          <input id="nav-search" type="search" placeholder="Filter sections…" aria-label="Filter sections" autocomplete="off" />
+          <kbd>/</kbd>
+        </div>
         <ul id="sidebar-nav-list"></ul>
       </nav>
       <div class="sidebar-footer" id="sidebar-progress">
@@ -2261,6 +2343,67 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
       </div>
     </section>
 
+    <section class="doc-page" id="shipping" data-title="Shipping &amp; quality">
+      <div class="page-card">
+      <h2 class="page-title">Shipping &amp; quality — making it production-credible</h2>
+      <p class="lead">
+        The gap between a demo and something an interviewer trusts: it runs in <strong>one command</strong>,
+        you can <strong>see inside</strong> it, and a robot <strong>blocks regressions</strong> before they merge.
+        This is the “I took it past a toy” story.
+      </p>
+
+      <h3>Run the whole stack in one command</h3>
+      <p>No Python, Node, or AWS account on the host — Docker brings up the API, mock partners, dashboard, AWS emulation, and tracing together.</p>
+      <pre><code>docker compose up --build</code></pre>
+      <table>
+        <thead><tr><th>URL</th><th>What</th></tr></thead>
+        <tbody>
+          <tr><td><code>localhost:5173</code></td><td>React dashboard (nginx → proxies <code>/api</code>)</td></tr>
+          <tr><td><code>localhost:8000</code></td><td>FastAPI service (<code>/docs</code> for OpenAPI)</td></tr>
+          <tr><td><code>localhost:9000</code></td><td>Mock partner APIs</td></tr>
+          <tr><td><code>localhost:16686</code></td><td>Jaeger UI — one trace per agent run</td></tr>
+          <tr><td><code>localhost:4566</code></td><td>LocalStack (S3 / SQS / DynamoDB)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Observability: see inside a run</h3>
+      <p>
+        Every run records OpenTelemetry-shaped spans (<code>llm.tool_call</code>, <code>skill.run</code>) with token and
+        cost estimates — always on, zero dependencies, surfaced in the dashboard and the run ledger. Behind a flag
+        they export to Jaeger over OTLP; if the exporter is disabled or its packages are missing it
+        <strong>fails closed to a no-op</strong>, so the offline-first default never breaks.
+      </p>
+      <pre><code>pip install -e ".[otel]"
+export AIH_OTEL_ENABLED=true
+export AIH_OTEL_ENDPOINT=http://localhost:4317   # Jaeger OTLP gRPC</code></pre>
+      <p class="md-hint">Spec: <code>specs/observability.md</code> · code: <code>src/aih/observability/tracing.py</code></p>
+
+      <h3>Quality gates (CI blocks merges)</h3>
+      <p>GitHub Actions runs on Python 3.11 + 3.12 and fails the build unless every gate passes:</p>
+      <div class="gate-grid">
+        <span class="gate">ruff lint + black</span>
+        <span class="gate">mypy --strict</span>
+        <span class="gate">coverage ≥ 70% (now ~85%)</span>
+        <span class="gate">eval thresholds</span>
+      </div>
+      <div class="callout">
+        <strong>The eval gate is the differentiator.</strong> <code>python tasks.py eval</code> exits non-zero if any
+        metric in <code>evals/thresholds.json</code> drops — so a fall in recall@k, MRR, nDCG, tool-selection accuracy,
+        or red-team block-rate <em>fails the build like a unit test</em>. The scorecard is posted to the CI job summary.
+      </div>
+
+      <h3>The “I extended this” story (say this out loud)</h3>
+      <div class="practice-day">
+        <strong>~30 seconds</strong>
+        “It started offline-first and well-tested. I made it production-credible: one-command Docker bring-up
+        <em>including</em> the dashboard, OpenTelemetry tracing to Jaeger behind a flag, and I hardened CI to gate on
+        lint, strict types, ≥70% coverage, <em>and</em> an eval regression check. I also drove the repo to a fully
+        green pipeline — strict mypy clean, ~85% coverage — by fixing root causes (for example a wrong A2A
+        <code>AgentCard</code> auth schema) rather than suppressing the errors.”
+      </div>
+      </div>
+    </section>
+
     <section class="doc-page" id="practice" data-title="How to practice">
       <div class="page-card">
       <h2 class="page-title">How to use this guide</h2>
@@ -2959,6 +3102,7 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       { id: "interviews", label: "Interviews" },
       { id: "modules", label: "Module map" },
       { id: "run", label: "How to run" },
+      { id: "shipping", label: "Shipping & quality" },
       { id: "practice", label: "Practice" },
       { id: "demo", label: "Live demo" },
       { id: "drills", label: "Drills" },
@@ -3059,7 +3203,10 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
 
       if (pageEls[currentIndex]?.querySelector(".md-embed, .mermaid")) {
         window.dispatchEvent(new CustomEvent("load-page-docs"));
+        setTimeout(addCopyButtons, 500);
       }
+
+      saveState();
     }
 
     function goToPage(index) {
@@ -3073,6 +3220,11 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
 
     document.addEventListener("keydown", (e) => {
       if (e.target.closest("pre, code, input, textarea")) return;
+      if (e.key === "/") {
+        e.preventDefault();
+        navSearch?.focus();
+        return;
+      }
       if (e.key === "ArrowLeft") goToPage(currentIndex - 1);
       if (e.key === "ArrowRight") goToPage(currentIndex + 1);
     });
@@ -3098,9 +3250,98 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       if (idx >= 0) currentIndex = idx;
     }
 
+    // ── Copy-to-clipboard buttons on every code block ──
+    function addCopyButtons() {
+      document.querySelectorAll(".page-content pre").forEach((pre) => {
+        if (pre.querySelector(".copy-btn")) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "copy-btn";
+        btn.textContent = "Copy";
+        btn.addEventListener("click", async () => {
+          const code = pre.querySelector("code");
+          const text = (code ? code.innerText : pre.innerText).trimEnd();
+          try {
+            await navigator.clipboard.writeText(text);
+          } catch (e) {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand("copy"); } catch (_) { /* ignore */ }
+            document.body.removeChild(ta);
+          }
+          btn.textContent = "Copied!";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "Copy";
+            btn.classList.remove("copied");
+          }, 1400);
+        });
+        pre.appendChild(btn);
+      });
+    }
+
+    // ── Sidebar filter ──
+    const navSearch = document.getElementById("nav-search");
+
+    function applyNavFilter() {
+      if (!navSearch) return;
+      const q = navSearch.value.trim().toLowerCase();
+      let visible = 0;
+      sidebarNavList.querySelectorAll("li").forEach((li) => {
+        const match = li.textContent.toLowerCase().includes(q);
+        li.classList.toggle("filtered-out", !match);
+        if (match) visible += 1;
+      });
+      let empty = sidebarNavList.parentElement.querySelector(".nav-empty");
+      if (visible === 0) {
+        if (!empty) {
+          empty = document.createElement("div");
+          empty.className = "nav-empty";
+          empty.textContent = "No sections match.";
+          sidebarNavList.after(empty);
+        }
+      } else if (empty) {
+        empty.remove();
+      }
+    }
+
+    if (navSearch) navSearch.addEventListener("input", applyNavFilter);
+
+    // ── Progress persistence (guarded for sandboxed contexts) ──
+    const LS_KEY = "aih-guide-state";
+
+    function saveState() {
+      try {
+        localStorage.setItem(
+          LS_KEY,
+          JSON.stringify({ idx: currentIndex, visited: [...visitedPages] }),
+        );
+      } catch (e) { /* storage unavailable; ignore */ }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return;
+        const s = JSON.parse(raw);
+        if (Array.isArray(s.visited)) {
+          s.visited.forEach((i) => {
+            if (Number.isInteger(i) && i >= 0 && i < PAGES.length) visitedPages.add(i);
+          });
+        }
+        if (!location.hash && Number.isInteger(s.idx) && s.idx >= 0 && s.idx < PAGES.length) {
+          currentIndex = s.idx;
+        }
+      } catch (e) { /* ignore */ }
+    }
+
     buildNav();
+    loadState();
     resolveInitialPage();
     updateUI();
+    addCopyButtons();
   </script>
 
   <script type="module">

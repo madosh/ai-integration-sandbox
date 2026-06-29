@@ -52,8 +52,8 @@ class ProceduralMemory:
         texts = [c.text for c in candidates]
         evs = self._embedder.embed(texts)
         scored = [
-            (sum(a * b for a, b in zip(qv, ev)), c)
-            for ev, c in zip(evs, candidates)
+            (sum(a * b for a, b in zip(qv, ev, strict=False)), c)
+            for ev, c in zip(evs, candidates, strict=False)
         ]
         scored.sort(key=lambda x: x[0], reverse=True)
         return [c for _, c in scored[:k]]

@@ -8,10 +8,10 @@ from typing import Any
 
 import httpx
 
+from aih.a2a.server import A2AServer, A2AState
 from aih.agent.approval import APIApprover
 from aih.agent.models import RunTrace
 from aih.agent.orchestrator import Agent
-from aih.a2a.server import A2AState, A2AServer
 from aih.agui.bridge import AguiBridge
 from aih.config import get_settings
 from aih.llm import get_embedder, get_llm
@@ -49,8 +49,8 @@ class AppState:
         for q in self._subscribers.get(trace.run_id, []):
             q.put_nowait(trace)
         for event in self.agui_bridge.diff(trace):
-            for q in self._agui_subscribers.get(trace.run_id, []):
-                q.put_nowait(event.model_dump())
+            for aq in self._agui_subscribers.get(trace.run_id, []):
+                aq.put_nowait(event.model_dump())
 
     def subscribe_agui(self, run_id: str) -> asyncio.Queue[dict[str, object]]:
         q: asyncio.Queue[dict[str, object]] = asyncio.Queue()

@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import time
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
-from typing import Any, Callable, Awaitable
+from typing import Any
 
 import httpx
 
@@ -53,7 +53,7 @@ class A2AServer:
         self,
         state: A2AState,
         *,
-        start_run: Callable[[str, str], Awaitable[None]],
+        start_run: Callable[[str, str], Coroutine[Any, Any, None]],
         get_trace: Callable[[str], RunTrace | None],
         resolve_approval: Callable[[str, bool, str], bool],
     ) -> None:
@@ -145,7 +145,7 @@ class A2AServer:
                         ).model_dump(),
                     )
                 else:
-                    task.state = "failed" if trace.status != "completed" else "completed"
+                    task.state = "failed"
                 final = TaskStatusUpdateEvent(task_id=task_id, state=task.state).model_dump()
                 self._emit(task_id, final)
                 await self._push_webhook(task, final)
@@ -162,7 +162,9 @@ class A2AServer:
             task.state = "working"
             self._emit(
                 task_id,
-                TaskStatusUpdateEvent(task_id=task_id, state="working", message="resumed").model_dump(),
+                TaskStatusUpdateEvent(
+                    task_id=task_id, state="working", message="resumed"
+                ).model_dump(),
             )
         return ok
 

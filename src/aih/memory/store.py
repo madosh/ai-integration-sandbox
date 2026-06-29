@@ -175,7 +175,8 @@ class MemoryStore:
         pid = uuid.uuid4().hex[:12]
         with self._connect() as conn:
             ver = conn.execute(
-                "SELECT COALESCE(MAX(version), 0) FROM procedural_heuristics WHERE tenant_id=? AND name=?",
+                "SELECT COALESCE(MAX(version), 0) FROM procedural_heuristics "
+                "WHERE tenant_id=? AND name=?",
                 (tenant_id, name),
             ).fetchone()[0]
             conn.execute(
@@ -231,7 +232,9 @@ class MemoryStore:
             conn.commit()
         return intention.id
 
-    def due_intentions(self, tenant_id: str, *, now: float | None = None) -> list[ProspectiveIntention]:
+    def due_intentions(
+        self, tenant_id: str, *, now: float | None = None
+    ) -> list[ProspectiveIntention]:
         ts = now if now is not None else time.time()
         with self._connect() as conn:
             rows = conn.execute(
@@ -282,7 +285,8 @@ class MemoryStore:
             conn.execute(
                 """
                 INSERT INTO episode_index
-                (run_id, tenant_id, subject_id, goal, outcome, lesson, salience, embedding, created_at)
+                (run_id, tenant_id, subject_id, goal, outcome, lesson,
+                 salience, embedding, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(run_id) DO UPDATE SET
                     outcome=excluded.outcome,

@@ -20,9 +20,12 @@ class SemanticMemory:
         contradiction = False
         existing = self._store.list_semantic(item.tenant_id)
         for row in existing:
-            if row["namespace"] == item.namespace and row["key"] == item.key:
-                if json.loads(row["value"]) != item.value:
-                    contradiction = True
+            if (
+                row["namespace"] == item.namespace
+                and row["key"] == item.key
+                and json.loads(row["value"]) != item.value
+            ):
+                contradiction = True
         return self._store.upsert_semantic(item, emb, contradiction=contradiction)
 
     def recall_by_key(self, tenant_id: str, namespace: str, key: str) -> RecallResult | None:
@@ -44,15 +47,14 @@ class SemanticMemory:
         rows = self._store.list_semantic(tenant_id)
         if not rows:
             return []
-        texts = [f"{r['namespace']}/{r['key']}: {r['value']}" for r in rows]
         qv = self._embedder.embed([query])[0]
         scored: list[tuple[float, dict[str, Any]]] = []
-        for i, row in enumerate(rows):
+        for row in rows:
             if row.get("embedding"):
                 from aih.memory.store import _unpack_vec
 
                 ev = _unpack_vec(row["embedding"])
-                score = sum(a * b for a, b in zip(qv, ev))
+                score = sum(a * b for a, b in zip(qv, ev, strict=False))
             else:
                 score = 0.1
             scored.append((score, row))
