@@ -30,6 +30,7 @@ evals/reports/*
 # Node / dashboard
 node_modules/
 dashboard/dist/
+dashboard/*.tsbuildinfo
 *.log
 
 # IaC / deploy
