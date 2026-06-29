@@ -132,11 +132,7 @@ class MemoryManager:
                 )
 
     def consolidate(self, *, tenant_id: str = "default") -> ConsolidationReport:
-        episodes = [
-            e
-            for e in self._store.list_episodes(tenant_id)
-            if e["outcome"] == "completed"
-        ]
+        episodes = [e for e in self._store.list_episodes(tenant_id) if e["outcome"] == "completed"]
         report = ConsolidationReport()
         report.evicted = self._store.evict_stale(tenant_id)
 

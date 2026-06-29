@@ -17,7 +17,7 @@ class ExternalMemory:
             out.append(
                 RecallResult(
                     type="external",
-                    id=chunk.provenance.chunk_id or chunk.id,
+                    id=chunk.provenance.chunk_id or chunk.provenance.doc_id or "",
                     text=chunk.text[:400],
                     score=chunk.score,
                     source=f"rag:{chunk.provenance.doc_id}",

@@ -23,7 +23,9 @@ class MetricCardSpec(BaseModel):
     metrics: dict[str, Any] = Field(default_factory=dict)
 
 
-def approval_card_from_step(action: str, preview: dict[str, Any], *, description: str = "") -> dict[str, Any]:
+def approval_card_from_step(
+    action: str, preview: dict[str, Any], *, description: str = ""
+) -> dict[str, Any]:
     return ApprovalCardSpec(
         action=action,
         payload_preview=preview,

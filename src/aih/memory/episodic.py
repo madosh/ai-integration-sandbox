@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from aih.agent.models import RunTrace
 from aih.llm.base import Embedder
 from aih.memory.models import RecallResult
@@ -15,7 +17,9 @@ class EpisodicMemory:
         self._ledger = ledger
         self._embedder = embedder
 
-    def record(self, trace: RunTrace, *, tenant_id: str = "default", subject_id: str | None = None) -> None:
+    def record(
+        self, trace: RunTrace, *, tenant_id: str = "default", subject_id: str | None = None
+    ) -> None:
         outcome = trace.status
         skills = [s.skill for s in trace.steps if s.kind == "skill"]
         errors = [s.message for s in trace.steps if s.kind == "error"]
@@ -37,17 +41,21 @@ class EpisodicMemory:
             salience=salience,
         )
 
-    def recall_similar(self, goal: str, *, tenant_id: str = "default", k: int = 3) -> list[RecallResult]:
+    def recall_similar(
+        self, goal: str, *, tenant_id: str = "default", k: int = 3
+    ) -> list[RecallResult]:
         episodes = self._store.list_episodes(tenant_id)
         if not episodes:
             return []
         qv = self._embedder.embed([goal])[0]
-        scored: list[tuple[float, dict]] = []
+        scored: list[tuple[float, dict[str, Any]]] = []
         for ep in episodes:
             emb = ep.get("embedding")
             if not emb:
                 continue
-            score = sum(a * b for a, b in zip(qv, emb)) * float(ep.get("salience", 1.0))
+            score = sum(a * b for a, b in zip(qv, emb, strict=False)) * float(
+                ep.get("salience", 1.0)
+            )
             scored.append((score, ep))
         scored.sort(key=lambda x: x[0], reverse=True)
         out: list[RecallResult] = []

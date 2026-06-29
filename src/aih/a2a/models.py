@@ -67,7 +67,7 @@ class AgentCard(BaseModel):
     version: str = "0.2.0"
     protocol_version: str = "0.2.x"
     url: str
-    authentication: dict[str, str] = Field(default_factory=lambda: {"schemes": ["none"]})
+    authentication: dict[str, list[str]] = Field(default_factory=lambda: {"schemes": ["none"]})
     default_input_modes: list[str] = Field(default_factory=lambda: ["text"])
     default_output_modes: list[str] = Field(default_factory=lambda: ["text", "data"])
     skills: list[AgentSkill] = Field(default_factory=list)

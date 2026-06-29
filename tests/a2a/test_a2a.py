@@ -7,14 +7,14 @@ import asyncio
 import httpx
 import pytest
 from httpx import ASGITransport
+from mock_agents.creative_review import create_creative_review_app
 
-from aih.agent.approval import APIApprover
 from aih.a2a.client import A2AClient
 from aih.a2a.models import JsonRpcRequest
+from aih.agent.approval import APIApprover
 from aih.observability.ledger import InMemoryLedger
 from aih.service.app import create_app
 from aih.service.deps import build_state
-from mock_agents.creative_review import create_creative_review_app
 
 
 @pytest.fixture

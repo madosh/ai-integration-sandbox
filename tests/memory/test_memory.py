@@ -87,7 +87,13 @@ def test_consolidate_creates_procedural_heuristic(memory: MemoryManager) -> None
     for i in range(3):
         trace = RunTrace(run_id=f"ok{i}", goal="sync novareach campaigns", status="completed")
         trace.add(
-            RunStep(index=0, kind="skill", skill="sync_campaign_data", message="ok", result={"count": 1})
+            RunStep(
+                index=0,
+                kind="skill",
+                skill="sync_campaign_data",
+                message="ok",
+                result={"count": 1},
+            )
         )
         memory.reflect(trace, tenant_id="t1")
     report = memory.consolidate(tenant_id="t1")

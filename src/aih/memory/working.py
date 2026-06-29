@@ -41,7 +41,10 @@ class ContextAssembler:
             )
 
         # Highest salience/score first; evict scratchpad then lowest-score when over budget.
-        fragments.sort(key=lambda f: (f.type == "working", -_score_for(f, candidates)), reverse=False)
+        fragments.sort(
+            key=lambda f: (f.type == "working", -_score_for(f, candidates)),
+            reverse=False,
+        )
         evicted = 0
         total = sum(f.tokens for f in fragments)
         while total > budget and fragments:
