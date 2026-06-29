@@ -35,4 +35,6 @@ deploy/cdk.out/
 Thumbs.db
 .idea/
 .vscode/
-docs/interview-practice.html
+
+# Accidental nested duplicate of the repo (has its own .git); never track it.
+ai-integration-sandbox/

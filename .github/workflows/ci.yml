@@ -18,14 +18,21 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      # Install into the runner's Python directly so every step below shares one
+      # environment. (tasks.py setup builds a local .venv, which the bare
+      # `python -m pytest` step could not see — that mismatch is what failed CI.)
       - name: Install
-        run: python tasks.py setup
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
 
       - name: Lint
-        run: python tasks.py lint
+        run: |
+          python -m ruff check src tests
+          python -m black --check src tests
 
       - name: Type check
-        run: python tasks.py type
+        run: python -m mypy
 
       - name: Test with coverage (gate >= 70%)
         run: >-
@@ -40,13 +47,13 @@ jobs:
           name: coverage-report
           path: coverage.xml
 
-      # Regression gate: `python tasks.py eval` exits non-zero if any metric in
+      # Regression gate: the eval harness exits non-zero if any metric in
       # evals/datasets falls below the bar in src/aih/evals/thresholds.json
       # (recall@k, MRR, nDCG, tool-selection accuracy, red-team block rate, ...).
       # A drop in retrieval/agent quality therefore fails the build like any test.
       - name: Eval regression gate
         if: matrix.python-version == '3.12'
-        run: python tasks.py eval | tee eval-output.txt
+        run: python -m aih.evals | tee eval-output.txt
 
       - name: Publish eval scorecard to job summary
         if: matrix.python-version == '3.12' && always()
