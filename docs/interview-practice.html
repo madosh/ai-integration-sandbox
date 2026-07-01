@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Integration Sandbox — Interview Practice Guide</title>
+  <meta name="description" content="AI Integration Sandbox — an offline-first, spec-driven AI hub covering hybrid RAG, agent orchestration, connector frameworks, evals, and HITL workflows. Runs without any API keys." />
+  <meta property="og:title" content="AI Integration Sandbox" />
+  <meta property="og:description" content="Offline-first AI hub: hybrid RAG, agentic workflows, HITL approval, connectors, evals — all runnable without API keys." />
+  <title>AI Integration Sandbox — Technical Guide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -840,11 +843,19 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <h1>AI Integration Sandbox</h1>
-        <p>Interview practice guide — offline-first, spec-driven, runnable without API keys.</p>
+        <p>Offline-first, spec-driven AI hub — runnable without any API keys or accounts.</p>
         <div class="sidebar-badges">
           <span class="product-ai">Product AI</span>
           <span class="integration">Integration</span>
           <span>59+ tests</span>
+        </div>
+        <div style="margin-top:0.75rem;">
+          <a href="https://github.com/madosh/ai-integration-sandbox" target="_blank" rel="noreferrer"
+             style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.73rem;font-weight:600;color:#94a3b8;text-decoration:none;padding:0.28rem 0.6rem;border:1px solid rgba(255,255,255,0.12);border-radius:6px;transition:color 0.15s,border-color 0.15s;"
+             onmouseover="this.style.color='#60a5fa';this.style.borderColor='#60a5fa'"
+             onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.12)'">
+            ⭐ View on GitHub
+          </a>
         </div>
       </div>
       <nav class="sidebar-nav" aria-label="Guide sections">
@@ -870,9 +881,10 @@
       <div class="page-card">
       <h2 class="page-title">What this system does</h2>
       <p class="lead">
-        It simulates an <strong>AI-native integration hub</strong>: connect to multiple external partner APIs,
-        let an agent automate sync and publish workflows, ground answers in company docs, and require
-        human approval before side effects (like uploading a creative).
+        An <strong>AI-native integration hub</strong> you can run entirely offline: connect to multiple
+        partner APIs, let an agent automate sync and publish workflows, ground answers in company docs
+        via hybrid RAG, and require human approval before any side effect (like uploading a creative).
+        Zero API keys required — the LLM, embeddings, and partner APIs are all local deterministic fakes.
       </p>
 
       <p>
@@ -2909,7 +2921,8 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       </nav>
 
       <footer class="site-footer">
-        AI Integration Sandbox · Final study guide · <code>docs/interview-practice.html</code>
+        AI Integration Sandbox · Offline-first · Spec-driven · No API keys needed ·
+        <a href="https://github.com/madosh/ai-integration-sandbox" target="_blank" rel="noreferrer">GitHub ↗</a>
       </footer>
     </div>
   </div>
