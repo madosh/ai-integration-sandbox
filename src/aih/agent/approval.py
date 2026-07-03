@@ -80,8 +80,9 @@ class APIApprover:
     handler or a dashboard button).
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, timeout: float | None = None) -> None:
         self._pending: dict[str, tuple[ApprovalRequest, asyncio.Future[ApprovalDecision]]] = {}
+        self._timeout = timeout
 
     async def decide(self, request: ApprovalRequest) -> ApprovalDecision:
         key = request.run_id or request.action
@@ -89,7 +90,16 @@ class APIApprover:
         future: asyncio.Future[ApprovalDecision] = loop.create_future()
         self._pending[key] = (request, future)
         try:
-            return await future
+            if self._timeout is None:
+                return await future
+            try:
+                return await asyncio.wait_for(future, timeout=self._timeout)
+            except TimeoutError:
+                return ApprovalDecision(
+                    approved=False,
+                    decided_by="timeout",
+                    reason=f"no decision within {self._timeout:g}s; auto-denied",
+                )
         finally:
             self._pending.pop(key, None)
 

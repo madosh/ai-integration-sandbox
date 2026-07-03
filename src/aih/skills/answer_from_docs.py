@@ -17,6 +17,11 @@ from aih.skills.base import Skill, SkillContext
 class AnswerInput(BaseModel):
     question: str = Field(description="The question to answer from company docs.")
     k: int = Field(default=4, ge=1, le=20)
+    history: list[str] = Field(
+        default_factory=list,
+        description="Prior conversation turns as 'role: content' lines (generation only; "
+        "retrieval always uses the bare question).",
+    )
 
 
 class Citation(BaseModel):
@@ -47,6 +52,10 @@ class AnswerFromDocs(Skill):
         # Build a grounded prompt. The CONTEXT / --- markers let the FakeLLM extract
         # the most relevant chunk deterministically; a real LLM reads the same context.
         context_block = "\n---\n".join(rc.text for rc in result.chunks)
+        conversation = ""
+        if payload.history:
+            turns = "\n".join(payload.history)
+            conversation = f"CONVERSATION SO FAR:\n{turns}\n---\n"
         messages = [
             ChatMessage(
                 role="system",
@@ -54,7 +63,7 @@ class AnswerFromDocs(Skill):
             ),
             ChatMessage(
                 role="user",
-                content=f"CONTEXT:\n{context_block}\n---\nQUESTION: {payload.question}",
+                content=f"{conversation}CONTEXT:\n{context_block}\n---\nQUESTION: {payload.question}",
             ),
         ]
         completion = await ctx.llm.complete(messages)

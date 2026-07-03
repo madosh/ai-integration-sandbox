@@ -1,4 +1,6 @@
 import type {
+  ChatResponse,
+  ConnectorHealth,
   ConnectorInfo,
   Metrics,
   RunSummary,
@@ -27,11 +29,17 @@ export const api = {
   healthz: () => request<{ status: string }>("/healthz"),
   metrics: () => request<Metrics>("/metrics"),
   connectors: () => request<ConnectorInfo[]>("/connectors"),
+  connectorsHealth: () => request<ConnectorHealth[]>("/connectors/health"),
   skills: () => request<SkillInfo[]>("/skills"),
-  listRuns: () =>
-    request<{ runs: RunSummary[]; next_cursor: string | null; total: number }>("/runs").then(
-      (r) => r.runs,
-    ),
+  chat: (threadId: string, message: string) =>
+    request<ChatResponse>("/chat", {
+      method: "POST",
+      body: JSON.stringify({ thread_id: threadId, message }),
+    }),
+  listRuns: (status?: string) =>
+    request<{ runs: RunSummary[]; next_cursor: string | null; total: number }>(
+      `/runs${status ? `?status=${encodeURIComponent(status)}` : ""}`,
+    ).then((r) => r.runs),
   getRun: (id: string) => request<RunSummary>(`/runs/${id}`),
   startRun: (goal: string) =>
     request<{ run_id: string; status: string }>("/runs", {

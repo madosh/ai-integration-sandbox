@@ -4,26 +4,29 @@ from __future__ import annotations
 
 import asyncio
 import json
+import secrets
 import uuid
 from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from sse_starlette.sse import EventSourceResponse
 
 from aih.a2a.card import build_agent_card
 from aih.a2a.models import JsonRpcRequest, JsonRpcResponse
 from aih.a2a.server import A2AServer
+from aih.agent.models import RunTrace
 from aih.config import get_settings, validate_settings
 from aih.connectors.health import check_all_connectors, check_connector_health
 from aih.connectors.registry import REGISTRY
 from aih.evals.online import maybe_sample_run
+from aih.observability.ledger import NotifyingLedger
 from aih.observability.logging import configure_logging, get_logger
 from aih.service.chat import chat_turn
 from aih.service.deps import AppState, build_state
-from aih.service.webhooks import list_events, receive
+from aih.service.webhooks import list_events, receive, verify_signature
 
 _log = get_logger("aih.service")
 
@@ -105,10 +108,14 @@ def create_app(state: AppState | None = None) -> FastAPI:
         description="Offline-first integration + agent API",
         lifespan=lifespan,
     )
+    # A wildcard origin must not be combined with credentials (browsers reject it);
+    # set AIH_CORS_ORIGINS to an explicit comma-separated list to enable credentials.
+    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    wildcard = origins == ["*"]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
+        allow_origins=origins or ["*"],
+        allow_credentials=not wildcard,
         allow_methods=["*"],
         allow_headers=["*"],
     )
@@ -125,8 +132,8 @@ def create_app(state: AppState | None = None) -> FastAPI:
     @app.middleware("http")
     async def api_key_middleware(request: Request, call_next):  # type: ignore[no-untyped-def]
         if settings.api_key is not None and request.url.path not in _NO_AUTH_PATHS:
-            provided = request.headers.get("x-api-key")
-            if provided != settings.api_key:
+            provided = request.headers.get("x-api-key") or ""
+            if not secrets.compare_digest(provided, settings.api_key):
                 return Response(
                     content='{"detail":"invalid or missing api key"}',
                     status_code=401,
@@ -154,7 +161,16 @@ def create_app(state: AppState | None = None) -> FastAPI:
         return await check_connector_health(name, httpx_transport=app_state.httpx_transport)
 
     @app.post("/webhooks/{partner}")
-    async def webhook_receiver(partner: str, body: WebhookPayload) -> dict[str, Any]:
+    async def webhook_receiver(partner: str, request: Request) -> dict[str, Any]:
+        raw = await request.body()
+        if settings.webhook_secret is not None and not verify_signature(
+            settings.webhook_secret, raw, request.headers.get("x-signature")
+        ):
+            raise HTTPException(status_code=401, detail="invalid webhook signature")
+        try:
+            body = WebhookPayload.model_validate_json(raw or b"{}")
+        except ValidationError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
         event = receive(partner, body.payload)
         return {"status": "received", "event_id": event["id"]}
 
@@ -232,23 +248,16 @@ def create_app(state: AppState | None = None) -> FastAPI:
         return EventSourceResponse(token_stream())  # type: ignore[no-untyped-call]
 
     async def _run_agent(goal: str, run_id: str) -> None:
-        agent = app_state.build_agent()
-        ledger = app_state.ledger
-        original_save = ledger.save
-
-        def save_and_notify(trace: RunTrace) -> None:
-            original_save(trace)
-            app_state.notify(trace)
-
-        ledger.save = save_and_notify  # type: ignore[method-assign]
+        # A per-run decorator forwards each save to SSE subscribers; the shared
+        # ledger is never mutated, so concurrent runs cannot race each other.
+        notifying = NotifyingLedger(app_state.ledger, app_state.notify)
+        agent = app_state.build_agent(ledger=notifying)
         try:
             result = await agent.run(goal, run_id=run_id)
             app_state.notify(result.trace)
             maybe_sample_run(_trace_summary(result.trace))
         except Exception as exc:  # noqa: BLE001
             _log.exception("run.failed", extra={"context": {"error": str(exc)}})
-        finally:
-            ledger.save = original_save  # type: ignore[method-assign]
 
     app_state.a2a_server = A2AServer(
         app_state.a2a_state,
@@ -271,23 +280,17 @@ def create_app(state: AppState | None = None) -> FastAPI:
         cursor: str | None = Query(default=None),
         status: str | None = Query(default=None),
     ) -> dict[str, Any]:
-        all_runs = app_state.ledger.list_runs()
-        if status is not None:
-            all_runs = [t for t in all_runs if t.status == status]
-        total = len(all_runs)
-        if cursor is not None:
-            run_ids = [t.run_id for t in all_runs]
-            try:
-                idx = run_ids.index(cursor)
-                all_runs = all_runs[idx + 1 :]
-            except ValueError:
-                raise HTTPException(status_code=400, detail="invalid cursor")
-        page = all_runs[:limit]
-        next_cursor = page[-1].run_id if len(all_runs) > limit else None
+        try:
+            # Fetch one extra row to know whether another page exists.
+            page = app_state.ledger.list_runs(status=status, limit=limit + 1, cursor=cursor)
+        except KeyError:
+            raise HTTPException(status_code=400, detail="invalid cursor") from None
+        has_more = len(page) > limit
+        page = page[:limit]
         return {
             "runs": [_trace_summary(t) for t in page],
-            "next_cursor": next_cursor,
-            "total": total,
+            "next_cursor": page[-1].run_id if has_more else None,
+            "total": app_state.ledger.count_runs(status=status),
         }
 
     @app.get("/runs/{run_id}")
@@ -322,14 +325,24 @@ def create_app(state: AppState | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail="run not found")
 
         async def event_generator():  # type: ignore[no-untyped-def]
+            # Events carry an id (step count) so EventSource reconnects are traceable;
+            # each event is a full snapshot, so replaying the latest one is idempotent.
             q = app_state.subscribe(run_id)
             current = app_state.ledger.get(run_id)
             if current:
-                yield {"event": "update", "data": json.dumps(_trace_summary(current))}
+                yield {
+                    "event": "update",
+                    "id": str(len(current.steps)),
+                    "data": json.dumps(_trace_summary(current)),
+                }
             while True:
                 try:
                     updated = await asyncio.wait_for(q.get(), timeout=30.0)
-                    yield {"event": "update", "data": json.dumps(_trace_summary(updated))}
+                    yield {
+                        "event": "update",
+                        "id": str(len(updated.steps)),
+                        "data": json.dumps(_trace_summary(updated)),
+                    }
                     if updated.status != "running":
                         break
                 except TimeoutError:

@@ -64,6 +64,15 @@ class Settings(BaseSettings):
     # API authentication (disabled when unset)
     api_key: str | None = None
 
+    # CORS: comma-separated allowed origins; "*" allows all (credentials disabled)
+    cors_origins: str = "*"
+
+    # HITL approval gate timeout in seconds (0 = wait forever)
+    approval_timeout_sec: float = Field(default=0.0, ge=0.0)
+
+    # Inbound webhook HMAC-SHA256 secret (signature checks disabled when unset)
+    webhook_secret: str | None = None
+
     # AWS / LocalStack
     aws_endpoint_url: str | None = "http://127.0.0.1:4566"
     aws_region: str = "us-east-1"

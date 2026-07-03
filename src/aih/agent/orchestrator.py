@@ -100,8 +100,11 @@ class Agent:
                 break
             with tracer.span("llm.tool_call", step=index):
                 completion = await self.llm.tool_call(messages, tools)
-                budget.charge(50)
-                tracer.add_token_estimate(50, 0.0001)
+                # ~4 chars/token heuristic over the growing conversation, so the
+                # budget reflects actual prompt size instead of a flat 50.
+                est_tokens = max(1, sum(len(m.content) for m in messages) // 4)
+                budget.charge(est_tokens)
+                tracer.add_token_estimate(est_tokens, est_tokens * 2e-6)
             call = completion.tool_call
             if call is None or call.name == "finish":
                 trace.add(RunStep(index=index, kind="finish", message="planner finished"))

@@ -109,6 +109,22 @@ python tasks.py run
 python tasks.py ui
 ```
 
+Or run the whole stack (mock APIs + service + dashboard + LocalStack) with one command:
+
+```bash
+docker compose up
+# service → http://localhost:8000 · dashboard → http://localhost:5173
+```
+
+### Configuration highlights (env vars, prefix `AIH_`)
+
+| Variable | Default | Effect |
+|---|---|---|
+| `AIH_API_KEY` | unset | When set, all routes (except `/healthz`) require an `X-Api-Key` header |
+| `AIH_CORS_ORIGINS` | `*` | Comma-separated allowed origins; explicit list enables credentials |
+| `AIH_APPROVAL_TIMEOUT_SEC` | `0` (wait forever) | Auto-deny pending HITL approvals after this many seconds |
+| `AIH_WEBHOOK_SECRET` | unset | When set, inbound webhooks must carry a valid `X-Signature` HMAC-SHA256 |
+
 > **Tooling note:** this repo ships both a `Makefile` and a stdlib-only `tasks.py`. On machines with
 > GNU `make` you can use `make test` etc.; everywhere else use `python tasks.py test`. They are
 > equivalent. If `uv` is installed it is preferred for installs, otherwise a `.venv` is used.

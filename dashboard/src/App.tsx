@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { api, streamRun, streamSearch } from "./api";
 import { extractApprovalSpec, sendAguiInput, streamAgui, type AguiEvent } from "./agui";
 import { A2uiApprovalCard, A2uiMetricCard } from "./A2uiRenderer";
-import type { RunSummary } from "./types";
+import type { ChatResponse, RunSummary } from "./types";
+
+const STATUS_FILTERS = ["all", "running", "completed", "denied", "max_steps"] as const;
 
 function formatDuration(run: RunSummary): string {
   const sec = Math.max(0, run.updated_at - run.created_at);
@@ -43,46 +45,72 @@ function MetricsHeader() {
   );
 }
 
-// ── Registry panel ───────────────────────────────────────────────────────────
+// ── Connector health panel ───────────────────────────────────────────────────
 
-function RegistryPanel() {
-  const connectors = useQuery({ queryKey: ["connectors"], queryFn: api.connectors });
-  const skills     = useQuery({ queryKey: ["skills"],     queryFn: api.skills });
+function ConnectorHealthPanel() {
+  const health = useQuery({
+    queryKey: ["connectors-health"],
+    queryFn: api.connectorsHealth,
+    refetchInterval: 10000,
+  });
+  const skills = useQuery({ queryKey: ["skills"], queryFn: api.skills });
 
   return (
-    <div className="panel registry" style={{ marginTop: "1rem" }}>
-      <div className="registry-section">
-        <h2>Connectors</h2>
-        <ul>
-          {(connectors.data ?? []).map((c) => (
-            <li key={c.name}>
-              <span className="item-name">{c.name}</span>
-            </li>
-          ))}
-          {connectors.data?.length === 0 && (
-            <li><span className="text-muted">No connectors registered</span></li>
-          )}
-        </ul>
+    <div className="panel">
+      <h2>Connector health</h2>
+      {health.error && <p className="error">Health checks unavailable</p>}
+      <div className="health-grid">
+        {(health.data ?? []).map((h) => (
+          <div className={`health-card health-${h.status}`} key={h.name}>
+            <div className="health-card-head">
+              <span className="item-name">{h.name}</span>
+              <span className={`status ${h.status === "healthy" ? "completed" : "denied"}`}>
+                {h.status.replace("_", " ")}
+              </span>
+            </div>
+            {h.circuit && (
+              <p className="health-circuit">
+                circuit {h.circuit.open ? "open" : "closed"} · {h.circuit.failure_count}/
+                {h.circuit.threshold} failures
+              </p>
+            )}
+            {h.error && <p className="health-error">{h.error}</p>}
+          </div>
+        ))}
       </div>
-      <div className="registry-section">
-        <h2>Skills</h2>
-        <ul>
-          {(skills.data ?? []).map((s) => (
-            <li key={s.name}>
-              <span className="item-name">{s.name}</span>
-              {s.side_effect && <span className="side-effect-badge">side-effect</span>}
-            </li>
-          ))}
-          {skills.data?.length === 0 && (
-            <li><span className="text-muted">No skills registered</span></li>
-          )}
-        </ul>
-      </div>
+
+      <h2 style={{ marginTop: "1.25rem" }}>Skills</h2>
+      <ul className="registry-list">
+        {(skills.data ?? []).map((s) => (
+          <li key={s.name} title={s.description}>
+            <span className="item-name">{s.name}</span>
+            {s.side_effect && <span className="side-effect-badge">side-effect</span>}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
 // ── Run detail ───────────────────────────────────────────────────────────────
+
+function StepDetails({ step }: { step: RunSummary["steps"][number] }) {
+  const hasPayload =
+    (step.args && Object.keys(step.args).length > 0) ||
+    (step.result && Object.keys(step.result).length > 0);
+  if (!hasPayload) return null;
+  return (
+    <details className="step-details">
+      <summary>args / result</summary>
+      {step.args && Object.keys(step.args).length > 0 && (
+        <pre className="a2ui-preview">{JSON.stringify(step.args, null, 2)}</pre>
+      )}
+      {step.result && Object.keys(step.result).length > 0 && (
+        <pre className="a2ui-preview">{JSON.stringify(step.result, null, 2)}</pre>
+      )}
+    </details>
+  );
+}
 
 function RunDetail({
   run,
@@ -143,6 +171,7 @@ function RunDetail({
           <div className="actions">
             <button
               className="primary"
+              aria-label="Approve pending side-effecting step"
               disabled={approve.isPending}
               onClick={() => approve.mutate({ id: run.run_id, ok: true })}
             >
@@ -150,6 +179,7 @@ function RunDetail({
             </button>
             <button
               className="danger"
+              aria-label="Deny pending side-effecting step"
               disabled={approve.isPending}
               onClick={() => approve.mutate({ id: run.run_id, ok: false })}
             >
@@ -158,6 +188,8 @@ function RunDetail({
           </div>
         </div>
       ) : null}
+
+      {approve.error && <p className="error">Approval failed: {String(approve.error)}</p>}
 
       {aguiEvents
         .filter(
@@ -191,12 +223,87 @@ function RunDetail({
                       </em>
                     )}
                   </div>
+                  <StepDetails step={s} />
                 </div>
               </li>
             ))}
           </ul>
         </>
       )}
+    </div>
+  );
+}
+
+// ── Chat panel (RAG-grounded, with citations) ────────────────────────────────
+
+interface ChatEntry {
+  role: "user" | "assistant";
+  text: string;
+  citations?: ChatResponse["citations"];
+}
+
+function ChatPanel() {
+  const [message, setMessage] = useState("");
+  const [log, setLog] = useState<ChatEntry[]>([]);
+
+  const send = useMutation({
+    mutationFn: (m: string) => api.chat("dashboard", m),
+    onSuccess: (data) => {
+      setLog((prev) => [
+        ...prev,
+        { role: "assistant", text: data.answer, citations: data.citations },
+      ]);
+    },
+  });
+
+  const submit = () => {
+    const m = message.trim();
+    if (!m || send.isPending) return;
+    setLog((prev) => [...prev, { role: "user", text: m }]);
+    setMessage("");
+    send.mutate(m);
+  };
+
+  return (
+    <div className="panel">
+      <h2>Docs chat (RAG-grounded)</h2>
+      {log.length === 0 && (
+        <p className="lead">
+          Ask about integration policies, partner specs, or retry behaviour — answers are grounded
+          in the doc corpus and cited.
+        </p>
+      )}
+      <div className="chat-log">
+        {log.map((entry, i) => (
+          <div className={`chat-msg chat-${entry.role}`} key={i}>
+            <div className="chat-bubble">{entry.text}</div>
+            {entry.citations && entry.citations.length > 0 && (
+              <div className="chat-citations">
+                {entry.citations.map((c, j) => (
+                  <span className="citation-chip" key={j} title={c.chunk_id ?? undefined}>
+                    {c.source}
+                    {c.score != null && ` · ${c.score.toFixed(2)}`}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+        {send.isPending && <p className="lead">Thinking…</p>}
+        {send.error && <p className="error">Chat failed: {String(send.error)}</p>}
+      </div>
+      <div className="new-run" style={{ marginBottom: 0, marginTop: "0.75rem" }}>
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Ask the docs…"
+          aria-label="Chat message"
+          onKeyDown={(e) => e.key === "Enter" && submit()}
+        />
+        <button className="primary" disabled={send.isPending} onClick={submit}>
+          Send
+        </button>
+      </div>
     </div>
   );
 }
@@ -227,6 +334,7 @@ function SearchPanel() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Ask something…"
+          aria-label="Search query"
           onKeyDown={(e) => e.key === "Enter" && runSearch()}
         />
         <button className="primary" onClick={runSearch}>
@@ -243,13 +351,14 @@ function SearchPanel() {
 
 export function App() {
   const queryClient = useQueryClient();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [goal, setGoal]             = useState("publish the new creative to creativebox");
-  const [liveRun, setLiveRun]       = useState<RunSummary | null>(null);
+  const [selectedId, setSelectedId]     = useState<string | null>(null);
+  const [goal, setGoal]                 = useState("publish the new creative to creativebox");
+  const [liveRun, setLiveRun]           = useState<RunSummary | null>(null);
+  const [statusFilter, setStatusFilter] = useState<(typeof STATUS_FILTERS)[number]>("all");
 
   const runs = useQuery({
-    queryKey: ["runs"],
-    queryFn: api.listRuns,
+    queryKey: ["runs", statusFilter],
+    queryFn: () => api.listRuns(statusFilter === "all" ? undefined : statusFilter),
     refetchInterval: 2000,
   });
 
@@ -306,12 +415,26 @@ export function App() {
         <div className="layout">
           {/* Left: run list */}
           <div className="panel">
-            <h2>Runs</h2>
+            <div className="panel-head">
+              <h2>Runs</h2>
+              <div className="status-filter" role="group" aria-label="Filter runs by status">
+                {STATUS_FILTERS.map((s) => (
+                  <button
+                    key={s}
+                    className={`filter-chip${statusFilter === s ? " active" : ""}`}
+                    onClick={() => setStatusFilter(s)}
+                  >
+                    {s.replace("_", " ")}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="new-run">
               <input
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
                 placeholder="Agent goal…"
+                aria-label="Agent goal"
                 onKeyDown={(e) => e.key === "Enter" && !startRun.isPending && startRun.mutate(goal)}
               />
               <button
@@ -323,45 +446,54 @@ export function App() {
               </button>
             </div>
 
+            {startRun.error && (
+              <p className="error">Failed to start run: {String(startRun.error)}</p>
+            )}
             {runs.error && <p className="error">Failed to load runs</p>}
 
             {runs.data?.length === 0 && (
               <div className="empty-state">
                 <div className="empty-icon">▷</div>
-                <p>No runs yet. Enter a goal above and click Start run.</p>
+                <p>
+                  {statusFilter === "all"
+                    ? "No runs yet. Enter a goal above and click Start run."
+                    : `No ${statusFilter.replace("_", " ")} runs.`}
+                </p>
               </div>
             )}
 
             {(runs.data?.length ?? 0) > 0 && (
-              <table>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Status</th>
-                    <th>Goal</th>
-                    <th>Duration</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(runs.data ?? []).map((r) => (
-                    <tr
-                      key={r.run_id}
-                      className={r.run_id === selectedId ? "selected" : ""}
-                      onClick={() => {
-                        setSelectedId(r.run_id);
-                        setLiveRun(null);
-                      }}
-                    >
-                      <td className="run-id-cell">{r.run_id}</td>
-                      <td>
-                        <span className={`status ${r.status}`}>{r.status}</span>
-                      </td>
-                      <td>{r.goal.length > 52 ? r.goal.slice(0, 52) + "…" : r.goal}</td>
-                      <td className="text-muted">{formatDuration(r)}</td>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Status</th>
+                      <th>Goal</th>
+                      <th>Duration</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {(runs.data ?? []).map((r) => (
+                      <tr
+                        key={r.run_id}
+                        className={r.run_id === selectedId ? "selected" : ""}
+                        onClick={() => {
+                          setSelectedId(r.run_id);
+                          setLiveRun(null);
+                        }}
+                      >
+                        <td className="run-id-cell">{r.run_id}</td>
+                        <td>
+                          <span className={`status ${r.status}`}>{r.status}</span>
+                        </td>
+                        <td>{r.goal.length > 52 ? r.goal.slice(0, 52) + "…" : r.goal}</td>
+                        <td className="text-muted">{formatDuration(r)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
 
@@ -378,7 +510,10 @@ export function App() {
           </div>
         </div>
 
-        <RegistryPanel />
+        <div className="bottom-grid">
+          <ConnectorHealthPanel />
+          <ChatPanel />
+        </div>
         <SearchPanel />
       </div>
 

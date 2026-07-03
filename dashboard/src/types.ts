@@ -53,3 +53,26 @@ export interface SearchResponse {
   chunks: SearchChunk[];
   deterministic?: Record<string, string> | null;
 }
+
+export interface ConnectorHealth {
+  name: string;
+  status: "healthy" | "degraded" | "circuit_open" | "unknown";
+  upstream_ok?: boolean;
+  circuit?: { open: boolean; failure_count: number; threshold: number };
+  error?: string | null;
+}
+
+export interface ChatCitation {
+  source: string;
+  doc_id?: string | null;
+  chunk_id?: string | null;
+  score?: number | null;
+}
+
+export interface ChatResponse {
+  thread_id: string;
+  answer: string;
+  citations: ChatCitation[];
+  deterministic?: Record<string, string> | null;
+  turns: number;
+}

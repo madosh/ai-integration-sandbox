@@ -35,6 +35,7 @@ class AppState:
     a2a_state: A2AState = field(default_factory=A2AState)
     a2a_server: A2AServer | None = None
     agui_bridge: AguiBridge = field(default_factory=AguiBridge)
+    _retriever: HybridRetriever | None = field(default=None, init=False)
     _agui_subscribers: dict[str, list[asyncio.Queue[dict[str, object]]]] = field(
         default_factory=dict
     )
@@ -57,30 +58,28 @@ class AppState:
         self._agui_subscribers.setdefault(run_id, []).append(q)
         return q
 
-    def build_agent(self) -> Agent:
-        ctx = SkillContext(
-            llm=get_llm(),
-            embedder=get_embedder(),
-            retriever=HybridRetriever(embedder=get_embedder()),
-            httpx_transport=self.httpx_transport,
-        )
+    def build_agent(self, *, ledger: RunLedger | None = None) -> Agent:
         agent = Agent(
             approver=self.approver,
-            ledger=self.ledger,
-            ctx=ctx,
+            ledger=ledger or self.ledger,
+            ctx=self.skill_context(),
             skills=self.skills,
             memory=self.memory,
         )
         return agent
 
     def build_retriever(self) -> HybridRetriever:
-        return HybridRetriever(embedder=get_embedder())
+        # Indexing the corpus (chunk + BM25 + embed) is the expensive part;
+        # build it once and share it across requests and agent runs.
+        if self._retriever is None:
+            self._retriever = HybridRetriever(embedder=get_embedder())
+        return self._retriever
 
     def skill_context(self) -> SkillContext:
         return SkillContext(
             llm=get_llm(),
             embedder=get_embedder(),
-            retriever=HybridRetriever(embedder=get_embedder()),
+            retriever=self.build_retriever(),
             httpx_transport=self.httpx_transport,
         )
 
@@ -127,9 +126,13 @@ def build_state(
     if memory is None and settings.agent_enable_memory:
         memory = build_memory_manager(ledger=ledger, embedder=get_embedder())
 
+    if approver is None:
+        timeout = settings.approval_timeout_sec or None
+        approver = APIApprover(timeout=timeout)
+
     return AppState(
         ledger=ledger,
-        approver=approver or APIApprover(),
+        approver=approver,
         httpx_transport=httpx_transport,
         memory=memory,
     )
