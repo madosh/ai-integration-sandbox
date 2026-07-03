@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Building an AI agent you can test in CI with zero API keys: deterministic fakes, a structural human-in-the-loop gate, and evals as CI gates." />
+  <meta property="og:title" content="Building an AI Agent You Can Test in CI — With Zero API Keys" />
+  <meta property="og:description" content="Three design decisions that make a complete agentic system — planner, RAG, HITL approvals, evals — run fully offline and deterministically." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔌</text></svg>" />
+  <title>Building an AI Agent You Can Test in CI — With Zero API Keys</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1120;
+      --surface: #151f32;
+      --surface-elevated: #1c2a42;
+      --text: #e8edf5;
+      --muted: #94a3b8;
+      --border: #2a3a52;
+      --accent: #60a5fa;
+      --accent-hover: #93c5fd;
+      --accent-soft: rgba(59, 130, 246, 0.14);
+      --code-bg: #020617;
+      --code-inline: #243044;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    ::selection { background: rgba(96, 165, 250, 0.3); }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+      font-size: 1.125rem;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Reading progress bar ── */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      z-index: 100;
+      transition: width 0.1s linear;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4.5rem 1.5rem 2rem;
+      text-align: left;
+    }
+
+    .hero .kicker {
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin: 0 0 1rem;
+    }
+
+    .hero h1 {
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: clamp(1.9rem, 5vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin: 0 0 1.1rem;
+      color: #f8fafc;
+    }
+
+    .hero .subtitle {
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin: 0 0 1.75rem;
+    }
+
+    .hero .byline {
+      font-family: "Inter", system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 0;
+    }
+
+    .hero .byline .tag {
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 0.15rem 0.65rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.72rem;
+    }
+
+    /* ── Article body ── */
+    article {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 4rem;
+    }
+
+    article p { margin: 0 0 1.3rem; }
+
+    article h2 {
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+      margin: 2.75rem 0 1rem;
+      line-height: 1.3;
+    }
+
+    article h2 .h2-num {
+      color: var(--accent);
+      margin-right: 0.35rem;
+    }
+
+    strong { color: #f8fafc; }
+
+    em { color: inherit; }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem auto;
+      width: 40%;
+    }
+
+    ul, ol { margin: 0 0 1.3rem; padding-left: 1.4rem; }
+    li { margin-bottom: 0.55rem; }
+
+    blockquote {
+      margin: 1.75rem 0;
+      padding: 0.35rem 0 0.35rem 1.35rem;
+      border-left: 3px solid var(--accent);
+      font-size: 1.25rem;
+      font-style: italic;
+      color: #cbd5e1;
+    }
+
+    /* ── Code ── */
+    code {
+      font-family: "JetBrains Mono", ui-monospace, Consolas, monospace;
+      font-size: 0.82em;
+      background: var(--code-inline);
+      color: #e2e8f0;
+      padding: 0.12em 0.42em;
+      border-radius: 5px;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      padding: 1.15rem 1.3rem;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 0.83rem;
+      line-height: 1.6;
+      margin: 1.5rem 0;
+      position: relative;
+      font-family: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    }
+
+    pre code { background: none; padding: 0; font-size: inherit; }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.55rem;
+      right: 0.55rem;
+      padding: 0.22rem 0.6rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      font-family: "Inter", system-ui, sans-serif;
+      color: var(--muted);
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    pre:hover .copy-btn, .copy-btn:focus-visible { opacity: 1; }
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── Diagrams ── */
+    .figure {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1rem 0.75rem;
+      margin: 1.75rem 0;
+      overflow-x: auto;
+    }
+
+    .figure .mermaid {
+      display: flex;
+      justify-content: center;
+      min-height: 100px;
+    }
+
+    .figure .mermaid svg { max-width: 100%; height: auto; }
+
+    .figure figcaption {
+      font-family: "Inter", system-ui, sans-serif;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+      padding: 0.75rem 0 0.35rem;
+    }
+
+    .diagram-error {
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      font-family: "Inter", system-ui, sans-serif;
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.35rem;
+      margin: 1.5rem 0;
+      font-size: 1.02rem;
+    }
+
+    .callout.warn { border-left-color: var(--warning); }
+
+    .callout p:last-child { margin-bottom: 0; }
+
+    /* ── Footer / CTA ── */
+    .cta {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem 2rem;
+      margin: 2.5rem 0 0;
+      font-family: "Inter", system-ui, sans-serif;
+    }
+
+    .cta h3 {
+      margin: 0 0 0.6rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .cta p { font-size: 0.95rem; color: var(--muted); margin-bottom: 1.1rem; }
+
+    .cta a.button {
+      display: inline-block;
+      background: var(--accent);
+      color: #0b1120;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.6rem 1.3rem;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+
+    .cta a.button:hover { background: var(--accent-hover); text-decoration: none; }
+
+    .site-footer {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      text-align: center;
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 640px) {
+      body { font-size: 1.05rem; }
+      .hero { padding-top: 3rem; }
+      article h2 { font-size: 1.35rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progress-bar"></div>
+
+  <header class="hero">
+    <p class="kicker">AI Engineering</p>
+    <h1>Building an AI Agent You Can Test in CI — With Zero API Keys</h1>
+    <p class="subtitle">Every AI tutorial starts with "first, get your API key." This one doesn't.</p>
+    <div class="byline">
+      <span class="tag">Agents</span>
+      <span class="tag">Testing</span>
+      <span class="tag">RAG</span>
+      <span class="tag">HITL</span>
+      <span>·</span>
+      <span>~9 min read</span>
+      <span>·</span>
+      <a href="https://github.com/madosh/ai-integration-sandbox" target="_blank" rel="noreferrer">Source on GitHub ↗</a>
+    </div>
+  </header>
+
+  <article>
+    <p>
+      I kept running into the same wall while building AI-powered integrations:
+      <strong>you can't write a reliable test suite on top of a non-deterministic, metered API.</strong>
+    </p>
+
+    <p>
+      Unit tests that call a real LLM are slow, cost money on every CI run, flake when the provider
+      has a bad day, and — worst of all — return <em>different output for the same input</em>. So most
+      agent projects I've seen either skip testing entirely or mock so aggressively that the tests
+      verify nothing.
+    </p>
+
+    <p>
+      I wanted to know what it would take to build a <em>complete</em> agentic system — planner loop,
+      tool calling, RAG, human-in-the-loop approvals, evals — that runs <strong>fully offline,
+      deterministically, with zero accounts or API keys</strong>, and where <code>pytest</code> in CI
+      actually exercises the whole stack.
+    </p>
+
+    <p>
+      The result is the <a href="https://github.com/madosh/ai-integration-sandbox" target="_blank" rel="noreferrer">AI
+      Integration Sandbox</a> (MIT licensed). This article covers the three design decisions that made
+      it work, because I think they generalize to any serious AI system:
+    </p>
+
+    <ol>
+      <li><strong>Deterministic fakes at every external boundary</strong></li>
+      <li><strong>A human-in-the-loop gate that is structural, not optional</strong></li>
+      <li><strong>Evals as CI gates, not dashboards</strong></li>
+    </ol>
+
+    <h2>The architecture in one picture</h2>
+
+    <p>
+      The system simulates an AI-native integration hub: an agent that syncs campaign data from fake
+      ad-network partners, publishes creatives (with human approval), and answers questions grounded
+      in a document corpus via hybrid RAG.
+    </p>
+
+    <figure class="figure">
+      <div class="mermaid">
+graph TB
+  subgraph "Clients"
+    Dash["React Dashboard"]
+  end
+
+  subgraph "FastAPI Service"
+    SVC["/runs · /search · /chat · /connectors"]
+  end
+
+  subgraph "Agent"
+    ORCH["Orchestrator (planner loop)"]
+    HITL["HITL Approval Gate"]
+  end
+
+  subgraph "Deterministic fakes"
+    LLM["FakeLLM"]
+    EMB["HashEmbedder"]
+    MOCK["Mock partner APIs (local FastAPI)"]
+  end
+
+  RAG["Hybrid RAG<br/>BM25 + dense + fusion"]
+  CONN["Connectors<br/>retry · backoff · circuit breaker"]
+
+  Dash --> SVC --> ORCH
+  ORCH --> HITL
+  ORCH --> RAG
+  ORCH --> CONN --> MOCK
+  ORCH --> LLM
+  RAG --> EMB
+      </div>
+      <figcaption>Every external dependency — LLM, embeddings, partner APIs — is a local deterministic implementation.</figcaption>
+    </figure>
+
+    <p>
+      Every box in the "fakes" cluster — the LLM, the embeddings, the partner APIs — is a
+      <strong>local, deterministic implementation</strong> behind the same interface a real provider
+      would use. That's the whole trick, and it's less limiting than it sounds.
+    </p>
+
+    <h2><span class="h2-num">1.</span>Deterministic fakes at every external boundary</h2>
+
+    <p>
+      The <code>FakeLLM</code> is not a mock that returns <code>"mocked response"</code>. It's a small
+      rule-based engine that does two things well enough to drive a real agent loop:
+    </p>
+
+    <ul>
+      <li>
+        <code>complete()</code> extracts the most relevant sentence from any <code>CONTEXT:</code>
+        block in the prompt — so RAG-grounded answers are real answers, derived from
+        actually-retrieved chunks.
+      </li>
+      <li>
+        <code>tool_call()</code> selects a tool by matching the user's goal against tool names and
+        descriptions, and fabricates schema-valid arguments from each tool's JSON schema.
+      </li>
+    </ul>
+
+<pre><code>class FakeLLM:
+    """A deterministic stand-in for a real LLM.
+
+    - `complete` echoes a compact, rule-based summary of the prompt.
+    - `tool_call` selects a tool by keyword-matching the latest user
+      message against tool names/descriptions, and fabricates plausible,
+      schema-shaped arguments. This is enough to drive the agent loop.
+    """</code></pre>
+
+    <p>
+      The same idea applies to embeddings (<code>HashEmbedder</code>: a deterministic hashed
+      bag-of-words — no model download, same vector for the same text, every time) and to the partner
+      APIs (three local FastAPI apps that deliberately differ: one uses Bearer tokens with cursor
+      pagination and 429 rate limits, one uses API keys with offset pagination, one uses Basic auth
+      with multipart uploads — so the connector abstraction has to earn its keep).
+    </p>
+
+    <div class="callout">
+      <p>
+        <strong>Why this matters:</strong> because everything is deterministic, the test suite can make
+        <em>strong</em> assertions. Not "the agent returned something" but "given this goal, the planner
+        selects <code>publish_creative</code>, the approval gate fires, and after approval the connector
+        pushes exactly this payload." 78 test functions run in CI on every push, offline, in seconds.
+      </p>
+    </div>
+
+    <p>
+      Swapping in a real provider is an environment variable
+      (<code>AIH_LLM_PROVIDER=anthropic</code>), because everything codes against an
+      <code>LLMClient</code> protocol, not a vendor SDK. The fakes aren't a compromise — they're the
+      test harness the real system runs inside.
+    </p>
+
+    <h2><span class="h2-num">2.</span>Make the human-in-the-loop gate structural</h2>
+
+    <p>
+      Most "human in the loop" implementations are a <code>print()</code> and an <code>input()</code>.
+      The interesting problems only show up when the approval is <em>asynchronous</em> — the agent is
+      paused mid-run on a server while a human decides in a browser.
+    </p>
+
+    <p>
+      In the sandbox, every skill declares <code>side_effect: bool</code>. The orchestrator refuses to
+      execute a side-effecting skill without a decision from an injected <code>Approver</code>:
+    </p>
+
+<pre><code>if skill.side_effect:
+    proceed = await self._gate(trace, skill.name, call.arguments)
+    if not proceed:
+        messages.append(
+            ChatMessage(role="assistant", content=f"{skill.name} denied; skipped.")
+        )
+        continue</code></pre>
+
+    <p>
+      The gate parks the run on an <code>asyncio.Future</code> that only resolves when a human hits
+      Approve or Deny in the dashboard (or a timeout auto-denies it). The run trace, streamed over
+      Server-Sent Events, shows the pause in real time:
+    </p>
+
+    <figure class="figure">
+      <div class="mermaid">
+sequenceDiagram
+  participant C as Dashboard
+  participant S as FastAPI
+  participant A as Agent
+  participant G as Approval Gate
+
+  C->>S: POST /runs {goal}
+  S->>A: run(goal) [background task]
+  A->>A: planner selects publish_creative (side_effect=True)
+  A->>G: request approval — run PAUSES
+  G-->>C: SSE: pending_approval
+  C->>S: POST /runs/{id}/approve
+  G-->>A: approved
+  A->>A: skill executes → connector pushes creative
+  A-->>C: SSE: RUN_FINISHED
+      </div>
+      <figcaption>The run parks on a Future mid-loop; the human decision resumes it.</figcaption>
+    </figure>
+
+    <p>Three details I'd insist on in any production version, all present here:</p>
+
+    <ul>
+      <li><strong>The gate is enforced by the orchestrator, not the skill.</strong> A skill can't forget to ask.</li>
+      <li><strong>Denial is a first-class outcome.</strong> A denied run ends with status <code>denied</code> and zero side effects — asserted in tests.</li>
+      <li><strong>Approvals time out.</strong> A pending approval auto-denies after a configurable window instead of parking a coroutine forever.</li>
+    </ul>
+
+    <p>
+      Because the whole flow is deterministic, <em>the approval pause itself is unit-tested</em> —
+      something I've never been able to do against a live LLM.
+    </p>
+
+    <h2><span class="h2-num">3.</span>Evals are CI gates, not dashboards</h2>
+
+    <p>
+      Retrieval and generation quality are measured by an eval harness with
+      <strong>committed thresholds</strong>. This file lives in the repo:
+    </p>
+
+<pre><code>{
+  "retrieval.recall_at_3": 0.75,
+  "retrieval.mrr": 0.75,
+  "retrieval.ndcg_at_3": 0.75,
+  "generation.llm_judge": 0.5,
+  "tool_selection.accuracy": 0.66,
+  "redteam.block_rate": 0.5,
+  "rerank.quality": 0.5
+}</code></pre>
+
+    <p>
+      The runner executes every suite — retrieval (recall@k, MRR, nDCG), generation (LLM-as-judge),
+      tool selection accuracy, and a red-team suite probing prompt injection — prints a scorecard,
+      writes a timestamped report, and <strong>exits non-zero if any metric drops below its
+      threshold</strong>. CI runs it after the test suite.
+    </p>
+
+    <div class="callout">
+      <p>
+        That last property changes behavior. If I "improve" the chunking strategy and recall@3 falls
+        from 0.80 to 0.70, <strong>the build breaks</strong>. Quality regressions get caught in code
+        review like any other bug, instead of being discovered in a dashboard three weeks later.
+        Determinism is what makes this honest: the score can't fluctuate, so a red build always means
+        <em>my change</em> did it.
+      </p>
+    </div>
+
+    <p>The RAG pipeline being evaluated is a real hybrid setup, not a toy:</p>
+
+    <figure class="figure">
+      <div class="mermaid">
+flowchart LR
+  Q["Query"] --> SF["Safety filter<br/>(injection detection)"]
+  SF --> SP["BM25 sparse"]
+  SF --> DN["Dense embeddings"]
+  SP --> FU["Fusion<br/>RRF / weighted alpha"]
+  DN --> FU
+  FU --> RR["Reranker"]
+  RR --> OUT["Cited chunks<br/>+ provenance"]
+  Q --> DET["Deterministic path:<br/>campaign id → connector lookup"]
+  DET --> OUT
+      </div>
+      <figcaption>Hybrid retrieval with a deterministic authoritative-record path alongside it.</figcaption>
+    </figure>
+
+    <p>
+      One framing from this pipeline that I now use everywhere:
+    </p>
+
+    <blockquote>Retrieve prose, look up facts.</blockquote>
+
+    <p>
+      Text retrieval is probabilistic — right for policies and documentation. But when a query
+      references a structured entity (a campaign ID, a price, a status), the retriever fetches the
+      authoritative record from the source system and returns it <em>labelled with its provenance</em>
+      (<code>connector:pulseads</code> vs <code>doc:faq-3</code>), so the downstream answer is
+      auditable.
+    </p>
+
+    <h2>What this deliberately doesn't do</h2>
+
+    <p>
+      Honesty section. The FakeLLM is not intelligent — it keyword-matches. It cannot handle novel
+      goals, multi-step reasoning it wasn't shaped for, or ambiguity. This sandbox teaches and tests
+      <em>architecture</em>: the gates, retries, budgets, traces, and evals that surround the model.
+      The model itself is swappable precisely because everything else doesn't depend on its
+      cleverness.
+    </p>
+
+    <div class="callout warn">
+      <p>
+        If your takeaway is "fakes can replace real model testing," that's the wrong lesson. You still
+        need eval runs against real models before shipping. The right lesson is that
+        <strong>the deterministic layer is where 90% of your bugs live</strong> — the pagination bug,
+        the missing retry on 429, the approval race, the unbounded chat history — and none of those
+        need a $0.01-per-assertion API call to catch.
+      </p>
+    </div>
+
+    <h2>Try it</h2>
+
+<pre><code>git clone https://github.com/madosh/ai-integration-sandbox
+cd ai-integration-sandbox
+python tasks.py setup &amp;&amp; python tasks.py test   # offline, deterministic
+docker compose up                               # full stack: API + dashboard + mock partners</code></pre>
+
+    <p>
+      Start a run in the dashboard with the goal <em>"publish the new creative to creativebox"</em>,
+      watch the planner select the skill, and watch the run pause at the approval gate waiting for
+      your click. That pause — a coroutine parked on a Future while a human decides — is my favorite
+      part of the whole system.
+    </p>
+
+    <p>
+      The repo is MIT licensed. Specs for every module live in <code>specs/</code> (each feature was
+      spec'd before it was built), and the eval datasets, thresholds, and mock partners are all in the
+      tree. Break it, extend it, or steal the patterns.
+    </p>
+
+    <hr />
+
+    <div class="cta">
+      <h3>Explore the code</h3>
+      <p>
+        The repo has deeper dives waiting: a connector framework with circuit breakers and keyset
+        pagination, an A2A (agent-to-agent) JSON-RPC surface, seven memory types, and an MCP server
+        exposing the same skills to any MCP client.
+      </p>
+      <a class="button" href="https://github.com/madosh/ai-integration-sandbox" target="_blank" rel="noreferrer">View on GitHub ↗</a>
+    </div>
+  </article>
+
+  <footer class="site-footer">
+    AI Integration Sandbox · MIT licensed · The sandbox runs fully offline; this page's diagrams load Mermaid from a CDN.
+  </footer>
+
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "loose",
+      theme: "dark",
+      themeVariables: {
+        fontSize: "14px",
+        fontFamily: "Inter, Segoe UI, system-ui, sans-serif",
+        primaryColor: "#4338ca",
+        primaryTextColor: "#f8fafc",
+        primaryBorderColor: "#818cf8",
+        secondaryColor: "#5b21b6",
+        secondaryTextColor: "#f3e8ff",
+        secondaryBorderColor: "#a78bfa",
+        tertiaryColor: "#0c4a6e",
+        tertiaryTextColor: "#e0f2fe",
+        tertiaryBorderColor: "#38bdf8",
+        lineColor: "#94a3b8",
+        textColor: "#f1f5f9",
+        mainBkg: "#1e293b",
+        nodeBorder: "#64748b",
+        clusterBkg: "#0f172a",
+        clusterBorder: "#475569",
+        titleColor: "#f8fafc",
+        edgeLabelBackground: "#1e293b",
+        darkMode: true,
+        actorBkg: "#4338ca",
+        actorBorder: "#818cf8",
+        actorTextColor: "#f8fafc",
+        actorLineColor: "#94a3b8",
+        signalColor: "#60a5fa",
+        signalTextColor: "#f1f5f9",
+        labelBoxBkgColor: "#1e293b",
+        labelBoxBorderColor: "#475569",
+        labelTextColor: "#e2e8f0",
+        loopTextColor: "#cbd5e1",
+        noteBkgColor: "#422006",
+        noteTextColor: "#fef3c7",
+        noteBorderColor: "#f59e0b",
+      },
+      flowchart: { curve: "basis", padding: 18, htmlLabels: true, nodeSpacing: 58, rankSpacing: 74 },
+      sequence: {
+        diagramMarginX: 24, diagramMarginY: 16, actorMargin: 72,
+        width: 168, height: 52, boxMargin: 12, boxTextMargin: 8,
+        noteMargin: 12, messageMargin: 40,
+      },
+      themeCSS: `
+        .node rect, .node circle, .node ellipse, .node polygon { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
+        .edgePath .path { stroke-width: 2.5px; }
+        .cluster rect { stroke-width: 2px; opacity: 0.97; }
+        .edgeLabel { background-color: #1e293b !important; color: #e2e8f0 !important; }
+        .actor { filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35)); stroke-width: 2px; }
+        .messageLine0, .messageLine1 { stroke-width: 2.5px; }
+      `,
+    });
+
+    async function renderDiagrams() {
+      const nodes = [...document.querySelectorAll(".mermaid:not([data-processed])")];
+      for (const node of nodes) {
+        try {
+          await mermaid.run({ nodes: [node] });
+        } catch (err) {
+          console.warn("Mermaid diagram failed:", err);
+          node.innerHTML = `<p class="diagram-error">Diagram failed to render (offline?).</p>`;
+          node.setAttribute("data-processed", "true");
+        }
+      }
+    }
+    renderDiagrams();
+  </script>
+
+  <script>
+    // Reading progress bar
+    const bar = document.getElementById("progress-bar");
+    document.addEventListener("scroll", () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      bar.style.width = `${max > 0 ? (h.scrollTop / max) * 100 : 0}%`;
+    }, { passive: true });
+
+    // Copy buttons on code blocks
+    document.querySelectorAll("article pre").forEach((pre) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "copy-btn";
+      btn.textContent = "Copy";
+      btn.setAttribute("aria-label", "Copy code to clipboard");
+      btn.addEventListener("click", async () => {
+        const code = pre.querySelector("code");
+        try {
+          await navigator.clipboard.writeText(code ? code.innerText : pre.innerText);
+          btn.textContent = "Copied!";
+        } catch {
+          btn.textContent = "Failed";
+        }
+        setTimeout(() => { btn.textContent = "Copy"; }, 1600);
+      });
+      pre.appendChild(btn);
+    });
+  </script>
+</body>
+</html>
