@@ -1,0 +1,14 @@
+{
+  "name": "aih-demo-recorder",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Record the dashboard HITL approval-gate flow to video for the README GIF.",
+  "scripts": {
+    "record": "node record.mjs",
+    "gif": "node gif.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}
