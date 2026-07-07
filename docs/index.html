@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Integration Sandbox — docs</title>
+  <meta name="description" content="Offline-first, AI-native integration hub: hybrid RAG, agentic workflows with a human-in-the-loop approval gate, MCP, evals, and a React dashboard — testable in CI with zero API keys." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔌</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1220;
+      --panel: #161d2f;
+      --panel-2: #1c2438;
+      --border: #2a3349;
+      --text: #e8edf7;
+      --muted: #9fb0cc;
+      --accent: #6ea8fe;
+      --accent-2: #8affc1;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: radial-gradient(1200px 600px at 70% -10%, #1b2540 0%, var(--bg) 55%) no-repeat, var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 5rem 1.25rem 4rem; }
+    .eyebrow { color: var(--accent); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: .78rem; }
+    h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; margin: .5rem 0 1rem; font-weight: 800; letter-spacing: -.02em; }
+    .lead { color: var(--muted); font-size: 1.125rem; max-width: 60ch; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 2.5rem 0 1.5rem; }
+    a.card {
+      display: block; text-decoration: none; color: inherit;
+      background: linear-gradient(180deg, var(--panel-2), var(--panel));
+      border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.25rem 1.1rem;
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    a.card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 12px 30px -12px rgba(110,168,254,.4); }
+    .card h2 { margin: 0 0 .35rem; font-size: 1.1rem; }
+    .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+    .card .go { color: var(--accent); font-weight: 600; font-size: .9rem; margin-top: .7rem; display: inline-block; }
+    .demo { margin: 1rem 0 2rem; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--panel); }
+    .demo img { display: block; width: 100%; height: auto; }
+    .demo figcaption { color: var(--muted); font-size: .9rem; padding: .8rem 1rem; }
+    footer { color: var(--muted); font-size: .9rem; border-top: 1px solid var(--border); margin-top: 2.5rem; padding-top: 1.25rem; }
+    footer a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="eyebrow">🔌 AI Integration Sandbox</p>
+    <h1>An AI agent you can test in CI — with zero API keys</h1>
+    <p class="lead">
+      An offline-first, AI-native integration hub: hybrid RAG, agentic workflows with a
+      human-in-the-loop approval gate, MCP tools, evals, and a React dashboard. Deterministic
+      fakes (FakeLLM, HashEmbedder, mock partner APIs) make the whole thing runnable and testable
+      offline.
+    </p>
+
+    <figure class="demo">
+      <img src="demo.gif" alt="Dashboard demo: an agent run pauses at the human-in-the-loop approval gate before the side-effecting publish_creative skill, then executes and completes after approval." loading="lazy" />
+      <figcaption>A run pauses at the human-in-the-loop approval gate, then executes and converges after approval — recorded from the real stack.</figcaption>
+    </figure>
+
+    <div class="grid">
+      <a class="card" href="mediumarticle.html">
+        <h2>Deep-dive article →</h2>
+        <p>“Building an AI Agent You Can Test in CI — With Zero API Keys.” Architecture, HITL, and hybrid RAG, with hand-drawn diagrams.</p>
+        <span class="go">Read the article</span>
+      </a>
+      <a class="card" href="interview-practice.html">
+        <h2>Study guide →</h2>
+        <p>Interactive final edition: diagrams, a modern-AI concept map, and copy-ready snippets.</p>
+        <span class="go">Open the guide</span>
+      </a>
+      <a class="card" href="https://github.com/madosh/ai-integration-sandbox">
+        <h2>Source on GitHub →</h2>
+        <p>Full repo: specs, connectors, agent, RAG, MCP server, evals, dashboard, and deploy.</p>
+        <span class="go">View on GitHub</span>
+      </a>
+    </div>
+
+    <footer>
+      MIT licensed · Runs with no external accounts or API keys by default ·
+      <a href="https://github.com/madosh/ai-integration-sandbox">github.com/madosh/ai-integration-sandbox</a>
+    </footer>
+  </main>
+</body>
+</html>
