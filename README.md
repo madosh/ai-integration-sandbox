@@ -28,8 +28,10 @@ step trace streams live over SSE. Recorded from the real stack; reproduce it wit
 
 ### Documentation
 
-- **Study guide (HTML):** [`docs/interview-practice.html`](docs/interview-practice.html) — interactive final study edition (diagrams + modern AI map).
-- **Deep-dive article:** [`docs/mediumarticle.html`](docs/mediumarticle.html) — *"Building an AI Agent You Can Test in CI — With Zero API Keys"* (hand-drawn Excalidraw diagrams).
+**Live site:** **[madosh.github.io/ai-integration-sandbox](https://madosh.github.io/ai-integration-sandbox/)** — landing page + rendered docs.
+
+- **Deep-dive article:** [Building an AI Agent You Can Test in CI — With Zero API Keys](https://madosh.github.io/ai-integration-sandbox/mediumarticle.html) (hand-drawn Excalidraw diagrams) · source: [`docs/mediumarticle.html`](docs/mediumarticle.html)
+- **Study guide:** [interactive final edition](https://madosh.github.io/ai-integration-sandbox/interview-practice.html) (diagrams + modern-AI map) · source: [`docs/interview-practice.html`](docs/interview-practice.html)
 - **Specs:** [`specs/`](specs/) — one spec per feature (spec-driven development).
 - **Contributing:** [`CONTRIBUTING.md`](CONTRIBUTING.md) · **Changelog:** [`CHANGELOG.md`](CHANGELOG.md)
 
