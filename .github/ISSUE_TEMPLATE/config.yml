@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Study guide (interview practice)
+    url: https://github.com/madosh/ai-integration-sandbox/blob/master/docs/interview-practice.html
+    about: The interactive HTML study guide bundled with this repo.

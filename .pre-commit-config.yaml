@@ -1,0 +1,31 @@
+# Pre-commit hooks mirroring the CI quality gates.
+#   pip install pre-commit && pre-commit install
+# Run against everything once with:  pre-commit run --all-files
+#
+# Note: mypy (strict) and the eval regression gate run in CI and via
+# `python tasks.py type` / `python tasks.py eval`; they are intentionally not
+# wired here to keep commits fast and hook setup dependency-light.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.10
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+        files: ^(src|tests)/
+
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        files: ^(src|tests)/
