@@ -38,4 +38,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rerank), agent orchestrator with token budget and HITL approval gate, MCP server, A2A
   surface, seven memory types, guardrails, eval harness, FastAPI service, and a React/TS
   monitoring dashboard.
-- Spec-Driven Development workflow (`specs/`) and practice drill packs (`drills/`).
+- Spec-Driven Development workflow (`specs/`).

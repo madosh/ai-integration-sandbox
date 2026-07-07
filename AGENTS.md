@@ -33,7 +33,3 @@ python tasks.py run         # :8000
 python tasks.py ui          # :5173
 python tasks.py eval
 ```
-
-## Study guide
-
-Open `docs/study-guide.html` in a browser — an interactive study guide covering the whole system.

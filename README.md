@@ -31,7 +31,6 @@ step trace streams live over SSE. Recorded from the real stack; reproduce it wit
 **Live site:** **[madosh.github.io/ai-integration-sandbox](https://madosh.github.io/ai-integration-sandbox/)** — landing page + rendered docs.
 
 - **Deep-dive article:** [Building an AI Agent You Can Test in CI — With Zero API Keys](https://madosh.github.io/ai-integration-sandbox/mediumarticle.html) (hand-drawn Excalidraw diagrams) · source: [`docs/mediumarticle.html`](docs/mediumarticle.html)
-- **Study guide:** [interactive edition](https://madosh.github.io/ai-integration-sandbox/study-guide.html) (diagrams + modern-AI map) · source: [`docs/study-guide.html`](docs/study-guide.html)
 - **Specs:** [`specs/`](specs/) — one spec per feature (spec-driven development).
 - **Contributing:** [`CONTRIBUTING.md`](CONTRIBUTING.md) · **Changelog:** [`CHANGELOG.md`](CHANGELOG.md)
 
@@ -50,7 +49,7 @@ step trace streams live over SSE. Recorded from the real stack; reproduce it wit
 | Spec-Driven Development | `specs/` (every feature has a spec first) |
 | React / TypeScript monitoring UI | `dashboard/` |
 | AWS deploy / infra | `deploy/` (LocalStack-first) |
-| Architecture + design scenarios | `docs/adr/`, `drills/` |
+| Architecture decision records | `docs/adr/` |
 
 ## Architecture at a glance
 
@@ -208,7 +207,6 @@ ai-integration-sandbox/
   mock_apis/           # local fake partner APIs (ad networks, docs store)
   dashboard/           # React + TS + Vite monitoring UI
   deploy/              # LocalStack + IaC
-  drills/              # practice exercises (katas, system-design, challenge-back)
   specs/               # Spec-Driven Development: one spec per feature
   tests/
 ```
@@ -329,7 +327,7 @@ modes, Success criteria (measurable), Out of scope. Commits reference the spec i
 This repo was built phase-by-phase (each phase spec-first, tested, committed):
 
 0. Skeleton 1. Connectors 3. Hybrid RAG 2. MCP server 4. Skills + agent + HITL
-5. Evals 6. FastAPI service 7. Dashboard 8. Deploy/LocalStack 9. Drill packs
+5. Evals 6. FastAPI service 7. Dashboard 8. Deploy/LocalStack
 
 ## Contributing
 
