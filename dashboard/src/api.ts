@@ -28,7 +28,10 @@ export const api = {
   metrics: () => request<Metrics>("/metrics"),
   connectors: () => request<ConnectorInfo[]>("/connectors"),
   skills: () => request<SkillInfo[]>("/skills"),
-  listRuns: () => request<RunSummary[]>("/runs"),
+  listRuns: () =>
+    request<{ runs: RunSummary[]; next_cursor: string | null; total: number }>("/runs").then(
+      (r) => r.runs,
+    ),
   getRun: (id: string) => request<RunSummary>(`/runs/${id}`),
   startRun: (goal: string) =>
     request<{ run_id: string; status: string }>("/runs", {
