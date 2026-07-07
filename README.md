@@ -17,6 +17,26 @@ It runs with **no external accounts or API keys by default**: the LLM is a deter
 embeddings use a deterministic `HashEmbedder`, and every external REST API is a local FastAPI fake in
 `mock_apis/`. So `python tasks.py test` is fully offline and deterministic.
 
+## Who is this for / why use it
+
+Building AI integrations usually means paying for API keys, wiring up cloud accounts, and testing
+against flaky third-party services before you can even see the shape of the system. This project
+removes that friction: a realistic slice of a modern AI stack that boots in one command and runs
+**fully offline and deterministically**, so you can learn, prototype, and test the patterns without
+spending a cent.
+
+- **Learn** how the pieces actually fit together — an agent that plans and calls tools, a
+  **human-in-the-loop approval gate** before risky side effects, **hybrid RAG** (BM25 + dense +
+  fusion + rerank), an **MCP server**, resilient REST connectors (retries, backoff, pagination,
+  circuit breakers), CI-gating **evals**, tracing, and a live React dashboard.
+- **Start from it** — fork the skeleton and swap the deterministic fakes for real providers with a
+  single env flag (`AIH_LLM_PROVIDER=anthropic`, real partner base URLs); the architecture stays put.
+- **Test against it** — develop and CI-test agentic + RAG behavior deterministically instead of
+  against slow, costly, non-reproducible live APIs. Quality regressions fail the build like unit tests.
+
+If you just want to *see* what it does, watch the approval-gate run below, then jump to
+[Quick start](#quick-start).
+
 ### See it run — human-in-the-loop approval gate
 
 ![Dashboard demo: an agent run pauses at the human-in-the-loop approval gate before the side-effecting publish_creative skill, then executes and completes after approval.](docs/demo.gif)
