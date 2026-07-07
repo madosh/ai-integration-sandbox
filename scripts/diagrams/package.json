@@ -1,0 +1,13 @@
+{
+  "name": "aih-diagram-generator",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Convert the article's Mermaid diagrams into hand-drawn Excalidraw SVGs.",
+  "scripts": {
+    "gen": "node convert.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}
