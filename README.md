@@ -17,6 +17,15 @@ It runs with **no external accounts or API keys by default**: the LLM is a deter
 embeddings use a deterministic `HashEmbedder`, and every external REST API is a local FastAPI fake in
 `mock_apis/`. So `python tasks.py test` is fully offline and deterministic.
 
+### See it run — human-in-the-loop approval gate
+
+![Dashboard demo: an agent run pauses at the human-in-the-loop approval gate before the side-effecting publish_creative skill, then executes and completes after approval.](docs/demo.gif)
+
+A run **pauses at the HITL approval gate** before any side-effecting skill (`publish_creative`,
+reversibility: low), waits for a human **Approve / Deny**, then executes and converges — the full
+step trace streams live over SSE. Recorded from the real stack; reproduce it with
+[`scripts/demo/`](scripts/demo/).
+
 ### Documentation
 
 - **Study guide (HTML):** [`docs/interview-practice.html`](docs/interview-practice.html) — interactive final study edition (diagrams + modern AI map).
