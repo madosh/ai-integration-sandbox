@@ -17,7 +17,12 @@ It runs with **no external accounts or API keys by default**: the LLM is a deter
 embeddings use a deterministic `HashEmbedder`, and every external REST API is a local FastAPI fake in
 `mock_apis/`. So `python tasks.py test` is fully offline and deterministic.
 
-**Interview practice guide (HTML):** open [`docs/interview-practice.html`](docs/interview-practice.html) — **final study edition** (diagrams + modern AI map).
+### Documentation
+
+- **Study guide (HTML):** [`docs/interview-practice.html`](docs/interview-practice.html) — interactive final study edition (diagrams + modern AI map).
+- **Deep-dive article:** [`docs/mediumarticle.html`](docs/mediumarticle.html) — *"Building an AI Agent You Can Test in CI — With Zero API Keys"* (hand-drawn Excalidraw diagrams).
+- **Specs:** [`specs/`](specs/) — one spec per feature (spec-driven development).
+- **Contributing:** [`CONTRIBUTING.md`](CONTRIBUTING.md) · **Changelog:** [`CHANGELOG.md`](CHANGELOG.md)
 
 ## Requirement -> module map
 
@@ -314,3 +319,14 @@ This repo was built phase-by-phase (each phase spec-first, tested, committed):
 
 0. Skeleton 1. Connectors 3. Hybrid RAG 2. MCP server 4. Skills + agent + HITL
 5. Evals 6. FastAPI service 7. Dashboard 8. Deploy/LocalStack 9. Drill packs
+
+## Contributing
+
+Contributions are welcome — please read [`CONTRIBUTING.md`](CONTRIBUTING.md) first. In short:
+spec before code, stay offline-first, side effects go through the HITL approval gate, and all four
+quality gates (lint, types, tests ≥ 70%, evals) must pass. See also
+[`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) and [`SECURITY.md`](SECURITY.md).
+
+## License
+
+[MIT](LICENSE) © madosh
