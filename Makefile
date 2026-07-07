@@ -6,7 +6,7 @@
 PY := python
 RUN := $(PY) tasks.py
 
-.PHONY: setup run mock-apis sandbox test lint type eval ui deploy-local drill-katas
+.PHONY: setup run mock-apis sandbox test lint type eval ui deploy-local
 
 setup:        ## Create venv + install package and dev deps
 	$(RUN) setup
@@ -37,6 +37,3 @@ ui:           ## Run the React dashboard dev server
 
 deploy-local: ## Provision LocalStack + smoke test
 	$(RUN) deploy-local
-
-drill-katas:  ## Run only the practice katas (expected failing)
-	$(RUN) drill-katas
