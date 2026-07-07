@@ -24,7 +24,7 @@ class PartnerMapping(BaseModel):
     fields: list[FieldMapping] = Field(default_factory=list)
 
 
-# Registry of known mappings (interview: "how do you handle schema drift?")
+# Registry of known mappings (handles partner schema drift)
 MAPPINGS: dict[str, PartnerMapping] = {
     "pulseads:campaigns": PartnerMapping(
         partner="pulseads",

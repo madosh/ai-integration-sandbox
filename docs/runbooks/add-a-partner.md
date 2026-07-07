@@ -19,7 +19,7 @@ flowchart LR
 
 ## 1. Mock API (offline dev)
 
-1. Add routes under `mock_apis/app.py` with deliberate auth + pagination quirks (interview signal).
+1. Add routes under `mock_apis/app.py` with deliberate auth + pagination quirks (exercises the connector abstraction).
 2. Add seed data in `mock_apis/data.py`.
 3. Expose `GET /healthz` on the mock app root (health probes use it).
 
@@ -76,7 +76,7 @@ python tasks.py mock-apis   # :9000
 python tasks.py run         # :8000 — GET /connectors/newpartner/health
 ```
 
-## Interview talking points
+## Key points
 
 - **Transport layer** owns retries, `Retry-After`, circuit breaker — connectors stay thin.
 - **Mapping registry** documents schema drift; versioning mappings beats one-off `if partner` blocks.

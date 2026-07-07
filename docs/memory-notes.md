@@ -1,4 +1,4 @@
-# Agent memory — interview notes
+# Agent memory — notes
 
 ## Memory taxonomy map
 
@@ -33,7 +33,7 @@ flowchart TB
 
 ## Seven memory types (built vs boundary)
 
-| Type | Built? | Where | Interview one-liner |
+| Type | Built? | Where | One-liner |
 |---|---|---|---|
 | Working / in-context | Yes | `memory/working.py` | Token-budgeted context assembly with provenance |
 | Semantic | Yes | `memory/semantic.py` | Facts/preferences with conflict flags |

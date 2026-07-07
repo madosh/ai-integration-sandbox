@@ -30,7 +30,7 @@ agentic-workflow + HITL surface.
 ## Constraints
 
 - Deterministic under FakeLLM. Bounded steps (`agent_max_steps`). The planner prompt and tool schemas
-  are real (an interviewer will probe them).
+  are real, not stubs.
 - No side effect occurs without an explicit approve.
 
 ## Failure modes

@@ -2,8 +2,8 @@
 
 ## Scope
 
-This is an **offline-first sandbox** intended for local development, learning, and interview
-rehearsal. By default it uses deterministic fakes and local mock APIs — it ships with **no real
+This is an **offline-first sandbox** intended for local development, learning, and
+experimentation. By default it uses deterministic fakes and local mock APIs — it ships with **no real
 credentials** and makes no outbound calls unless you explicitly opt into a real provider.
 
 ## Reporting a vulnerability

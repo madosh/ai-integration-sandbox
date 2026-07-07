@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Integration Sandbox — Interview Practice Guide</title>
+  <title>AI Integration Sandbox — Study Guide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -917,7 +917,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <h1>AI Integration Sandbox</h1>
-        <p>Interview practice guide — offline-first, spec-driven, runnable without API keys.</p>
+        <p>Study guide — offline-first, spec-driven, runnable without API keys.</p>
         <div class="sidebar-badges">
           <span class="product-ai">Product AI</span>
           <span class="integration">Integration</span>
@@ -1022,7 +1022,7 @@ linkStyle 6 stroke:#f87171,stroke-width:2px,stroke-dasharray:4 3
 
       <p>
         By default: <code>FakeLLM</code> (deterministic planner), <code>HashEmbedder</code> (offline embeddings),
-        and <code>mock_apis/</code> (local FastAPI fakes). No keys, no cloud, reproducible in CI and in an interview room.
+        and <code>mock_apis/</code> (local FastAPI fakes). No keys, no cloud, reproducible in CI and on any machine.
       </p>
       </div>
     </section>
@@ -1031,11 +1031,11 @@ linkStyle 6 stroke:#f87171,stroke-width:2px,stroke-dasharray:4 3
       <div class="page-card">
       <h2 class="page-title">Architecture diagrams</h2>
       <p class="lead">
-        Visual map of the system — use these when whiteboarding or walking an interviewer through the repo.
+        Visual map of the system — use these when whiteboarding or walking someone through the repo.
         Diagrams render via Mermaid (requires internet on first open). Each topic page also loads the matching <code>docs/*.md</code> file below the curated summary — serve over HTTP so markdown can be fetched. If you opened this file directly
         (<code>file://</code>), use a local server:
         <code>python -m http.server 8080</code> from the repo root, then open
-        <code>http://localhost:8080/docs/interview-practice.html</code>.
+        <code>http://localhost:8080/docs/study-guide.html</code>.
       </p>
 
       <div class="diagram-legend" aria-label="Diagram color key">
@@ -1310,7 +1310,7 @@ style termC fill:#082f49,stroke:#0ea5e9,stroke-width:2px,color:#7dd3fc
       <div class="diagram-wrap">
         <div class="mermaid">
 flowchart TB
-subgraph practice ["📝 Interview practice surface"]
+subgraph practice ["📝 Docs & practice surface"]
 Specs["specs/ — SDD contracts"]
 Drills["drills/ — katas + design"]
 Docs["docs/ — ADRs + notes"]
@@ -1630,7 +1630,7 @@ end
       <div class="page-card">
       <h2 class="page-title">Integration ops (Phase 15) — production-shaped gaps</h2>
       <p class="lead">
-        Tier-1 extensions for <strong>integration engineer</strong> interviews: health probes, webhook intake,
+        Tier-1 production-shaped extensions: health probes, webhook intake,
         schema mapping, connector caching, parallel sync, multi-turn chat, prompt versioning, RAG confidence,
         CI, and an add-partner runbook.
       </p>
@@ -1769,7 +1769,7 @@ style execute fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#c7d2fe
           <tr>
             <td>Add-partner runbook</td>
             <td><code>docs/runbooks/add-a-partner.md</code></td>
-            <td>Walk interviewer through registry + mapping + corpus</td>
+            <td>Registry + mapping + corpus, step by step</td>
           </tr>
         </tbody>
       </table>
@@ -1789,12 +1789,12 @@ style execute fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#c7d2fe
         Extensions added for <strong>today's AI engineering</strong>: vector index protocol, reranking,
         query rewrite, injection guardrails, MCP resources/prompts, tracing, token budgets, online evals,
         red-team suite, OAuth/outbox patterns, agent card (A2A-style), and streaming search in the UI.
-        All offline by default — same rehearsal rules as the core repo.
+        All offline by default — same rules as the core repo.
       </p>
 
       <table>
         <thead>
-          <tr><th>Modern topic</th><th>Where</th><th>What to say in interviews</th></tr>
+          <tr><th>Modern topic</th><th>Where</th><th>What it demonstrates</th></tr>
         </thead>
         <tbody>
           <tr>
@@ -2005,7 +2005,7 @@ AIH_ONLINE_EVAL_SAMPLE_RATE=0.0</code></pre>
 
     <section class="doc-page" id="study-plan" data-title="Study plan">
       <div class="page-card">
-      <h2 class="page-title">Final study plan (7 days before interviews)</h2>
+      <h2 class="page-title">Suggested 7-day tour</h2>
       <p>Use this page + the repo. Each day: <strong>run</strong> → <strong>read one spec</strong> → <strong>one drill</strong> → <strong>narrate 5 min</strong>.</p>
 
       <h3>7-day arc</h3>
@@ -2017,7 +2017,7 @@ D2 --> D3["📅 D3<br/>Hybrid RAG"]
 D3 --> D4["📅 D4<br/>MCP + agent + HITL"]
 D4 --> D5["📅 D5<br/>Evals + CI"]
 D5 --> D6["📅 D6<br/>Memory + A2A + AG-UI"]
-D6 --> D7["🎤 D7<br/>Mock interview"]
+D6 --> D7["🎤 D7<br/>Recap & demo"]
 
 class D1 input
 class D2,D3 mem
@@ -2066,19 +2066,19 @@ linkStyle default stroke:#818cf8,stroke-width:2px
         <code>python tasks.py drill-katas</code> (solve 2). Two challenge-back scenarios aloud.
       </div>
       <div class="practice-day">
-        <strong>Day 7 — Mock interview</strong>
-        Full 5-min demo script (no notes). <code>python tasks.py test</code> must be green. Pick product AI OR integration emphasis.
+        <strong>Day 7 — Recap &amp; demo</strong>
+        Full 5-min walkthrough script. <code>python tasks.py test</code> must be green. Pick an AI or integration emphasis.
       </div>
       </div>
     </section>
 
-    <section class="doc-page" id="interviews" data-title="Which interviews">
+    <section class="doc-page" id="capabilities" data-title="What it shows">
       <div class="page-card">
-      <h2 class="page-title">Which interviews this rehearses</h2>
+      <h2 class="page-title">What this project demonstrates</h2>
       <div class="grid-2">
         <div class="card product-ai">
           <h3>Product AI Engineering</h3>
-          <p>API &amp; Integrations profile. Emphasis on:</p>
+          <p>API &amp; integrations focus:</p>
           <ul>
             <li><strong>Spec-Driven Development</strong> — every feature has a spec in <code>specs/</code> first</li>
             <li><strong>AI Skills</strong> — reusable typed capabilities + registry</li>
@@ -2088,11 +2088,11 @@ linkStyle default stroke:#818cf8,stroke-width:2px
             <li><strong>MCP</strong> — tools expose integrations to LLM clients</li>
             <li><strong>End-to-end ownership</strong> — service, tests, observability</li>
           </ul>
-          <p><strong>Foreground in demos:</strong> agent trace, approval flow, RAG citations, eval scorecard, specs.</p>
+          <p><strong>Highlights:</strong> agent trace, approval flow, RAG citations, eval scorecard, specs.</p>
         </div>
         <div class="card integration">
           <h3>Integration Engineering</h3>
-          <p>Ad-tech / integrations profile. Emphasis on:</p>
+          <p>Integration engineering focus:</p>
           <ul>
             <li><strong>Python automations</strong> — async connectors, retries, circuit breaker</li>
             <li><strong>REST GET/PUSH</strong> — paginated extraction + multipart creative upload</li>
@@ -2102,7 +2102,7 @@ linkStyle default stroke:#818cf8,stroke-width:2px
             <li><strong>AWS deployment</strong> — Docker, LocalStack, S3/SQS ADRs</li>
             <li><strong>Architecture + challenge-back</strong> — ADRs, drills, trade-off narratives</li>
           </ul>
-          <p><strong>Foreground in demos:</strong> connector layer, dashboard metrics, transport resilience, deploy story.</p>
+          <p><strong>Highlights:</strong> connector layer, dashboard metrics, transport resilience, deploy story.</p>
         </div>
       </div>
       </div>
@@ -2110,7 +2110,7 @@ linkStyle default stroke:#818cf8,stroke-width:2px
 
     <section class="doc-page" id="modules" data-title="Module map">
       <div class="page-card">
-      <h2 class="page-title">Requirement → module map</h2>
+      <h2 class="page-title">Capability → module map</h2>
 
       <h3>Repo layers</h3>
       <div class="diagram-wrap">
@@ -2330,7 +2330,7 @@ python tasks.py run
 # Terminal C — React dashboard (:5173)
 python tasks.py ui</code></pre>
 
-      <h3>Verify &amp; rehearse offline</h3>
+      <h3>Verify &amp; run offline</h3>
       <pre><code>python tasks.py test          # full suite, no network
 python tasks.py eval          # RAG + agent + generation scorecard
 python tasks.py drill-katas   # 7 failing katas to solve
@@ -2347,9 +2347,9 @@ python tasks.py deploy-local  # LocalStack smoke (skips if Docker down)</code></
       <div class="page-card">
       <h2 class="page-title">Shipping &amp; quality — making it production-credible</h2>
       <p class="lead">
-        The gap between a demo and something an interviewer trusts: it runs in <strong>one command</strong>,
+        The gap between a demo and something you'd trust in production: it runs in <strong>one command</strong>,
         you can <strong>see inside</strong> it, and a robot <strong>blocks regressions</strong> before they merge.
-        This is the “I took it past a toy” story.
+        This is what takes it past a toy.
       </p>
 
       <h3>Run the whole stack in one command</h3>
@@ -2392,14 +2392,14 @@ export AIH_OTEL_ENDPOINT=http://localhost:4317   # Jaeger OTLP gRPC</code></pre>
         or red-team block-rate <em>fails the build like a unit test</em>. The scorecard is posted to the CI job summary.
       </div>
 
-      <h3>The “I extended this” story (say this out loud)</h3>
+      <h3>What “production-credible” means here</h3>
       <div class="practice-day">
-        <strong>~30 seconds</strong>
-        “It started offline-first and well-tested. I made it production-credible: one-command Docker bring-up
-        <em>including</em> the dashboard, OpenTelemetry tracing to Jaeger behind a flag, and I hardened CI to gate on
-        lint, strict types, ≥70% coverage, <em>and</em> an eval regression check. I also drove the repo to a fully
-        green pipeline — strict mypy clean, ~85% coverage — by fixing root causes (for example a wrong A2A
-        <code>AgentCard</code> auth schema) rather than suppressing the errors.”
+        <strong>In short</strong>
+        It started offline-first and well-tested, then was made production-credible: one-command Docker bring-up
+        <em>including</em> the dashboard, OpenTelemetry tracing to Jaeger behind a flag, and CI hardened to gate on
+        lint, strict types, ≥70% coverage, <em>and</em> an eval regression check. The pipeline is fully
+        green — strict mypy clean, ~85% coverage — with root-cause fixes (for example a wrong A2A
+        <code>AgentCard</code> auth schema) rather than suppressed errors.
       </div>
       </div>
     </section>
@@ -2408,8 +2408,8 @@ export AIH_OTEL_ENDPOINT=http://localhost:4317   # Jaeger OTLP gRPC</code></pre>
       <div class="page-card">
       <h2 class="page-title">How to use this guide</h2>
       <p>
-        The repo is not just code to read — it's a <strong>rehearsal instrument</strong>.
-        Alternate between running the system, solving drills, and narrating architecture out loud as if an interviewer is watching.
+        The repo is not just code to read — it's a <strong>hands-on learning tool</strong>.
+        Alternate between running the system, solving drills, and explaining the architecture out loud.
       </p>
 
       <h3>Weekly rhythm (suggested)</h3>
@@ -2450,24 +2450,24 @@ export AIH_OTEL_ENDPOINT=http://localhost:4317   # Jaeger OTLP gRPC</code></pre>
       </div>
 
       <div class="practice-day">
-        <strong>Day 7 — Mock interview (60 min)</strong>
-        Full demo script below + 10 flashcards from <code>drills/flashcards.md</code>. No notes for the first 15 min.
+        <strong>Day 7 — Recap &amp; demo (60 min)</strong>
+        Full walkthrough script below + 10 flashcards from <code>drills/flashcards.md</code>.
       </div>
 
-      <h3>Before each real interview</h3>
+      <h3>Before you present it</h3>
       <ul>
-        <li>Run <code>python tasks.py test</code> — green suite = confidence to run live</li>
-        <li>Pick 3 modules to foreground based on which company is first</li>
-        <li>Prepare one “I extended this” story (e.g. added eval threshold, fixed a connector, solved a kata)</li>
+        <li>Run <code>python tasks.py test</code> — a green suite means it'll run live</li>
+        <li>Pick 3 modules to foreground for your audience</li>
+        <li>Have one concrete extension in mind (e.g. added an eval threshold, fixed a connector, solved a kata)</li>
         <li>Know where specs live — spec-first is how this system was built</li>
       </ul>
       </div>
     </section>
 
-    <section class="doc-page" id="demo" data-title="Live demo script">
+    <section class="doc-page" id="demo" data-title="Walkthrough">
       <div class="page-card">
-      <h2 class="page-title">Live demo script (~5 minutes)</h2>
-      <p>Use this when an interviewer says “walk me through something you built” or “show it running”.</p>
+      <h2 class="page-title">Guided walkthrough (~5 minutes)</h2>
+      <p>Use this to walk anyone through the system, or to show it running end-to-end.</p>
 
       <h3>Demo arc</h3>
       <div class="diagram-wrap">
@@ -2882,10 +2882,10 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       </div>
     </section>
 
-    <section class="doc-page" id="qa" data-title="Interview Q&amp;A">
+    <section class="doc-page" id="qa" data-title="Q&amp;A">
       <div class="page-card">
-      <h2 class="page-title">Interview Q&amp;A — 15 questions, crisp answers</h2>
-      <p class="lead">Click a question to expand the answer. Cover these before every interview — they map directly to the diagrams, specs, and code.</p>
+      <h2 class="page-title">Q&amp;A — 15 questions, crisp answers</h2>
+      <p class="lead">Click a question to expand the answer. These map directly to the diagrams, specs, and code.</p>
 
       <div class="qa-category">
         <p class="qa-category-title">System overview</p>
@@ -2902,7 +2902,7 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
             <details>
               <summary>Why offline-first? Why FakeLLM and mock APIs?</summary>
               <div class="qa-answer">
-                <p>Deterministic tests that run anywhere without API keys or network — in CI, in a local dev environment, and in an interview room. <code>FakeLLM</code> returns predictable skill selections by keyword matching; <code>HashEmbedder</code> is a deterministic hashed bag-of-words. Swapping in real providers is an env-flag change (<code>AIH_LLM_PROVIDER=anthropic</code>), not a code change. The principle: <strong>domain logic should not be coupled to provider availability</strong>.</p>
+                <p>Deterministic tests that run anywhere without API keys or network — in CI, in a local dev environment, and on any machine. <code>FakeLLM</code> returns predictable skill selections by keyword matching; <code>HashEmbedder</code> is a deterministic hashed bag-of-words. Swapping in real providers is an env-flag change (<code>AIH_LLM_PROVIDER=anthropic</code>), not a code change. The principle: <strong>domain logic should not be coupled to provider availability</strong>.</p>
               </div>
             </details>
           </li>
@@ -3039,11 +3039,11 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       </div>
     </section>
 
-    <section class="doc-page" id="talking" data-title="Talking points">
+    <section class="doc-page" id="talking" data-title="Key points">
       <div class="page-card">
-      <h2 class="page-title">Talking points cheat sheet</h2>
+      <h2 class="page-title">Key points cheat sheet</h2>
       <ul>
-        <li><strong>Why offline-first?</strong> Deterministic tests, no interview-day network failures, cheap CI evals. Real providers are behind env flags — one change to swap in.</li>
+        <li><strong>Why offline-first?</strong> Deterministic tests, no network flakiness, cheap CI evals. Real providers are behind env flags — one change to swap in.</li>
         <li><strong>Why hybrid RAG?</strong> BM25 wins on exact token matches (IDs, error codes, rare terms); dense wins on paraphrase and semantic queries. Fusion beats either alone in MRR — proven by the test suite.</li>
         <li><strong>Why RRF over alpha fusion?</strong> RRF blends ranks, not magnitudes — scale-free and robust when BM25 and cosine scores live on incomparable scales. Alpha needs calibrated, comparable distributions.</li>
         <li><strong>Why HITL?</strong> Side effects are low-reversibility; models can hallucinate tool arguments. The gate creates an auditable paper trail: every decision is recorded to the run trace.</li>
@@ -3059,7 +3059,7 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
         <li><strong>Why FastAPI for the AI layer?</strong> Native async matches async connectors, RAG, and agent loops. SSE pushes run state without polling. <code>httpx.ASGITransport</code> tests the full app in-process — no sockets in CI.</li>
       </ul>
 
-      <h3>Docs to skim before interviews</h3>
+      <h3>Docs worth skimming</h3>
       <ul>
         <li><code>README.md</code> — overview</li>
         <li><code>docs/architecture.md</code> — C4 diagram</li>
@@ -3087,7 +3087,7 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       </nav>
 
       <footer class="site-footer">
-        AI Integration Sandbox · Final study guide · <code>docs/interview-practice.html</code>
+        AI Integration Sandbox · Study guide · <code>docs/study-guide.html</code>
       </footer>
     </div>
   </div>
@@ -3098,18 +3098,18 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
       { id: "diagrams", label: "Architecture" },
       { id: "integration-ops", label: "Integration ops" },
       { id: "modern-ai", label: "Modern AI stack" },
-      { id: "study-plan", label: "Study plan" },
-      { id: "interviews", label: "Interviews" },
+      { id: "study-plan", label: "7-day tour" },
+      { id: "capabilities", label: "What it shows" },
       { id: "modules", label: "Module map" },
       { id: "run", label: "How to run" },
       { id: "shipping", label: "Shipping & quality" },
       { id: "practice", label: "Practice" },
-      { id: "demo", label: "Live demo" },
+      { id: "demo", label: "Walkthrough" },
       { id: "drills", label: "Drills" },
       { id: "memory-protocols", label: "Memory & protocols" },
       { id: "fastapi", label: "FastAPI" },
-      { id: "talking", label: "Talking points" },
-      { id: "qa", label: "Interview Q&A" },
+      { id: "talking", label: "Key points" },
+      { id: "qa", label: "Q&A" },
     ];
 
     const visitedPages = new Set([0]);
@@ -3447,7 +3447,7 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
           await mermaid.run({ nodes: [node] });
         } catch (err) {
           console.warn("Mermaid diagram failed:", err);
-          node.innerHTML = `<pre class="diagram-error">Diagram could not render. Open via a local server: <code>python -m http.server 8080</code> then visit <code>http://localhost:8080/docs/interview-practice.html</code></pre>`;
+          node.innerHTML = `<pre class="diagram-error">Diagram could not render. Open via a local server: <code>python -m http.server 8080</code> then visit <code>http://localhost:8080/docs/study-guide.html</code></pre>`;
           node.setAttribute("data-processed", "true");
         }
       }
@@ -3509,7 +3509,7 @@ style meta fill:#022c22,stroke:#10b981,stroke-width:2px,color:#6ee7b7
           embed.dataset.loaded = "true";
         } catch (err) {
           console.warn("Markdown load failed:", src, err);
-          embed.innerHTML = `<div class="md-error"><p>Could not load <code>docs/${src}</code>.</p><p>Serve the repo over HTTP — e.g. <code>python -m http.server 8080</code> from <code>ai-integration-sandbox/</code>, then open <code>http://localhost:8080/docs/interview-practice.html</code>. Opening the HTML file directly (<code>file://</code>) cannot fetch sibling markdown files.</p></div>`;
+          embed.innerHTML = `<div class="md-error"><p>Could not load <code>docs/${src}</code>.</p><p>Serve the repo over HTTP — e.g. <code>python -m http.server 8080</code> from <code>ai-integration-sandbox/</code>, then open <code>http://localhost:8080/docs/study-guide.html</code>. Opening the HTML file directly (<code>file://</code>) cannot fetch sibling markdown files.</p></div>`;
           embed.dataset.loaded = "error";
         } finally {
           embed.classList.remove("md-loading");

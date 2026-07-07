@@ -4,7 +4,7 @@
 
 FastAPI is the **composition root** of the runnable sandbox: it wires the agent, RAG, connectors,
 memory, protocol adapters (A2A, AG-UI), and observability into one async HTTP surface suitable for
-the React dashboard, tests, and interview demos.
+the React dashboard, tests, and demos.
 
 ## Architecture role
 
@@ -161,9 +161,9 @@ flowchart LR
 ```
 
 Integration tests use `httpx.ASGITransport(app=create_app(build_state(...)))` — no TCP, no keys.
-The same app factory powers local dev, CI, and interview-room demos.
+The same app factory powers local dev, CI, and demos.
 
-## Interview talking points
+## Key points
 
 - **Async all the way:** agent, connectors, RAG search are `async`; FastAPI matches without thread pools.
 - **Thin routes, fat domain:** routes validate I/O; orchestration lives in `agent/`, `memory/`, `a2a/`.

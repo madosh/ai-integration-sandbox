@@ -31,7 +31,7 @@ sequenceDiagram
 - `protocols` — `mcp` + `rest` in this sandbox
 - `endpoints` — local service URLs
 
-## Interview talking point
+## Key point
 
 > "MCP standardizes tools for LLM clients; an agent card helps orchestrators pick the right
 > specialist agent. Here the card lists integration skills; production would add auth, rate limits,

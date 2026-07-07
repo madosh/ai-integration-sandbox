@@ -15,7 +15,7 @@ Targets:
     eval         Run the eval harness and write a scorecard report.
     ui           Run the dashboard dev server (npm run dev in dashboard/).
     deploy-local Provision the stack against LocalStack and run a smoke test.
-    drill-katas  Run ONLY the interview kata tests (expected to fail until solved).
+    drill-katas  Run ONLY the practice kata tests (expected to fail until solved).
     mock-apis    Boot the mock partner APIs (uvicorn) on :9000.
     sandbox      Boot mock-apis + service + dashboard (all-in-one).
 """

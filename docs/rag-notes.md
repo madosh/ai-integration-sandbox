@@ -1,4 +1,4 @@
-# RAG notes: dense vs sparse vs fusion (interview talking points)
+# RAG notes: dense vs sparse vs fusion
 
 A one-page mental model for hybrid retrieval, grounded in this repo's `aih.rag` module.
 
