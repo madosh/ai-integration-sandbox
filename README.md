@@ -5,13 +5,13 @@
 ![python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
-An **offline-first, AI-native integration hub** covering two engineering profiles:
+An **offline-first, AI-native integration hub** for building and testing API integrations and
+GenAI workflows end to end:
 
-- **Product AI Engineering** (API & Integrations): Spec-Driven Development, AI Skills,
-  Evals, RAG, human-in-the-loop + agentic workflows, MCP, end-to-end ownership.
-- **Integration Engineering** (ad-tech): Python automations, REST GET/PUSH across
-  ad networks, LLM + MCP inside the flow, a React/TS monitoring UI, AWS deploy, architecture +
-  challenge-back.
+- **AI engineering:** Spec-Driven Development, AI Skills, evals, hybrid RAG, human-in-the-loop
+  + agentic workflows, MCP.
+- **Integration engineering:** Python automations, REST GET/PUSH across partner APIs, LLM + MCP
+  inside the flow, a React/TS monitoring UI, AWS deploy, and architecture docs.
 
 It runs with **no external accounts or API keys by default**: the LLM is a deterministic `FakeLLM`,
 embeddings use a deterministic `HashEmbedder`, and every external REST API is a local FastAPI fake in
@@ -31,26 +31,26 @@ step trace streams live over SSE. Recorded from the real stack; reproduce it wit
 **Live site:** **[madosh.github.io/ai-integration-sandbox](https://madosh.github.io/ai-integration-sandbox/)** — landing page + rendered docs.
 
 - **Deep-dive article:** [Building an AI Agent You Can Test in CI — With Zero API Keys](https://madosh.github.io/ai-integration-sandbox/mediumarticle.html) (hand-drawn Excalidraw diagrams) · source: [`docs/mediumarticle.html`](docs/mediumarticle.html)
-- **Study guide:** [interactive final edition](https://madosh.github.io/ai-integration-sandbox/interview-practice.html) (diagrams + modern-AI map) · source: [`docs/interview-practice.html`](docs/interview-practice.html)
+- **Study guide:** [interactive edition](https://madosh.github.io/ai-integration-sandbox/study-guide.html) (diagrams + modern-AI map) · source: [`docs/study-guide.html`](docs/study-guide.html)
 - **Specs:** [`specs/`](specs/) — one spec per feature (spec-driven development).
 - **Contributing:** [`CONTRIBUTING.md`](CONTRIBUTING.md) · **Changelog:** [`CHANGELOG.md`](CHANGELOG.md)
 
-## Requirement -> module map
+## Capability -> module map
 
-| Interview requirement | Source | Module |
-|---|---|---|
-| Advanced Python automations / services | both | `connectors/`, `service/` |
-| REST consumption (GET) + publishing (PUSH) of data/files/creatives | Integration track | `connectors/` |
-| Integrations framework / reusable capabilities | AI track | `connectors/base.py`, `skills/` |
-| MCP server / tools | both | `mcp_server/` |
-| LLM + agentic workflow orchestration | both | `agent/` |
-| Human-in-the-loop on critical actions | AI track | `agent/approval.py` |
-| RAG grounded in trusted data (probabilistic vs deterministic) | AI track | `rag/` (BM25 + dense + fusion) |
-| Evals (automated + human-in-the-loop) | AI track | `evals/` |
-| Spec-Driven Development | AI track | `specs/` (every feature has a spec first) |
-| React / TypeScript monitoring UI | Integration track | `dashboard/` |
-| AWS deploy / infra | both | `deploy/` (LocalStack-first) |
-| Architecture + challenge-back | both | `docs/adr/`, `drills/` |
+| Capability | Module |
+|---|---|
+| Advanced Python automations / services | `connectors/`, `service/` |
+| REST consumption (GET) + publishing (PUSH) of data/files/creatives | `connectors/` |
+| Integrations framework / reusable capabilities | `connectors/base.py`, `skills/` |
+| MCP server / tools | `mcp_server/` |
+| LLM + agentic workflow orchestration | `agent/` |
+| Human-in-the-loop on critical actions | `agent/approval.py` |
+| RAG grounded in trusted data (probabilistic vs deterministic) | `rag/` (BM25 + dense + fusion) |
+| Evals (automated + human-in-the-loop) | `evals/` |
+| Spec-Driven Development | `specs/` (every feature has a spec first) |
+| React / TypeScript monitoring UI | `dashboard/` |
+| AWS deploy / infra | `deploy/` (LocalStack-first) |
+| Architecture + design scenarios | `docs/adr/`, `drills/` |
 
 ## Architecture at a glance
 
@@ -208,7 +208,7 @@ ai-integration-sandbox/
   mock_apis/           # local fake partner APIs (ad networks, docs store)
   dashboard/           # React + TS + Vite monitoring UI
   deploy/              # LocalStack + IaC
-  drills/              # interview drill packs (katas, system-design, challenge-back)
+  drills/              # practice exercises (katas, system-design, challenge-back)
   specs/               # Spec-Driven Development: one spec per feature
   tests/
 ```

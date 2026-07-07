@@ -1,6 +1,6 @@
 # Protocols & memory — drill model answers
 
-Click to expand each answer during rehearsal.
+Click to expand each answer while practicing.
 
 <details>
 <summary>1. The 7 memory types — which do you BUILD vs which is a BOUNDARY?</summary>

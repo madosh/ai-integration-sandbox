@@ -38,5 +38,5 @@ ui:           ## Run the React dashboard dev server
 deploy-local: ## Provision LocalStack + smoke test
 	$(RUN) deploy-local
 
-drill-katas:  ## Run only the interview katas (expected failing)
+drill-katas:  ## Run only the practice katas (expected failing)
 	$(RUN) drill-katas

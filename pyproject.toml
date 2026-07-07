@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "aih"
 version = "0.1.0"
-description = "AI-native integration hub: offline-first sandbox for integration + GenAI rehearsal."
+description = "AI-native integration hub: an offline-first sandbox for API integrations and GenAI workflows."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

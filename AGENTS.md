@@ -1,6 +1,7 @@
 # AI Integration Hub (`aih`) — agent instructions
 
-This repo is an **offline-first AI integration sandbox** for interview rehearsal.
+This repo is an **offline-first AI integration sandbox** for building and testing API integrations
+and GenAI workflows.
 
 ## Conventions
 
@@ -35,4 +36,4 @@ python tasks.py eval
 
 ## Study guide
 
-Open `docs/interview-practice.html` in a browser — final documentation for interview prep.
+Open `docs/study-guide.html` in a browser — an interactive study guide covering the whole system.

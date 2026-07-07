@@ -134,4 +134,4 @@ Peer agents are **untrusted**. Treat returned text as **data**, not instructions
 - **AG-UI:** ~16–17 event types — pin shapes in `specs/agui.md`; spec still moving
 - **A2UI:** youngest / least settled — illustrative field names only
 
-Verify canonical specs before interviews: [a2a-protocol.org](https://a2a-protocol.org), [docs.ag-ui.com](https://docs.ag-ui.com).
+Verify canonical specs against the sources: [a2a-protocol.org](https://a2a-protocol.org), [docs.ag-ui.com](https://docs.ag-ui.com).

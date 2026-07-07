@@ -55,7 +55,7 @@ class InMemoryVectorStore:
 
 
 class FakePineconeVectorStore(InMemoryVectorStore):
-    """Same as in-memory but labelled as a vector DB adapter for interview demos."""
+    """Same as in-memory but labelled as a vector DB adapter for demos."""
 
     @property
     def backend_name(self) -> str:

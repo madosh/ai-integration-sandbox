@@ -23,7 +23,7 @@ Export a **review queue** (CSV/JSON) when:
 The runner exports `human_score` blanks; reviewers fill them; `ingest_human_scores` merges labels
 for reporting and threshold tuning.
 
-## Interview talking points
+## Key points
 
 | Signal | Automated | HITL |
 |--------|-----------|------|

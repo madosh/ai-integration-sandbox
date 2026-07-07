@@ -11,4 +11,4 @@ connector reliability patterns — all offline-first by default.
 - `pytest` passes; `python tasks.py eval` includes rerank uplift metric.
 - MCP exposes resources + prompts; `AGENTS.md` and agent card exist.
 - Tracing spans appear on agent runs; budget can stop over-long loops.
-- `docs/interview-practice.html` documents the full final study surface.
+- `docs/study-guide.html` documents the full system as an interactive study guide.
