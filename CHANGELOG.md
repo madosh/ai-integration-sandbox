@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- OpenAI LLM adapter (`AIH_LLM_PROVIDER=openai`, `openai` extra), a second real provider
+  alongside Anthropic that demonstrates the codebase depends only on the `LLMClient`
+  protocol, not any one vendor SDK. Lazy-imported, so the offline default is unaffected.
 - CI now type-checks and builds the React/TS dashboard (`tsc -b && vite build`) on every
   push and PR, closing the gap where the Python-only pipeline could merge a broken frontend.
 - Grouped Dependabot updates: safe minor/patch bumps arrive as a single weekly PR per

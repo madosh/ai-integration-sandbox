@@ -215,7 +215,7 @@ test** — the scorecard is published to the GitHub Actions job summary.
 ai-integration-sandbox/
   src/aih/
     config.py          # pydantic-settings Settings
-    llm/               # LLMClient protocol + FakeLLM (default) + real adapter (env flag)
+    llm/               # LLMClient protocol + FakeLLM (default) + real adapters (Anthropic/OpenAI, env flag)
     connectors/        # REST integration layer (GET/PUSH across partner APIs)
     mcp_server/        # MCP tools exposing connector + RAG capabilities
     rag/               # hybrid retrieval: BM25 + dense + fusion (alpha & RRF)
