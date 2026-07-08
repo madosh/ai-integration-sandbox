@@ -64,3 +64,26 @@ jobs:
             sed -n '/=== EVAL SCORECARD ===/,$p' eval-output.txt || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # The Python job above never touches the React/TS dashboard, so a type error
+  # or broken build there could merge unnoticed. This job type-checks and builds
+  # it (tsc -b && vite build) on every push/PR.
+  dashboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Type check + build
+        run: npm run build
