@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-09
+
 ### Added
 - OpenAI LLM adapter (`AIH_LLM_PROVIDER=openai`, `openai` extra), a second real provider
   alongside Anthropic that demonstrates the codebase depends only on the `LLMClient`
@@ -15,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   push and PR, closing the gap where the Python-only pipeline could merge a broken frontend.
 - Grouped Dependabot updates: safe minor/patch bumps arrive as a single weekly PR per
   ecosystem, while majors stay as individual, reviewable PRs.
+- Provider guide (`docs/real-providers.md`) and a LangGraph/LangChain mapping
+  (`docs/mapping-to-langchain.md`).
 - One-command full-stack demo via `docker compose up` (API, mock partners, dashboard,
   LocalStack, Jaeger).
 - Optional OpenTelemetry span export (`AIH_OTEL_ENABLED`, `otel` extra) that fails closed to a
@@ -37,6 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed / hygiene
 - Stopped tracking generated artifacts (`.coverage`, `dashboard/tsconfig.tsbuildinfo`) and an
   accidental nested repository copy; added matching `.gitignore` rules.
+
+### Dependencies
+- Bumped GitHub Actions (`checkout` v4→v7, `setup-python` v5→v6, `upload-artifact` v4→v7)
+  and widened Python floors (`anyio`, `uvicorn`, `pytest-asyncio`, `pytest-cov`,
+  `opentelemetry-sdk`) plus `@tanstack/react-query` in the dashboard, via Dependabot.
 
 ## [0.1.0]
 
