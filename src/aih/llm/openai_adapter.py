@@ -24,17 +24,13 @@ class OpenAILLM:
     def __init__(self) -> None:
         self._settings = get_settings()
         if not self._settings.openai_api_key:
-            raise RuntimeError(
-                "AIH_LLM_PROVIDER=openai requires AIH_OPENAI_API_KEY to be set."
-            )
+            raise RuntimeError("AIH_LLM_PROVIDER=openai requires AIH_OPENAI_API_KEY to be set.")
 
     def _client(self) -> object:
         try:
             import openai
         except ImportError as exc:  # pragma: no cover - optional dependency
-            raise RuntimeError(
-                "Install the 'openai' extra: pip install -e '.[openai]'"
-            ) from exc
+            raise RuntimeError("Install the 'openai' extra: pip install -e '.[openai]'") from exc
         return openai.AsyncOpenAI(api_key=self._settings.openai_api_key)
 
     def _messages(self, messages: list[ChatMessage]) -> list[dict[str, str]]:

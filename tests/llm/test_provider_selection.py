@@ -30,8 +30,6 @@ def test_openai_adapter_constructs_with_key(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_anthropic_adapter_requires_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(
-        anthropic_adapter, "get_settings", lambda: Settings(anthropic_api_key=None)
-    )
+    monkeypatch.setattr(anthropic_adapter, "get_settings", lambda: Settings(anthropic_api_key=None))
     with pytest.raises(RuntimeError, match="AIH_ANTHROPIC_API_KEY"):
         anthropic_adapter.AnthropicLLM()
