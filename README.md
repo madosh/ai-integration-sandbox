@@ -52,6 +52,8 @@ step trace streams live over SSE. Recorded from the real stack; reproduce it wit
 
 - **Deep-dive article:** [Building an AI Agent You Can Test in CI — With Zero API Keys](https://madosh.github.io/ai-integration-sandbox/mediumarticle.html) (hand-drawn Excalidraw diagrams) · source: [`docs/mediumarticle.html`](docs/mediumarticle.html)
 - **Specs:** [`specs/`](specs/) — one spec per feature (spec-driven development).
+- **Real providers:** [`docs/real-providers.md`](docs/real-providers.md) — swap the fakes for Anthropic/OpenAI and real partner APIs, and an optional non-blocking live-smoke CI job.
+- **Coming from LangGraph/LangChain?** [`docs/mapping-to-langchain.md`](docs/mapping-to-langchain.md) maps each piece to its equivalent.
 - **Contributing:** [`CONTRIBUTING.md`](CONTRIBUTING.md) · **Changelog:** [`CHANGELOG.md`](CHANGELOG.md)
 
 ## Capability -> module map
@@ -215,7 +217,7 @@ test** — the scorecard is published to the GitHub Actions job summary.
 ai-integration-sandbox/
   src/aih/
     config.py          # pydantic-settings Settings
-    llm/               # LLMClient protocol + FakeLLM (default) + real adapter (env flag)
+    llm/               # LLMClient protocol + FakeLLM (default) + real adapters (Anthropic/OpenAI, env flag)
     connectors/        # REST integration layer (GET/PUSH across partner APIs)
     mcp_server/        # MCP tools exposing connector + RAG capabilities
     rag/               # hybrid retrieval: BM25 + dense + fusion (alpha & RRF)

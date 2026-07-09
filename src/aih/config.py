@@ -30,9 +30,11 @@ class Settings(BaseSettings):
     memory_db_path: str = "./memory.sqlite3"
 
     # LLM
-    llm_provider: Literal["fake", "anthropic"] = "fake"
+    llm_provider: Literal["fake", "anthropic", "openai"] = "fake"
     anthropic_api_key: str | None = None
     anthropic_model: str = "claude-3-5-sonnet-latest"
+    openai_api_key: str | None = None
+    openai_model: str = "gpt-4o-mini"
 
     # Embeddings / vector index
     embedder: Literal["hash", "anthropic", "openai"] = "hash"
@@ -91,6 +93,8 @@ def validate_settings(settings: Settings | None = None) -> list[str]:
     warnings: list[str] = []
     if s.llm_provider == "anthropic" and not s.anthropic_api_key:
         warnings.append("AIH_LLM_PROVIDER=anthropic but AIH_ANTHROPIC_API_KEY is unset")
+    if s.llm_provider == "openai" and not s.openai_api_key:
+        warnings.append("AIH_LLM_PROVIDER=openai but AIH_OPENAI_API_KEY is unset")
     if s.agent_token_budget < 500:
         warnings.append("AIH_AGENT_TOKEN_BUDGET is very low; agent may stop early")
     if not s.mock_api_base_url.startswith("http"):

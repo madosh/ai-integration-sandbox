@@ -7,6 +7,12 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     labels: ["dependencies", "python"]
+    groups:
+      # Bundle safe minor/patch bumps into a single weekly PR; leave majors
+      # as individual PRs so breaking changes stay reviewable.
+      python-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
 
   # React / TypeScript dashboard
   - package-ecosystem: "npm"
@@ -15,6 +21,10 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     labels: ["dependencies", "javascript"]
+    groups:
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
 
   # GitHub Actions used by CI
   - package-ecosystem: "github-actions"
@@ -22,3 +32,7 @@ updates:
     schedule:
       interval: "weekly"
     labels: ["dependencies", "ci"]
+    groups:
+      # Action bumps are low-risk; bundle everything into one PR.
+      github-actions:
+        patterns: ["*"]
