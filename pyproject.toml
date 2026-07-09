@@ -37,7 +37,7 @@ openai = ["openai>=1.0"]
 # Optional OpenTelemetry tracing export (e.g. to Jaeger). Off by default so the
 # offline test suite stays dependency-light; enable with AIH_OTEL_ENABLED=true.
 otel = [
-    "opentelemetry-sdk>=1.27",
+    "opentelemetry-sdk>=1.43.0",
     "opentelemetry-exporter-otlp-proto-grpc>=1.27",
 ]
 
