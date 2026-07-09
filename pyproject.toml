@@ -33,6 +33,7 @@ dev = [
 ]
 # Real provider adapters live behind these extras; never required for tests.
 anthropic = ["anthropic>=0.25"]
+openai = ["openai>=1.0"]
 # Optional OpenTelemetry tracing export (e.g. to Jaeger). Off by default so the
 # offline test suite stays dependency-light; enable with AIH_OTEL_ENABLED=true.
 otel = [

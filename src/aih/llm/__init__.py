@@ -41,6 +41,10 @@ def get_llm() -> LLMClient:
         from aih.llm.anthropic_adapter import AnthropicLLM
 
         return AnthropicLLM()
+    if settings.llm_provider == "openai":
+        from aih.llm.openai_adapter import OpenAILLM
+
+        return OpenAILLM()
     return FakeLLM()
 
 
