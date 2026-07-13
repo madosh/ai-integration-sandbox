@@ -29,7 +29,7 @@ dev = [
     "pytest-cov>=7.1.0",
     "ruff>=0.4",
     "black>=24.3",
-    "mypy>=1.9",
+    "mypy>=2.2.0",
 ]
 # Real provider adapters live behind these extras; never required for tests.
 anthropic = ["anthropic>=0.25"]
