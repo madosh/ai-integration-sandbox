@@ -9,6 +9,7 @@ from pathlib import Path
 from aih.evals.models import Scorecard
 from aih.evals.review_queue import export_review_queue, ingest_human_scores
 from aih.evals.suites import (
+    run_adjudication_suite,
     run_generation_suite,
     run_redteam_suite,
     run_rerank_suite,
@@ -59,9 +60,10 @@ async def run_evals() -> Scorecard:
     tool_sel = await run_tool_selection_suite()
     redteam = await run_redteam_suite()
     rerank = await run_rerank_suite()
+    adjudication = await run_adjudication_suite()
 
     scorecard = Scorecard(
-        suites=[retrieval, generation, tool_sel, redteam, rerank],
+        suites=[retrieval, generation, tool_sel, redteam, rerank, adjudication],
         timestamp=datetime.now(UTC).isoformat(),
     )
     _apply_thresholds(scorecard, thresholds)

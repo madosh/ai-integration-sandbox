@@ -159,6 +159,41 @@ async def run_redteam_suite() -> SuiteResult:
     return SuiteResult(suite="redteam", metrics=[metric], samples=len(records))
 
 
+async def run_adjudication_suite() -> SuiteResult:
+    """Regression gate for the adjudication layer: the false-dismissal rate.
+
+    A false dismissal is a finding a human labelled ``KEEP`` that the pipeline dismissed. The
+    metric is reported as ``1 - rate`` so it fits the harness's uniform ``value >= threshold``
+    gate (SPEC decision D3); at threshold 1.0 the build fails on any false dismissal.
+    """
+    from aih.adjudication import Finding, FixtureSource, RuleBasedJudge, run_batch
+
+    records = load_jsonl(_DATASETS / "adjudication.jsonl")
+    findings = [Finding.model_validate(rec.input) for rec in records]
+    labels = {rec.id: str(rec.reference) for rec in records}
+
+    results = run_batch(findings, source=FixtureSource(), judge=RuleBasedJudge())
+
+    keep_ids = [rec.id for rec in records if labels[rec.id] == "KEEP"]
+    offenders: list[str] = []
+    for rec, result in zip(records, results, strict=True):
+        if labels[rec.id] == "KEEP" and result.disposition.action == "dismiss":
+            offenders.append(rec.id)
+
+    rate = len(offenders) / len(keep_ids) if keep_ids else 0.0
+    metric = MetricScore(name="adjudication.no_false_dismissal", value=1.0 - rate)
+    dispositions = {rec.id: r.disposition.action for rec, r in zip(records, results, strict=True)}
+    detail = {
+        "false_dismissal_rate": rate,
+        "keep_findings": len(keep_ids),
+        "false_dismissals": offenders,
+        "dispositions": dispositions,
+    }
+    return SuiteResult(
+        suite="adjudication", metrics=[metric], samples=len(records), details=[detail]
+    )
+
+
 async def run_rerank_suite() -> SuiteResult:
     retriever = HybridRetriever(embedder=HashEmbedder(dim=256))
     query = "HTTP 429 Retry-After exponential backoff"

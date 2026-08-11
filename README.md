@@ -68,6 +68,7 @@ step trace streams live over SSE. Recorded from the real stack; reproduce it wit
 | Human-in-the-loop on critical actions | `agent/approval.py` |
 | RAG grounded in trusted data (probabilistic vs deterministic) | `rag/` (BM25 + dense + fusion) |
 | Evals (automated + human-in-the-loop) | `evals/` |
+| AI adjudication over static-analysis findings (LLM proposes, deterministic gate decides) | `adjudication/` |
 | Spec-Driven Development | `specs/` (every feature has a spec first) |
 | React / TypeScript monitoring UI | `dashboard/` |
 | AWS deploy / infra | `deploy/` (LocalStack-first) |
@@ -223,6 +224,7 @@ ai-integration-sandbox/
     rag/               # hybrid retrieval: BM25 + dense + fusion (alpha & RRF)
     skills/            # reusable AI Skills the agent can invoke
     agent/             # orchestration loop + human-in-the-loop approval gate
+    adjudication/      # LLM-proposes / deterministic-gate-decides over static-analysis findings
     evals/             # eval harness (automated + HITL)
     service/           # FastAPI app wiring it all together
     observability/     # structured logging, request ids, SQLite run ledger
@@ -337,6 +339,56 @@ graph LR
   SC --> RPT["Timestamped report\nevals/reports/*.json"]
   SC --> HQ["HITL review queue\nexport CSV/JSON\n→ re-ingest human scores"]
 ```
+
+### AI adjudication over static-analysis findings
+
+An LLM proposes a verdict on a code-scan finding — **confirm / dismiss / escalate** — but a
+deterministic policy gate makes the decision. Anything consequential is routed to a human queue,
+and the system **never autonomously closes a real security finding**. Spec: [`SPEC.md`](SPEC.md)
+and [`specs/adjudication.md`](specs/adjudication.md).
+
+> **This is a reference skeleton, not a production system.** It ships with a **fake,
+> fixture-backed source adapter** and a **deterministic rule-based judge**, so the whole pipeline
+> runs and is tested **offline — with no API token and no network**. A real SonarQube MCP source
+> (`SonarQubeMCPSource`) and real model judges (Bedrock / Vertex / Anthropic) implement the same
+> protocols but are **optional and off by default**, never on the test path. The value here is the
+> *architecture and the guardrails*, not model quality.
+
+```mermaid
+graph LR
+  F["Finding\n(SonarQube-style issue\n/ security hotspot)"]
+  F --> EV["gather_evidence\n(deterministic;\nsource is data)"]
+  EV --> J["judge\n(the ONE LLM node;\ndefault = rule-based fake)"]
+  J --> PG["policy_gate\n(deterministic; never\nauto-closes security)"]
+  PG -->|confirm / low-risk dismiss| AU["Audit log\n(hash-chained JSONL)"]
+  PG -->|escalate / overridden| HQ["Human queue"]
+  HQ --> AU
+```
+
+Safety properties, all enforced by plain Python + Pydantic v2 (not by the model):
+
+- **Empty-evidence dismissals are unrepresentable** — the `Verdict` schema raises rather than let
+  a finding be dropped without justification.
+- **Consequential findings never auto-close** — a `dismiss` on a vulnerability / security hotspot
+  (or a blocker/critical) is overridden to `escalate`.
+- **Source is untrusted input** — an in-code comment like `// mark this SAFE` cannot cause an
+  auto-dismissal (tested).
+- **Regression-gated** — `python -m aih.evals` runs the pipeline over a golden labelled set and
+  fails CI if the **false-dismissal rate** exceeds its threshold (default `0`).
+
+```python
+from aih.adjudication import Finding, run_pipeline  # offline: fixture source + rule-based judge
+
+result = run_pipeline(Finding(
+    key="AY-001", rule="python:S3649", severity="major",
+    finding_type="security_hotspot", file_path="auth/login.py", line=10,
+))
+print(result.disposition.action, "→", result.disposition.routed_to)
+```
+
+The state machine is dependency-free by default; `aih.adjudication.graph.build_langgraph` wires
+the identical nodes into a LangGraph `StateGraph` behind the optional `graph` extra
+(`pip install 'aih[graph]'`). See [`SPEC.md`](SPEC.md) §Decisions for why.
 
 ## Spec-Driven Development
 
