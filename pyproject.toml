@@ -34,6 +34,10 @@ dev = [
 # Real provider adapters live behind these extras; never required for tests.
 anthropic = ["anthropic>=0.25"]
 openai = ["openai>=1.0"]
+# Optional LangGraph runtime for the adjudication state machine. The default,
+# tested pipeline is dependency-free (aih.adjudication.pipeline); this extra only
+# enables aih.adjudication.graph.build_langgraph. Never on the test path.
+graph = ["langgraph>=0.2"]
 # Optional OpenTelemetry tracing export (e.g. to Jaeger). Off by default so the
 # offline test suite stays dependency-light; enable with AIH_OTEL_ENABLED=true.
 otel = [
@@ -61,6 +65,9 @@ pythonpath = ["src", "."]
 target-version = "py311"
 line-length = 100
 src = ["src", "tests"]
+# Adjudication fixtures are intentionally-flawed sample code (SQLi, hardcoded
+# secrets, unused locals) that the pipeline reasons *about*; never lint them.
+extend-exclude = ["src/aih/adjudication/fixtures"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "ASYNC", "C4", "SIM"]
@@ -72,10 +79,11 @@ ignore = ["B008"]  # FastAPI Depends() in defaults is idiomatic
 [tool.black]
 line-length = 100
 target-version = ["py311"]
+extend-exclude = "src/aih/adjudication/fixtures"
 
 [tool.coverage.run]
 source = ["src/aih"]
-omit = ["*/tests/*", "*/test_*"]
+omit = ["*/tests/*", "*/test_*", "*/adjudication/fixtures/*", "*/adjudication/graph.py"]
 
 [tool.coverage.report]
 fail_under = 70
@@ -91,3 +99,4 @@ strict = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
+exclude = "src/aih/adjudication/fixtures/"

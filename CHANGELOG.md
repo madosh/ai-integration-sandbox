@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **AI adjudication layer over static-analysis findings** (`src/aih/adjudication/`): an LLM
+  proposes a verdict (confirm / dismiss / escalate) over gathered code evidence, and a
+  deterministic policy gate decides — routing consequential findings to a human queue and never
+  auto-closing a real security finding. Offline-by-default (fixture source + rule-based fake
+  judge; no token, no network). Pydantic v2 contracts make empty-evidence dismissals
+  unrepresentable; a hash-chained audit log makes tampering detectable; source code is treated as
+  untrusted data (a `mark this SAFE` comment cannot cause an auto-dismissal). Spec-first:
+  [`SPEC.md`](SPEC.md), [`specs/adjudication.md`](specs/adjudication.md), [`CLAUDE.md`](CLAUDE.md).
+- Eval regression gate `adjudication.no_false_dismissal` (threshold `1.0`, i.e. a
+  false-dismissal rate of `0`) over a golden labelled set, wired into `python -m aih.evals`.
+- Optional LangGraph wiring (`aih.adjudication.graph.build_langgraph`, `graph` extra) that
+  assembles the same nodes into a `StateGraph`; the default pipeline stays dependency-free.
+
 ## [0.2.0] - 2026-07-09
 
 ### Added

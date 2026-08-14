@@ -17,6 +17,7 @@ and GenAI workflows.
 | Connectors | `src/aih/connectors/` |
 | Hybrid RAG + vector store | `src/aih/rag/` |
 | Agent + budget + memory | `src/aih/agent/` |
+| Adjudication over static-analysis findings | `src/aih/adjudication/` |
 | MCP tools/resources/prompts | `src/aih/mcp_server/` |
 | Guardrails | `src/aih/guardrails/` |
 | Evals | `src/aih/evals/` |
