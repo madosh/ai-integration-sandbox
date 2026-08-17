@@ -28,7 +28,7 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.21",
-    "black>=24.3",
+    "black>=26.5.1",
     "mypy>=2.2.0",
 ]
 # Real provider adapters live behind these extras; never required for tests.
