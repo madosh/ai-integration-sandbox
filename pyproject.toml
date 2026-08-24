@@ -91,3 +91,10 @@ strict = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
+
+# FastMCP's @mcp.tool()/@mcp.resource() decorators are untyped upstream, which trips
+# --strict's untyped-decorator check on mypy >= 2.2. Scope just that check off for the
+# MCP server module; --strict (incl. untyped decorators) stays in force everywhere else.
+[[tool.mypy.overrides]]
+module = "aih.mcp_server.*"
+disallow_untyped_decorators = false

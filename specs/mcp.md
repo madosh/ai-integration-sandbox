@@ -33,6 +33,9 @@ explicitly.
   envelopes.
 - Offline + deterministic in tests (mock APIs via ASGI transport, HashEmbedder).
 - Typed args + results via Pydantic v2.
+- Type-checking: FastMCP's `@mcp.tool()` / `@mcp.resource()` decorators are untyped upstream,
+  so `aih.mcp_server.*` disables mypy's `untyped-decorator` check while keeping `--strict`
+  in force for the rest of the codebase (`[[tool.mypy.overrides]]` in `pyproject.toml`).
 
 ## Failure modes
 
