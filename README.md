@@ -348,7 +348,7 @@ modes, Success criteria (measurable), Out of scope. Commits reference the spec i
 
 This repo was built phase-by-phase (each phase spec-first, tested, committed):
 
-0. Skeleton 1. Connectors 3. Hybrid RAG 2. MCP server 4. Skills + agent + HITL
+0. Skeleton 1. Connectors 2. MCP server 3. Hybrid RAG 4. Skills + agent + HITL
 5. Evals 6. FastAPI service 7. Dashboard 8. Deploy/LocalStack
 
 ## Contributing

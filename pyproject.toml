@@ -18,7 +18,7 @@ dependencies = [
     "uvicorn[standard]>=0.51.0",
     "python-multipart>=0.0.9",
     "rank-bm25>=0.2.2",
-    "mcp>=1.2.0",
+    "mcp>=1.2.0,<2",  # mcp 2.0 relocated FastMCP (mcp.server.fastmcp); pin until we migrate
     "sse-starlette>=3.4.5",
 ]
 
@@ -91,3 +91,10 @@ strict = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
+
+# FastMCP's @mcp.tool()/@mcp.resource() decorators are untyped upstream, which trips
+# --strict's untyped-decorator check on mypy >= 2.2. Scope just that check off for the
+# MCP server module; --strict (incl. untyped decorators) stays in force everywhere else.
+[[tool.mypy.overrides]]
+module = "aih.mcp_server.*"
+disallow_untyped_decorators = false
