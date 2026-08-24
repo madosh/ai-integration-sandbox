@@ -25,6 +25,25 @@ updates:
       npm-minor-patch:
         applies-to: version-updates
         update-types: ["minor", "patch"]
+    ignore:
+      # Frontend majors need a coordinated migration (React 19 = react + react-dom +
+      # @types + @vitejs/plugin-react together; vite 8 and plugin-react 6 are peer-linked;
+      # TypeScript 7 is the experimental native rewrite). Hold them until we do that
+      # upgrade deliberately, so Dependabot stops reopening PRs that break the dashboard build.
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@vitejs/plugin-react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions used by CI
   - package-ecosystem: "github-actions"
