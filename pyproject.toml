@@ -19,7 +19,7 @@ dependencies = [
     "python-multipart>=0.0.9",
     "rank-bm25>=0.2.2",
     "mcp>=1.2.0,<2",  # mcp 2.0 relocated FastMCP (mcp.server.fastmcp); pin until we migrate
-    "sse-starlette>=3.4.5",
+    "sse-starlette>=3.4.8",
 ]
 
 [project.optional-dependencies]
